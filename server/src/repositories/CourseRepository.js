@@ -1,27 +1,49 @@
-const { Course, Module, Partition, Leasson } = require('../models')
+const { Course, Module, Partition, Leasson, User } = require('../models')
 
 class CourseRepository {
     async list() {
         return await Course.findAll({
-            include: {
-                model: Module,
-                include: {
-                    model: Partition,
-                    include: Leasson
-                }
-            }
+            include: [
+                {
+                    model: Module,
+                    as: 'modules',
+                    include: {
+                        model: Partition,
+                        as: 'partitions',
+                        include: {
+                            model: Leasson,
+                            as: 'leassons'
+                        }
+                    }
+                },
+                {
+                    model: User,
+                    as: 'courseTeachers'
+                },
+            ]
         })
     }
 
     async getById(courseId) {
         return await Course.findByPk(courseId, {
-            include: {
-                model: Module,
-                include: {
-                    model: Partition,
-                    include: Leasson
-                }
-            }
+            include: [
+                {
+                    model: Module,
+                    as: 'modules',
+                    include: {
+                        model: Partition,
+                        as: 'partitions',
+                        include: {
+                            model: Leasson,
+                            as: 'leassons'
+                        }
+                    }
+                },
+                {
+                    model: User,
+                    as: 'courseTeachers'
+                },
+            ]
         })
     }
 

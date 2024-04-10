@@ -27,19 +27,20 @@ class CourseController {
 
     async create(req, res) {
         try {
-            const { name, description, modules } = req.body
-            const newCourse = await courseService.createCourse({ name, description, modules })
+            const { name, description, modules, teacherIds } = req.body
+            const newCourse = await courseService.createCourse({ name, description, modules, teacherIds })
 
             return res.status(StatusCodes.CREATED).json({ course: newCourse })
         } catch (err) {
+            console.log(err)
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
         }
     }
 
     async update(req, res) {
         try {
-            const { id, name, description, modules } = req.body
-            const updatedCourse = await courseService.updateCourse({ id, name, description, modules })
+            const { id, name, description, modules, teachers } = req.body
+            const updatedCourse = await courseService.updateCourse({ id, name, description, modules, teachers })
 
             return res.status(StatusCodes.OK).json({ course: updatedCourse })
         } catch (err) {
