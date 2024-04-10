@@ -1,6 +1,6 @@
 const { Model } = require('sequelize');
 
-Leasson.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
     class Leasson extends Model {
         static associate(models) {
             Leasson.hasOne(models.Lecture, { foreignKey: 'leassonId' })
@@ -9,6 +9,7 @@ Leasson.exports = (sequelize, DataTypes) => {
 
     Leasson.init({
         name: DataTypes.STRING,
+        partitionId: DataTypes.INTEGER
     }, {
         sequelize,
         modelName: 'Leasson',
