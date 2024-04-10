@@ -1,6 +1,6 @@
 const { Model } = require('sequelize');
 
-Partition.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
     class Partition extends Model {
         static associate(models) {
             Partition.hasMany(models.Leasson, { foreignKey: 'partitionId' })
@@ -9,6 +9,8 @@ Partition.exports = (sequelize, DataTypes) => {
 
     Partition.init({
         name: DataTypes.STRING,
+        description: DataTypes.STRING,
+        moduleId: DataTypes.INTEGER
     }, {
         sequelize,
         modelName: 'Partition',

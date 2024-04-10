@@ -1,5 +1,7 @@
 const express = require("express");
 
+const coursesRouter = require('./routes/coursesRoutes')
+
 const app = express()
 const port = process.env.PORT || 3000
 
@@ -18,6 +20,8 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     next();
 });
+
+app.use('/api/courses', coursesRouter)
 
 
 app.listen(port, () => {
