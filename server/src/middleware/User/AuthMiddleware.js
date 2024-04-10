@@ -1,8 +1,9 @@
 const { StatusCodes } = require("http-status-codes")
 const jwt = require('jsonwebtoken')
 
-exports.authenticateUser = async (req, res, next) => {
+authenticateUser = async (req, res, next) => {
     const token = (req.headers.authorization || '').replace(/Bearer\s?/, '')
+    console.log('token', token)
 
     if (!token) {
         return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'Unauthorized' })
@@ -10,9 +11,12 @@ exports.authenticateUser = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        console.log('decoded id', decoded.id)
         req.userId = decoded.id
         next()
     } catch (error) {
         return res.status(StatusCodes.FORBIDDEN).json({ error: 'Forbidden' })
     }
 }
+
+module.exports = authenticateUser

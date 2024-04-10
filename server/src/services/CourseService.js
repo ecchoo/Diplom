@@ -2,14 +2,14 @@ const courseRepository = require("../repositories/CourseRepository")
 const moduleRepository = require('../repositories/ModuleRepository')
 const partitionRepository = require('../repositories/PartitionRepository')
 const leassonRepository = require('../repositories/LeassonRepository')
-const teacherRepository = require('../repositories/TeacherRepository')
+const userCourseRepository = require('../repositories/UserCourseRepository')
 
 class CourseService {
     async createCourse({ name, description, modules, teacherIds }) { //
         const { id: courseId } = await courseRepository.create({ name, description })
 
         await Promise.all(teacherIds.map(async (teacherId) => {
-            await teacherRepository.create({ courseId, teacherId })
+            await userCourseRepository.create({ courseId, userId: teacherId })
         }))
 
         await Promise.all(modules.map(async ({ name, description, partitions }) => {
@@ -31,7 +31,7 @@ class CourseService {
         await courseRepository.update({ id, name, description })
 
         await Promise.all(teachers.map(async ({ id, courseId, teacherId }) => {
-            await teacherRepository.update({ id, courseId, teacherId })
+            await userCourseRepository.update({ id, courseId, userId: teacherId })
         }))
 
         await Promise.all(modules.map(async ({ id, name, description, courseId, partitions }) => {
