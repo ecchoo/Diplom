@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { routes } from "../../routes";
-import { HOME } from "../../constants";
+import { routes } from "@/routes";
+import { HOME } from "@/constants";
 
 
 export const AppRouter = () => {
