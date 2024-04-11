@@ -43,9 +43,20 @@ class CourseRepository {
                 },
                 {
                     model: User,
-                    as: 'courseTeachers'
+                    as: 'courseUsers',
+                    where: { role: ROLES.TEACHER },
                 },
             ]
+        })
+    }
+
+    async getUserCourses(userId) {
+        return await Course.findAll({
+            include: {
+                model: User,
+                as: 'courseUsers',
+                where: { id: userId },
+            }
         })
     }
 
