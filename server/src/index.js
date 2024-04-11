@@ -2,6 +2,7 @@ const express = require("express");
 
 const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
+const userRouter = require('./routes/userRoutes')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
 
 app.use('/api/courses', coursesRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/user', userRouter)
 
 app.listen(port, () => {
     console.log(`[server]: Server is running on port ${port}`);

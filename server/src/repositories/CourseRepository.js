@@ -1,4 +1,5 @@
 const { Course, Module, Partition, Leasson, User } = require('../models')
+const { ROLES } = require('../constants/roles')
 
 class CourseRepository {
     async list() {
@@ -18,7 +19,8 @@ class CourseRepository {
                 },
                 {
                     model: User,
-                    as: 'courseTeachers'
+                    as: 'courseUsers',
+                    where: { role: ROLES.TEACHER },
                 },
             ]
         })
@@ -41,9 +43,20 @@ class CourseRepository {
                 },
                 {
                     model: User,
-                    as: 'courseTeachers'
+                    as: 'courseUsers',
+                    where: { role: ROLES.TEACHER },
                 },
             ]
+        })
+    }
+
+    async getUserCourses(userId) {
+        return await Course.findAll({
+            include: {
+                model: User,
+                as: 'courseUsers',
+                where: { id: userId },
+            }
         })
     }
 

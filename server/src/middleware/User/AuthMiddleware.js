@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes")
 const jwt = require('jsonwebtoken')
 
-exports.authenticateUser = async (req, res, next) => {
+authenticateUser = async (req, res, next) => {
     const token = (req.headers.authorization || '').replace(/Bearer\s?/, '')
 
     if (!token) {
@@ -16,3 +16,5 @@ exports.authenticateUser = async (req, res, next) => {
         return res.status(StatusCodes.FORBIDDEN).json({ error: 'Forbidden' })
     }
 }
+
+module.exports = authenticateUser

@@ -5,10 +5,10 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             Course.hasMany(models.Module, { foreignKey: 'courseId', as: 'modules' })
             Course.belongsToMany(models.User, {
-                through: 'CourseTeacher',
+                through: 'UserCourse',
                 foreignKey: 'courseId',
-                otherKey: 'teacherId',
-                as: 'courseTeachers'
+                otherKey: 'userId',
+                as: 'courseUsers'
             })
         }
     }
