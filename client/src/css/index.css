@@ -1,0 +1,9 @@
+@import url('./reset.css');
+@import url('../assets/fonts/raleway/raleway.css');
+@import url('../assets//fonts/poppins/poppins.css');
+
+body {
+    /* font-family: 'Raleway', sans-serif; */
+    font-family: 'Poppins', sans-serif;
+    background-color: #f2f2f2;
+}
