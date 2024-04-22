@@ -1,11 +1,11 @@
-import { Logo } from "@/UI"
+import { Logo } from "../Logo"
 import { ButtonLogin, ButtonRegister, Container, HeaderNav, NavActions, NavItem, NavList } from "./styled"
 
 export const Header = () => {
     return (
         <Container>
             <HeaderNav>
-                <Logo>Web Learn</Logo>
+                <Logo />
                 <nav>
                     <NavList>
                         <NavItem>О нас</NavItem>

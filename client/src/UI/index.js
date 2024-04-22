@@ -1,4 +1,4 @@
 export * from './Title'
-export * from './Logo'
 export * from './Text'
 export * from './Title2'
+export * from './Avatar'

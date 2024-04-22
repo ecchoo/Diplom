@@ -1,12 +1,13 @@
-import { Logo, Title2 } from "@/UI"
+import { Title2 } from "@/UI"
 import { Column, ContainerFooter, NavItem, NavList, StyledFooter, SubscribeBlock } from "./styled"
 import { ButtonArrow } from "../ButtonArrow"
+import { Logo } from "../Logo"
 
 export const Footer = () => {
     return (
         <StyledFooter>
             <ContainerFooter>
-                <Logo>Web Learn</Logo>
+                <Logo />
                 <nav>
                     <NavList>
                         <Column>
@@ -20,7 +21,7 @@ export const Footer = () => {
                     </NavList>
                 </nav>
                 <SubscribeBlock>
-                    <Title2>Подписаться, чтобы не пропустить</Title2>
+                    {/* <Title2>Подписаться, чтобы не пропустить</Title2> */}
                     <ButtonArrow
                         text='Подписаться на рассылку'
                     />

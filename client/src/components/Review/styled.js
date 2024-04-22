@@ -1,25 +1,24 @@
 import styled from 'styled-components'
 
 export const StyledReview = styled.div`
-    background-color: #fff;
-    border-radius: 20px;
-    padding: 40px 30px;
+    background-color: ${({ theme }) => theme.colors.white};;
+    border-radius: ${({ theme }) => theme.spacing(2)};
+    padding: ${({ theme }) => theme.spacing(4)} ${({ theme }) => theme.spacing(3)};
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 350px;
+    height: ${({ theme }) => theme.spacing(35)};
 `
 
 export const Reviewer = styled.div`
     display: flex;
     align-items: center;
-    column-gap: 10px;
+    column-gap: ${({ theme }) => theme.spacing(1)};
 `
 
 export const ReviewerInfo = styled.div`
     display: flex;
     flex-direction: column;
-    /* row-gap: 5px; */
 `
 
 export const Name = styled.span`
@@ -28,7 +27,7 @@ export const Name = styled.span`
 `
 
 export const Course = styled.span`
-    color: #c19cf6;
+    color: ${({ theme }) => theme.colors.accent};
     font-size: 16px;
     font-weight: 400;
 `

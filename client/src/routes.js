@@ -1,6 +1,7 @@
 import { Home } from "./pages/Home";
 import { Courses } from "./pages/Courses";
-import { COURSES, HOME } from "./constants";
+import { COURSES, DASHBOARD, HOME } from "./constants";
+import { Dashboard } from "./pages/Dashboard";
 
 export const routes = [
     {
@@ -11,4 +12,8 @@ export const routes = [
         path: COURSES,
         Component: Courses
     },
+    {
+        path: DASHBOARD,
+        Component: Dashboard
+    }
 ]

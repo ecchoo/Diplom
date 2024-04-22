@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const StyledFooter = styled.footer`
-    padding-top: 50px;
+    padding-top: ${({ theme }) => theme.spacing(5)};
 `
 
 export const ContainerFooter = styled.div`
@@ -12,13 +12,13 @@ export const ContainerFooter = styled.div`
 
 export const NavList = styled.ul`
     display: flex;
-    column-gap: 30px;
+    column-gap: ${({ theme }) => theme.spacing(3)};
 `
 
 export const Column = styled.div`
     display: flex;
     flex-direction: column;
-    row-gap: 15px;
+    row-gap: ${({ theme }) => theme.spacing(1.5)};
 `
 
 export const NavItem = styled.li`
@@ -28,7 +28,7 @@ export const NavItem = styled.li`
 export const SubscribeBlock = styled.div`
     display: flex;
     flex-direction: column;
-    row-gap: 40px;
+    row-gap: ${({ theme }) => theme.spacing(4)};
 
     & .button-arrow {
         align-self: flex-end;

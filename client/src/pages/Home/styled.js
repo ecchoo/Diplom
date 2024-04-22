@@ -1,11 +1,11 @@
 import styled from 'styled-components'
 
 export const Section = styled.section`
-    padding-top: 50px;
+    padding-top: ${({ theme }) => theme.spacing(5)};
 `
 
 export const Container = styled.div`
-    padding: 40px 70px;
+    padding: ${({ theme }) => theme.spacing(4)} ${({ theme }) => theme.spacing(7)};
 `
 export const RowMainScreen = styled.div`
     display: flex;
@@ -14,29 +14,28 @@ export const RowMainScreen = styled.div`
 `
 
 export const RowContent = styled.div`
-    /* padding-top: 60px; */
     display: flex;
     flex-direction: column;
-    row-gap: 80px;
+    row-gap: ${({ theme }) => theme.spacing(8)};
     width: 50%;
 `
 
 export const Offer = styled.h1`
     font-size: 55px;
     font-weight: 600;
-    color: #353535;
+    color: ${({ theme }) => theme.colors.primary};
 `
 
 
 
 export const RowImage = styled.img`
     width: 39%;
-    border-radius: 15px;
+    border-radius: ${({ theme }) => theme.spacing(1.5)};
 `
 
 export const DirectionCards = styled.div`
     display: flex;
-    padding-top: 50px;
+    padding-top: ${({ theme }) => theme.spacing(5)};
     justify-content: space-between;
 `
 
@@ -44,7 +43,7 @@ export const DirectionCard = styled.div`
     position: relative;
     display: flex;
     flex-direction: column;
-    row-gap: 10px;
+    row-gap: ${({ theme }) => theme.spacing(1)};
     width: 30%;
     height: max-content;
     transition: all .2s ease-in-out;
@@ -61,7 +60,7 @@ export const Row = styled.div`
 `
 
 export const AboutContent = styled.div`
-    padding-top: 100px;
+    padding-top: ${({ theme }) => theme.spacing(10)};
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -70,16 +69,14 @@ export const AboutContent = styled.div`
 export const Advantages = styled.div`
     display: flex;
     flex-direction: column;
-    /* align-items: center; */
     justify-content: space-between;
     height: 100%;
-    row-gap: 15px;
-    /* width: 30%; */
+    row-gap: ${({ theme }) => theme.spacing(1.5)};
 
     & .delimeter {
-        height: 70px;
+        height: ${({ theme }) => theme.spacing(7)};
         align-self: flex-start;
-        margin-left: 30px;
+        margin-left: ${({ theme }) => theme.spacing(3)};
     }
 `
 
@@ -87,7 +84,7 @@ export const Advantage = styled.div`
     display: flex;
     width: 100%;
     align-items: center;
-    column-gap: 20px;
+    column-gap: ${({ theme }) => theme.spacing(2)};
 `
 
 export const AdvantageIcon = styled.div`
@@ -96,15 +93,15 @@ export const AdvantageIcon = styled.div`
     justify-content: center;
     align-items: center;
     /* padding: 15px; */
-    width: 64px;
-    height: 64px;
+    width: ${({ theme }) => theme.spacing(6.4)};
+    height: ${({ theme }) => theme.spacing(6.4)};
     border-radius: 50%;
 `
 
 export const AdvantageText = styled.div`
     display: flex;
     flex-direction: column;
-    row-gap: 7px;
+    row-gap: ${({ theme }) => theme.spacing(0.7)};
 `
 
 export const AboutImage = styled.div`

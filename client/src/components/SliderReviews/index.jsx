@@ -36,9 +36,9 @@ export const SliderReviews = () => {
     return (
         <Slider
             spaceBetween={50}
-            slidesPerView={3.5}
-            onSlideChange={() => console.log('slide change')}
-            onSwiper={(swiper) => console.log(swiper)}
+            slidesPerView={3.2}
+            // onSlideChange={() => console.log('slide change')}
+            // onSwiper={(swiper) => console.log(swiper)}
         >
             {reviews.map(({ name, photo, course, text }) =>
                 <SwiperSlide>
