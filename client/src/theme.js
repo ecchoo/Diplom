@@ -6,17 +6,17 @@ export const theme = {
         background: '#f2f2f2',
 
         gray: '#d6d6d3',
-        
+
         progressBar: {
             primary: 'rgba(255, 199, 115, .2)',
             secondary: '#ffc773'
         },
-    
+
         white: '#ffffff',
         black: '#000000'
     },
-    
-    spacing: (size) => {
-        return `${size * 10}px`
+
+    spacing: (...sizes) => {
+        return sizes.map(size => `${size * 10}px`).join(' ')
     }
 }

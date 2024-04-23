@@ -1,0 +1,19 @@
+<svg width="30.000000" height="30.000000" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<desc>
+			Created with Pixso.
+	</desc>
+	<defs>
+		<clipPath id="clip43_8">
+			<rect id="profile" width="30.000000" height="30.000000" transform="translate(-0.756104 -0.211182)" fill="white" fill-opacity="0"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip43_8)">
+		<mask id="mask43_11" mask-type="alpha" maskUnits="userSpaceOnUse" x="-0.756104" y="-0.211182" width="30.000000" height="30.000000">
+			<rect id="rect" x="-0.756104" y="-0.211182" width="30.000000" height="30.000000" fill="#000000" fill-opacity="1.000000"/>
+		</mask>
+		<g mask="url(#mask43_11)">
+			<path id="path" d="M19.92 30.5C19.92 30.5 23.86 30.27 25.84 27.73C27.81 25.18 21.89 18.78 21.89 18.78C21.89 18.78 18.6 21.56 14 21.33C9.39 21.1 7.42 18.78 7.42 18.78C7.42 18.78 0.18 23.88 2.81 27.96C5.45 32.03 19.92 30.5 19.92 30.5Z" fill="#353535" fill-opacity="1.000000" fill-rule="nonzero"/>
+			<path id="path" d="M14.69 17.67C19.35 17.67 23.13 13.89 23.13 9.23C23.13 4.56 19.35 0.78 14.69 0.78C10.02 0.78 6.25 4.56 6.25 9.23C6.25 13.89 10.02 17.67 14.69 17.67Z" fill="#353535" fill-opacity="1.000000" fill-rule="nonzero"/>
+		</g>
+	</g>
+</svg>
