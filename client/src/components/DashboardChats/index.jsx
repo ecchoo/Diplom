@@ -6,7 +6,7 @@ export const DashboardChats = () => {
     return (
         <DashboardChatsContainer>
             <ChatList />
-            <Chat />
+            <Chat name='User1' chatId={1} />
         </DashboardChatsContainer>
     )
 }

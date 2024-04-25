@@ -5,21 +5,22 @@ import { ButtonActions } from "../ButtonActions"
 import { Message } from "../Message"
 import PaperClip from '@/assets/icons/paperClip.svg'
 import SendMessage from '@/assets/icons/sendMessage2.svg'
+import io from "socket.io-client"
+import { useEffect } from "react"
 
-const messages = [
-    {
-        userAvatar: AsideImg,
-        messageText: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quidem optio illum consequuntur voluptas saepe fugit libero molestias consectetur qui. Nostrum similique eos libero nobis quae aspernatur quos reprehenderit eveniet quidem.',
-        isIncoming: true,
-    },
-    {
-        userAvatar: AsideImg,
-        messageText: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quidem optio illum consequuntur voluptas saepe fugit libero molestias consectetur qui. Nostrum similique eos libero nobis quae aspernatur quos reprehenderit eveniet quidem.',
-        isIncoming: false,
-    }
-]
+export const Chat = ({ name, chatId }) => {
+    const socket = io.connect(process.env.REACT_APP_SERVER_URL)
 
-export const Chat = () => {
+    useEffect(() => {
+        socket.emit('join', { name, chatId })
+    }, [name, chatId])
+
+    useEffect(() => {
+        socket.on("message", ({ data }) => {
+            // console.log(data)
+        })
+    }, [])
+
     return (
         <ChatContainer>
             <ChatHeader>
@@ -35,13 +36,7 @@ export const Chat = () => {
                 </ChatActions>
             </ChatHeader>
             <Messages>
-                {messages.map(({ userAvatar, messageText, isIncoming }) =>
-                    <Message
-                        userAvatar={userAvatar}
-                        messageText={messageText}
-                        isIncoming={isIncoming}
-                    />
-                )}
+
             </Messages>
             <MessageInput>
                 <TypeMessage>

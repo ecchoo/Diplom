@@ -8,6 +8,13 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'userId',
                 otherKey: 'courseId',
             })
+            User.belongsToMany(models.Chat, {
+                through: 'UserChat',
+                foreignKey: 'userId',
+                otherKey: 'chatId',
+                as: 'userChats'
+            })
+            User.hasMany(models.Message, { foreignKey: 'userId' })
         }
     }
 

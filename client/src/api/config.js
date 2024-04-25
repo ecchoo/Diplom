@@ -1,3 +1,4 @@
+import { getAuthUser } from "@/utils";
 import axios from "axios";
 
 const $host = axios.create({
@@ -9,7 +10,8 @@ const $authHost = axios.create({
 });
 
 const authInterceptor = (config) => {
-    config.headers.authorization = `Bearer ${ localStorage.getItem("token") }`;
+    const { token } = getAuthUser()
+    config.headers.authorization = `Bearer ${token}`;
     return config;
 };
 

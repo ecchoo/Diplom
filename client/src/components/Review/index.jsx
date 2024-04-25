@@ -4,8 +4,6 @@ import { Text } from "@/UI"
 
 
 export const Review = ({ name, photo, course, text }) => {
-    console.log(course)
-
     return (
         <StyledReview>
             <Text>{text}</Text>

@@ -56,6 +56,7 @@ class CourseRepository {
                 model: User,
                 as: 'courseUsers',
                 where: { id: userId },
+                attributes: []
             }
         })
     }

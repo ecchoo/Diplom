@@ -11,6 +11,7 @@ export const Input = ({ type, name, placeholder, value, onChange, errorValidatio
                     name={name}
                     id={name}
                     placeholder=" "
+                    autoComplete="off"
                 />
                 <FlyingPlaceholder
                     htmlFor={name}
