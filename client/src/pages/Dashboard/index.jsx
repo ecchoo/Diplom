@@ -11,8 +11,8 @@ export const Dashboard = () => {
             <Aside />
             <DashboardContent>
                 <HeaderDashboard />
-                <DashboardCourses />
-                {/* <DashboardChats /> */}
+                {/* <DashboardCourses /> */}
+                <DashboardChats />
                 {/* <DashboardActivity /> */}
             </DashboardContent>
         </DashboardContainer>

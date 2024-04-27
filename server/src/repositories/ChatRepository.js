@@ -25,7 +25,7 @@ class ChatRepository {
                         attributes: ['id', 'text', 'type', 'status', 'createdAt'],
                         order: [['createdAt', 'DESC']],
                         where: { status: 'sent', type: 'incoming' },
-                        required: true,
+                        required: false,
                     },
                 ],
                 attributes: ['id', 'name', 'type', 'logo'],

@@ -10,30 +10,6 @@ import { CardChatList } from "../CardChatList"
 import { CHAT_TYPES } from "@/constants"
 import { getInterlocutor } from "@/utils"
 
-// const chats = [
-//     {
-//         user: {
-//             name: 'Linna Medison',
-//             photo: AsideImg,
-//         },
-//         lastMessage: {
-//             text: 'Last message',
-//             time: '10:01'
-//         },
-//         newMessagesCount: 2,
-//     },
-//     {
-//         user: {
-//             name: 'Test Test',
-//             photo: AvatarPhoto,
-//         },
-//         lastMessage: {
-//             text: 'First message',
-//             time: '10:00'
-//         },
-//         newMessagesCount: 1,
-//     }
-// ]
 
 export const ChatList = () => {
     const [chatList, setChatList] = useState([])
@@ -47,19 +23,6 @@ export const ChatList = () => {
 
         fetchChatList()
     }, [])
-
-    console.log('chatList', chatList)
-
-    // chatList.length && chatList.forEach((chat) => console.log('chat', chat))
-
-    // chatList.length && chatList.map((chat) => {
-    //     if (chat.type === CHAT_TYPES.DEFAULT) {
-    //         const interlocutor = getInterlocutor(chat.chatUsers)
-    //         chat.logo = interlocutor.photo
-    //     }
-
-    //     return chat
-    // })
 
     return (
         <ChatListContainer>

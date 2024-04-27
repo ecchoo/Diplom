@@ -1,4 +1,4 @@
-const { Course, Module, Partition, Leasson, User } = require('../models')
+const { Course, Module, Partition, Leasson, User, UserCourse } = require('../models')
 const { ROLES } = require('../constants/roles')
 
 class CourseRepository {
@@ -51,13 +51,20 @@ class CourseRepository {
     }
 
     async getUserCourses(userId) {
-        return await Course.findAll({
+        return await UserCourse.findAll({
             include: {
-                model: User,
-                as: 'courseUsers',
-                where: { id: userId },
-                attributes: []
-            }
+                model: Course,
+                as: 'course',
+                include: {
+                    model: User,
+                    as: 'courseUsers',
+                    where: { role: ROLES.TEACHER },
+                    require: false,
+                },
+                require: true,
+            },
+            where: {userId},
+            attributes: ['progress', 'createdAt']
         })
     }
 
