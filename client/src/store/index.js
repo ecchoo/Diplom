@@ -4,6 +4,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit'
 
 import userReducer from './reducers/User'
 import authModalReducer from './reducers/AuthModal'
+import selectedChatReducer from './reducers/SelectedChat'
 
 
 const persistConfig = {
@@ -15,6 +16,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     user: userReducer,
     authModal: authModalReducer,
+    selectedChat: selectedChatReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

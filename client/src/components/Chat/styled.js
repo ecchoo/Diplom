@@ -16,7 +16,7 @@ export const ChatHeader = styled.div`
     padding: ${({ theme }) => theme.spacing(1.5)} ${({ theme }) => theme.spacing(2)};
 `
 
-export const User = styled.div`
+export const ChatInfo = styled.div`
     display: flex;
     column-gap: ${({ theme }) => theme.spacing(2)};
 `
@@ -26,13 +26,13 @@ export const UserInfo = styled.div`
     flex-direction: column;
 `
 
-export const UserName = styled.span`
+export const Title = styled.span`
     font-size: 18px;
     font-weight: 400;
     color: ${({ theme }) => theme.colors.primary};
 `
 
-export const Status = styled.span`
+export const SubTitle = styled.span`
     font-size: 13px;
     color: ${({ theme }) => theme.colors.primary};
     opacity: 0.5;

@@ -6,6 +6,7 @@ const cors = require('cors')
 const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')
+const messageRepository = require('./repositories/MessageRepository')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -27,18 +28,20 @@ const io = new Server(server, {
 })
 
 io.on('connection', socket => {
-    socket.on('join', ({ name, chatId }) => {
+    socket.on('join', async ({ chatId }) => {
         socket.join(chatId)
 
-        socket.emit('message', {
+        const chatMessages = await messageRepository.getChatMessages(chatId)
+
+        socket.emit('chatMessages', {
             data: {
-                user: {
-                    name: 'Admin',
-                    photo: '/aside1.png'
-                },
-                message: `Але, але ${name}`
+                chatMessages
             }
         })
+    })
+
+    socket.on('sendMessage', async ({ newMessage, userId }) => {
+        console.log(newMessage)
     })
 
     io.on('disconnection', () => {

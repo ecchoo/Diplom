@@ -2,15 +2,15 @@ import styled from "styled-components";
 
 export const ChatListContainer = styled.div`
     width: 35%;
-    padding: ${({ theme }) => theme.spacing(2)};
     background-color: ${({ theme }) => theme.colors.white}; 
     display: flex;
     flex-direction: column;
-    row-gap: ${({ theme }) => theme.spacing(2)};
+    /* row-gap: ${({ theme }) => theme.spacing(2)}; */
     border-radius: ${({ theme }) => theme.spacing(1.5)};
 `
 
 export const ChatSearch = styled.div`
+    margin: ${({ theme }) => theme.spacing(2)};
     padding: ${({ theme }) => theme.spacing(1)} ${({ theme }) => theme.spacing(2)};
     display: flex;
     justify-content: space-between;
