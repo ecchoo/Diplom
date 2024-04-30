@@ -14,7 +14,11 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'chatId',
                 as: 'userChats'
             })
-            User.hasMany(models.Message, { foreignKey: 'userId' })
+            User.belongsToMany(models.Message, {
+                through: 'UserMessage',
+                foreignKey: 'userId',
+                otherKey: 'messageId',
+            })
         }
     }
 
@@ -22,7 +26,8 @@ module.exports = (sequelize, DataTypes) => {
         name: DataTypes.STRING,
         password: DataTypes.STRING,
         email: DataTypes.STRING,
-        role: DataTypes.STRING
+        role: DataTypes.STRING,
+        photo: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'User',

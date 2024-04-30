@@ -17,7 +17,6 @@ export const ChatList = () => {
     useEffect(() => {
         const fetchChatList = async () => {
             const { userChats } = await getChatList()
-            console.log(chatList)
             setChatList(userChats)
         }
 
@@ -39,9 +38,11 @@ export const ChatList = () => {
                     } 
 
                     return <CardChatList
-                        chatLogo={chat.logo}
+                        key={chat.id}
+                        chatId={chat.id}
+                        logo={chat.logo}
                         lastMessage={chat.lastMessage}
-                        newMessagesCount={chat.newMessages.length}
+                        countNewMessages={chat.countNewMessages}
                         title={chat.name}
                     />
                 })}

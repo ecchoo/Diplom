@@ -4,8 +4,13 @@ export const Card = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: ${({ theme }) => theme.spacing(0.1)} solid ${({ theme }) => theme.colors.background};
-    padding: ${({ theme }) => theme.spacing(1)} 0;
+    padding: ${({ theme }) => theme.spacing(1, 2)};
+    /* background-color: ${({ isSelected, theme }) => isSelected?theme.colors.gray: theme.colors.white}; */
+
+    &:hover{
+        /* background-color: ${({ theme }) => theme.colors.gray}; */
+        cursor: pointer;
+    }
 `
 
 export const ChatPreview = styled.div`

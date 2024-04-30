@@ -1,14 +1,31 @@
 import { Avatar } from "@/UI"
 import { LastMessageInfo, LastMessageText, Card, ChatPreview, NewMessagesCount, Time, ChatPreviewInfo, Title } from "./styled"
 import { getTime } from "@/utils/getTime"
+import { useDispatch, useSelector } from "react-redux"
+import { setSelectedChat } from "@/store/reducers"
 
-export const CardChatList = ({ chatLogo, lastMessage, newMessagesCount, title }) => {
+export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, title }) => {
+    const dispatch = useDispatch()
+    const { selectedChat: { chatId: selectedChatId } } = useSelector(state => state)
+
+    const isSelectedChat = selectedChatId === chatId
     const timeLastMessage = getTime(lastMessage.createdAt)
 
+    const handleClick = () => {
+        if (isSelectedChat) return
+
+        dispatch(setSelectedChat({
+            id: chatId,
+            title: title,
+            subTitle: 'В сети',
+            logo: logo,
+        }))
+    }
+
     return (
-        <Card>
+        <Card onClick={handleClick}>
             <ChatPreview>
-                <Avatar src={chatLogo} alt="Chat logo" />
+                <Avatar src={logo} alt="Chat logo" />
                 <ChatPreviewInfo>
                     <Title>{title}</Title>
                     <LastMessageText>{lastMessage.text}</LastMessageText>
@@ -16,16 +33,15 @@ export const CardChatList = ({ chatLogo, lastMessage, newMessagesCount, title })
             </ChatPreview>
             <LastMessageInfo>
                 <Time>{timeLastMessage}</Time>
-                {
-                    newMessagesCount ? (
+                {/* {
+                    countNewMessages ? (
                         <NewMessagesCount>
-                            {newMessagesCount}
+                            {countNewMessages}
                         </NewMessagesCount>
-                    ): (
+                    ) : (
                         null
                     )
-                }
-
+                } */}
             </LastMessageInfo>
         </Card>
     )

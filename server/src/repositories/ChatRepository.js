@@ -22,9 +22,7 @@ class ChatRepository {
                     {
                         model: Message,
                         as: 'messages',
-                        attributes: ['id', 'text', 'type', 'status', 'createdAt'],
-                        order: [['createdAt', 'DESC']],
-                        where: { status: 'sent', type: 'incoming' },
+                        attributes: [],
                         required: false,
                     },
                 ],
