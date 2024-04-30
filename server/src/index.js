@@ -7,6 +7,7 @@ const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')
 const messageRepository = require('./repositories/MessageRepository')
+const chatService = require('./services/ChatService')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -28,10 +29,10 @@ const io = new Server(server, {
 })
 
 io.on('connection', socket => {
-    socket.on('join', async ({ chatId }) => {
+    socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
 
-        const chatMessages = await messageRepository.getChatMessages(chatId)
+        const chatMessages = await chatService.getChatMessages(userId, chatId)
 
         socket.emit('chatMessages', {
             data: {
@@ -40,8 +41,13 @@ io.on('connection', socket => {
         })
     })
 
-    socket.on('sendMessage', async ({ newMessage, userId }) => {
-        console.log(newMessage)
+    socket.on('sendMessage', async ({ chatId, userId, text }) => {
+        try {
+            const newMesssage = await chatService.sendMessage(userId, chatId, text)
+            io.to(chatId).emit('messageReceived', newMesssage)
+        } catch (err) {
+            console.log(err.message)
+        }
     })
 
     io.on('disconnection', () => {

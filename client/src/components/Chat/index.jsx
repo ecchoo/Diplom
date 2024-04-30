@@ -8,6 +8,7 @@ import SendMessage from '@/assets/icons/sendMessage2.svg'
 import io from "socket.io-client"
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
+import { MESSAGE_TYPES } from "@/constants"
 
 export const Chat = () => {
     const socket = io.connect(process.env.REACT_APP_SERVER_URL)
@@ -28,11 +29,25 @@ export const Chat = () => {
     const [newMessage, setNewMessage] = useState('')
 
     useEffect(() => {
-        socket.emit('join', { chatId })
+        socket.emit('join', { userId, chatId })
 
         socket.on("chatMessages", ({ data: { chatMessages } }) => {
+            // console.log('messages', chatMessages)
             setMessages(chatMessages)
         })
+
+        socket.on('messageReceived', (newMessage) => {
+            setMessages(prevMessages => {
+                const updatedMessages = [
+                    ...prevMessages,
+                    {
+                        ...newMessage,
+                        type: newMessage.user.id === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
+                    }
+                ];
+                return updatedMessages;
+            });
+        });
     }, [chatId])
 
 
@@ -41,7 +56,8 @@ export const Chat = () => {
 
         if (!newMessage.length) return
 
-        // socket.emit('sendMessage', { newMessage, userId })
+        setNewMessage('')
+        socket.emit('sendMessage', { chatId, userId, text: newMessage })
     }
 
     const handleChange = (e) => {
@@ -63,13 +79,18 @@ export const Chat = () => {
                 </ChatActions>
             </ChatHeader>
             <Messages>
-                {messages.length && messages.map((message) =>
-                    <Message
-                        key={message.id}
-                        userAvatar={message.user.photo}
-                        messageText={message.message.text}
-                        isIncoming={message.type === 'incoming'}
-                    />
+                {messages.length && messages.map((message) => {
+                    console.log('Map message', message)
+                    return (
+                        <Message
+                            key={message.id}
+                            userAvatar={message.user.photo}
+                            messageText={message.text}
+                            isIncoming={message.type === 'incoming'}
+                        />
+                    )
+                }
+
                 )}
             </Messages>
             <form onSubmit={handleSubmit} >

@@ -3,7 +3,7 @@ const { MESSAGE_TYPES } = require('../constants/messageTypes')
 const { Message, User, UserMessage } = require('../models')
 
 class MessageRepository {
-    async getChatMessages(chatId) {
+    async getChatMessages(userId, chatId) {
         return await UserMessage.findAll({
             attributes: ['type', 'status', 'createdAt'],
             order: [['createdAt', 'ASC']],
@@ -20,6 +20,7 @@ class MessageRepository {
                     attributes: ['text'],
                 },
             ],
+            where: { userId }
         })
     }
 
@@ -53,6 +54,14 @@ class MessageRepository {
                 attributes: []
             }
         })
+    }
+
+    async createMessage(text, chatId) {
+        return await Message.create({ text, chatId })
+    }
+
+    async createUserMessage({ messageId, userId, type, status }) {
+        return await UserMessage.create({ messageId, userId, type, status })
     }
 }
 

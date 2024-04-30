@@ -33,7 +33,7 @@ export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, titl
             </ChatPreview>
             <LastMessageInfo>
                 <Time>{timeLastMessage}</Time>
-                {
+                {/* {
                     countNewMessages ? (
                         <NewMessagesCount>
                             {countNewMessages}
@@ -41,7 +41,7 @@ export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, titl
                     ) : (
                         null
                     )
-                }
+                } */}
             </LastMessageInfo>
         </Card>
     )

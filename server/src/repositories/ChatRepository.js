@@ -1,4 +1,4 @@
-const { Sequelize } = require('sequelize')
+const { Sequelize, Op } = require('sequelize')
 const { Chat, User, UserChat, Message } = require('../models')
 
 class ChatRepository {
@@ -6,6 +6,7 @@ class ChatRepository {
         return await UserChat.findAll({
             where: {
                 userId,
+                '$chat.messages.id$': { [Op.ne]: null }
             },
             include: {
                 model: Chat,
@@ -17,6 +18,12 @@ class ChatRepository {
                         attributes: ['id', 'name', 'photo'],
                         through: { attributes: [] },
                         required: false
+                    },
+                    {
+                        model: Message,
+                        as: 'messages',
+                        attributes: [],
+                        required: false,
                     },
                 ],
                 attributes: ['id', 'name', 'type', 'logo'],

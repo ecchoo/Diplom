@@ -1,8 +1,18 @@
-const { User } = require('../models')
+const { User, UserChat } = require('../models')
 
 class UserRepository {
     async getByEmail(email) {
-        return User.findOne({ where: { email } })
+        return await User.findOne({ where: { email } })
+    }
+
+    async getById(id){
+        return await User.findByPk(id)
+    }
+
+    async getChatUsers(chatId){
+        return await UserChat.findAll({
+            where: { chatId },
+        })
     }
 
     async create({ name, email, password, role }) {

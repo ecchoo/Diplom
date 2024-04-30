@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Message',
         timestamps: true,
-        tableName: 'messages'
+        tableName: 'messages',
+        // underscored: true
     });
 
     return Message;
