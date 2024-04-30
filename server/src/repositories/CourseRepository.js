@@ -55,21 +55,20 @@ class CourseRepository {
             include: {
                 model: Course,
                 as: 'course',
+                attributes: ['id', 'name', 'logo', 'description'],
                 include: {
                     model: User,
-                    as: 'courseUsers',
-                    where: { role: ROLES.TEACHER },
-                    require: false,
+                    as: 'courseTeachers',
+                    attributes: ['name', 'photo']
                 },
-                require: true,
             },
             where: {userId},
             attributes: ['progress', 'createdAt']
         })
     }
 
-    async create({ name, description }) {
-        return await Course.create({ name, description })
+    async create({ name, description, logo }) {
+        return await Course.create({ name, description, logo })
     }
 
     async update({ id, name, description }) {

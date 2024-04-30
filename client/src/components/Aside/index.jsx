@@ -10,8 +10,19 @@ import Plus from '@/assets/icons/plus.svg'
 
 import AsideImg from '/aside1.png'
 import AsideImg2 from '/blatnoy.png'
+import { useDispatch, useSelector } from "react-redux"
+import { setActiveDashboardSection } from "@/store/reducers"
+import { DASHBOARD_SECTIONS } from "@/constants"
 
 export const Aside = () => {
+    const dispatch = useDispatch()
+    const { dashboard: { activeSection } } = useSelector(state => state)
+
+    const handleClickNavItem = (section) => {
+        console.log(section)
+        dispatch(setActiveDashboardSection(section))
+    }
+
     return (
         <AsideContainer>
             <AsideHeader>
@@ -29,19 +40,31 @@ export const Aside = () => {
             </AsideHeader>
             <nav>
                 <NavList>
-                    <NavListItem isActive={false}>
+                    <NavListItem
+                        onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.ACTIVITY)}
+                        isActive={activeSection === DASHBOARD_SECTIONS.ACTIVITY}
+                    >
                         <HomeSvg />
-                        <span>Главная</span>
+                        <span>Активность</span>
                     </NavListItem>
-                    <NavListItem isActive={false}>
+                    <NavListItem
+                        onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.COURSES)}
+                        isActive={activeSection === DASHBOARD_SECTIONS.COURSES}
+                    >
                         <BookSvg />
                         <span>Курсы</span>
                     </NavListItem>
-                    <NavListItem isActive={true}>
+                    <NavListItem
+                        onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.CHATS)}
+                        isActive={activeSection === DASHBOARD_SECTIONS.CHATS}
+                    >
                         <ChatSvg />
                         <span>Чаты</span>
                     </NavListItem>
-                    <NavListItem isActive={false}>
+                    <NavListItem
+                        onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.PROFILE)}
+                        isActive={activeSection === DASHBOARD_SECTIONS.PROFILE}
+                    >
                         <ProfileSvg />
                         <span>Профиль</span>
                     </NavListItem>

@@ -10,12 +10,19 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'userId',
                 as: 'courseUsers'
             })
+            Course.belongsToMany(models.User, {
+                through: 'TeacherCourse',
+                foreignKey: 'courseId',
+                otherKey: 'teacherId',
+                as: 'courseTeachers'
+            })
         }
     }
 
     Course.init({
         name: DataTypes.STRING,
         description: DataTypes.STRING,
+        logo: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Course',

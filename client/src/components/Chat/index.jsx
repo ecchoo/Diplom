@@ -97,7 +97,7 @@ export const Chat = () => {
                 <MessageInput>
                     <TypeMessage>
                         <img src={PaperClip} alt="Paper clip" />
-                        <Input onChange={handleChange} placeholder="Написать сообщение" />
+                        <Input onChange={handleChange} value={newMessage} placeholder="Написать сообщение" />
                     </TypeMessage>
                     <button>
                         <img src={SendMessage} alt="Send message" />
