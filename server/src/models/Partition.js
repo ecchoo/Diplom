@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     class Partition extends Model {
         static associate(models) {
             Partition.hasMany(models.Leasson, { foreignKey: 'partitionId', as: 'leassons' })
+            Partition.belongsTo(models.Module, { foreignKey: 'moduleId', as: 'module' })
         }
     }
 

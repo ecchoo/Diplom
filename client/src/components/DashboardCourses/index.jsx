@@ -1,92 +1,22 @@
+import { useEffect, useState } from 'react'
 import { CardCourse } from '../CardCourse'
 import { CoursesTitle, CoursesBody, CoursesContainer, CoursesHeader, CoursesManagement, SortCourses, SortPlaceholder, SortSelect, SortSelectHeader } from './styled'
-import AvatarPhoto from '/avatar.jpg'
-import BackEndPhoto from '/backend.png'
-
-const courses = [
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-    {
-        name: 'Back-end Basic',
-        logo: BackEndPhoto,
-        author: {
-            name: 'David Nikolson',
-            photo: AvatarPhoto
-        }
-    },
-]
+import { useSelector } from 'react-redux'
+import { getUserCourseList } from '@/api'
 
 export const DashboardCourses = () => {
+    const { user: { id: userId } } = useSelector(state => state)
+    const [courses, setCourses] = useState([])
+    
+    useEffect(() => {
+        const fetchCourses = async () => {
+            const { userCourses } = await getUserCourseList()
+            setCourses(userCourses)
+        }
+
+        fetchCourses()
+    }, [])
+    
     return (
         <CoursesContainer>
             <CoursesHeader>
@@ -103,11 +33,15 @@ export const DashboardCourses = () => {
                 </CoursesManagement>
             </CoursesHeader>
             <CoursesBody>
-                {courses.map(({ name, logo, author }) =>
+                { courses.length && courses.map(({ id, name, logo, author, progress, countLeassons, courseTime }) =>
                     <CardCourse
+                        key={id}
                         name={name}
                         logo={logo}
                         author={author}
+                        progress={progress}
+                        countLeassons={countLeassons}
+                        courseTime={courseTime}
                     />
                 )}
             </CoursesBody>

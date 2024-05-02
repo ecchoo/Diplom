@@ -41,11 +41,6 @@ class CourseRepository {
                         }
                     }
                 },
-                {
-                    model: User,
-                    as: 'courseUsers',
-                    where: { role: ROLES.TEACHER },
-                },
             ]
         })
     }
@@ -55,14 +50,21 @@ class CourseRepository {
             include: {
                 model: Course,
                 as: 'course',
-                attributes: ['id', 'name', 'logo', 'description'],
+                attributes: ['id', 'name', 'logo'],
                 include: {
-                    model: User,
-                    as: 'courseTeachers',
-                    attributes: ['name', 'photo']
+                    model: Module,
+                    as: 'modules',
+                    include: {
+                        model: Partition,
+                        as: 'partitions',
+                        include: {
+                            model: Leasson,
+                            as: 'leassons'
+                        }
+                    }
                 },
             },
-            where: {userId},
+            where: { userId },
             attributes: ['progress', 'createdAt']
         })
     }

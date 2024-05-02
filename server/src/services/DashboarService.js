@@ -1,27 +1,29 @@
-const chatRepository = require('../repositories/ChatRepository')
-const messageRepository = require('../repositories/MessageRepository')
 const courseRepository = require('../repositories/CourseRepository')
+const userRepository = require('../repositories/UserRepository')
+const leassonService = require('../services/LeassonService')
 
 class DashboardService {
-    async getUserChatList(userId) {
-        const userChats = await chatRepository.getUserChats(userId)
+    async getUserCourses(userId) {
+        const userCourses = await courseRepository.getUserCourses(userId);
 
-        return await Promise.all(userChats.map(async ({ chat }) => {
-            const { type, status, createdAt, user, message } = await messageRepository.getLastChatMessage(chat.id);
-            const countNewMessages = await messageRepository.getCountNewMessagesInChat(chat.id)
+        return Promise.all(userCourses.map(async ({ progress, createdAt, course }) => {
+            const { id, name, logo } = course
+            const { teacher: author } = await userRepository.getCourseAuthor(course.id)
+            const { countLeassons, courseTime } = await leassonService.getCountLeassonsAndDuration(course)
 
             return {
-                ...chat.dataValues,
-                countNewMessages,
-                lastMessage: { text: message.text, type, status, createdAt, user }
-            }
+                id,
+                name,
+                logo,
+                author,
+                progress,
+                countLeassons,
+                courseTime,
+                createdAt,
+            };
         }));
     }
 
-    async getUserCourses(userId) {
-        // const userCourses = await courseRepository.getUserCourses(userId)
-        // return userCourses
-    }
 }
 
 module.exports = new DashboardService()

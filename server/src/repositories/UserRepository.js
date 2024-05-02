@@ -15,6 +15,18 @@ class UserRepository {
         })
     }
 
+    async getCourseAuthor(courseId){
+        return await TeacherCourse.findOne({
+            where: { isAuthor: true, courseId },
+            attributes: [],
+            include: {
+                model: User,
+                as: 'teacher',
+                attributes: ['name', 'photo']
+            }
+        })
+    }
+
     async create({ name, email, password, role }) {
         return await User.create({ name, email, password, role })
     }

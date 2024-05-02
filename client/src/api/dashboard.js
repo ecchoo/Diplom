@@ -7,7 +7,7 @@ export const getChatList = async () => {
     return data
 }
 
-export const getCourseList = async () => {
+export const getUserCourseList = async () => {
     const { data } = await $authHost.get(DASHBOARD_ENDPOINTS.COURSE_LIST)
 
     return data
