@@ -2,7 +2,7 @@ import { DASHBOARD_SECTIONS } from "@/constants";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    activeSection: DASHBOARD_SECTIONS.ACTIVITY
+    activeSection: DASHBOARD_SECTIONS.COURSES
 };
 
 const dashboardSlice = createSlice({

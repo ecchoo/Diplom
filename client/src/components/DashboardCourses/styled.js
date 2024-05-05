@@ -52,6 +52,6 @@ export const SortSelectHeader = styled.div`
 export const CoursesBody = styled.div`
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    row-gap: ${({ theme }) => theme.spacing(2)};
+    /* justify-content: space-between; */
+    gap: ${({ theme }) => theme.spacing(2)};
 `

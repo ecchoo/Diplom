@@ -1,6 +1,6 @@
 const express = require('express')
 const { registerValidation } = require('../requests/Auth/RegisterRequest')
-const { loginValidation } = require('../requests/Auth/LoginRequest')
+const { loginValidation } = require('../requests/auth/LoginRequest')
 const authController = require('../controllers/AuthController')
 
 const authRouter = express.Router()

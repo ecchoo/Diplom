@@ -3,6 +3,20 @@ const moduleService = require('./ModuleService')
 const teacherService = require('./TeacherService')
 
 class CourseService {
+    async getCountLeassonsAndCourseTime(course) {
+        const { modules } = course;
+
+        const { countLeassons, courseTime } = modules.reduce((accumulator, { partitions }) => {
+            partitions.forEach(({ leassons }) => {
+                accumulator.countLeassons += leassons.length;
+                leassons.forEach(lesson => accumulator.courseTime += lesson.time);
+            });
+            return accumulator;
+        }, { countLeassons: 0, courseTime: 0 });
+
+        return { countLeassons, courseTime };
+    }
+
     async createCourse({ name, description, logo, modules, teacherIds }) {
         const { id: courseId } = await courseRepository.create({ name, description, logo })
 

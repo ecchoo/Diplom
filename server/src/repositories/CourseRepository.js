@@ -1,5 +1,7 @@
 const { Course, Module, Partition, Leasson, User, UserCourse } = require('../models')
 const { ROLES } = require('../constants/roles')
+const { filter: filterParams } = require('../config/params')
+const { Op } = require('sequelize')
 
 class CourseRepository {
     async list() {
@@ -45,7 +47,14 @@ class CourseRepository {
         })
     }
 
-    async getUserCourses(userId) {
+    async getUserCourses(userId, params) {
+        const where = { userId }
+
+        if ('filter' in params) {
+            const { column, option, value } = filterParams.courses[params.filter]
+            where[column] = { [option]: value }
+        }
+
         return await UserCourse.findAll({
             include: {
                 model: Course,
@@ -64,8 +73,8 @@ class CourseRepository {
                     }
                 },
             },
-            where: { userId },
-            attributes: ['progress', 'createdAt']
+            attributes: ['progress', 'createdAt'],
+            where,
         })
     }
 

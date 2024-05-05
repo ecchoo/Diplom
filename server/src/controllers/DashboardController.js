@@ -1,14 +1,19 @@
 const { StatusCodes } = require('http-status-codes')
-const chatRepository = require('../repositories/ChatRepository')
-const courseRepository = require('../repositories/CourseRepository')
 const dasboardService = require('../services/DashboarService')
 const chatService = require('../services/ChatService')
+const { validationResult } = require('express-validator')
 
 class DashboardController {
     async courseList(req, res) {
         try {
-            const userCourses = await dasboardService.getUserCourses(req.userId)
-            // текущий урок и всего уроков, задается автоматически при записи на курс и после прохождения урока 
+            const errorsValidation = validationResult(req)
+            if (!errorsValidation.isEmpty()) {
+                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
+            }
+
+            const { userId, query: params } = req
+
+            const userCourses = await dasboardService.getUserCourses(userId, params)
             return res.status(StatusCodes.OK).json({ userCourses })
         } catch (err) {
             console.log(err)
