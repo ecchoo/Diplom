@@ -44,7 +44,7 @@ class MessageRepository {
         })
     }
 
-    async getCountNewMessagesInChat(chatId) {
+    async getCountNewMessagesInChat(chatId) { //
         return await UserMessage.count({
             where: { status: MESSAGE_STATUSES.SENT, type: MESSAGE_TYPES.INCOMING },
             include: {

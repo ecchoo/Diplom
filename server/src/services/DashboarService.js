@@ -1,36 +1,29 @@
-const chatRepository = require('../repositories/ChatRepository')
-const messageRepository = require('../repositories/MessageRepository')
+const courseRepository = require('../repositories/CourseRepository')
+const userRepository = require('../repositories/UserRepository')
+const courseService = require('../services/CourseService')
 
 class DashboardService {
-    async getUserChatList(userId) {
-        const userChats = await chatRepository.getUserChats(userId)
-        console.log(userId)
-        // return userChats
-        return await Promise.all(userChats.map(async ({ chat }) => {
-            const {
-                type,
-                status,
-                createdAt,
-                message: { text },
-                user
-            } = await messageRepository.getLastChatMessage(chat.id);
-            console.log({
-                type,
-                status,
-                createdAt,
-                text,
-                user
-            })
-
-            const countNewMessages = await messageRepository.getCountNewMessagesInChat(chat.id)
+    async getUserCourses(userId, params) {
+        const userCourses = await courseRepository.getUserCourses(userId, params);
+        // return userCourses
+        return await Promise.all(userCourses.map(async ({ course, progress, createdAt: enrolmentDate }) => {
+            const { id, name, logo } = course
+            const { teacher: author } = await userRepository.getCourseAuthor(course.id)
+            const { countLeassons, courseTime } = await courseService.getCountLeassonsAndCourseTime(course)
 
             return {
-                ...chat.dataValues,
-                countNewMessages,
-                lastMessage: { type, status, createdAt, text, user }
+                id,
+                name,
+                logo,
+                author,
+                progress,
+                countLeassons,
+                courseTime,
+                enrolmentDate,
             };
         }));
     }
+
 }
 
 module.exports = new DashboardService()

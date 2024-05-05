@@ -27,8 +27,8 @@ class CourseController {
 
     async create(req, res) {
         try {
-            const { name, description, modules, teacherIds } = req.body
-            const newCourse = await courseService.createCourse({ name, description, modules, teacherIds })
+            const { name, description, logo, modules, teacherIds } = req.body
+            const newCourse = await courseService.createCourse({ name, description, logo, modules, teacherIds })
 
             return res.status(StatusCodes.CREATED).json({ course: newCourse })
         } catch (err) {

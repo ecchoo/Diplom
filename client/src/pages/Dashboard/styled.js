@@ -13,7 +13,7 @@ export const DashboardContainer = styled.div`
     overflow-y: hidden;
 `
 
-export const DashboardContent = styled.div`
+export const Content = styled.div`
     display: flex;
     padding: ${({ theme }) => theme.spacing(3)} ${({ theme }) => theme.spacing(2)};
     flex-direction: column;

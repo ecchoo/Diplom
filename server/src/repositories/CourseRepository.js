@@ -1,5 +1,7 @@
 const { Course, Module, Partition, Leasson, User, UserCourse } = require('../models')
 const { ROLES } = require('../constants/roles')
+const { filter: filterParams } = require('../config/params')
+const { Op } = require('sequelize')
 
 class CourseRepository {
     async list() {
@@ -41,35 +43,43 @@ class CourseRepository {
                         }
                     }
                 },
-                {
-                    model: User,
-                    as: 'courseUsers',
-                    where: { role: ROLES.TEACHER },
-                },
             ]
         })
     }
 
-    async getUserCourses(userId) {
+    async getUserCourses(userId, params) {
+        const where = { userId }
+
+        if ('filter' in params) {
+            const { column, option, value } = filterParams.courses[params.filter]
+            where[column] = { [option]: value }
+        }
+
         return await UserCourse.findAll({
             include: {
                 model: Course,
                 as: 'course',
+                attributes: ['id', 'name', 'logo'],
                 include: {
-                    model: User,
-                    as: 'courseUsers',
-                    where: { role: ROLES.TEACHER },
-                    require: false,
+                    model: Module,
+                    as: 'modules',
+                    include: {
+                        model: Partition,
+                        as: 'partitions',
+                        include: {
+                            model: Leasson,
+                            as: 'leassons'
+                        }
+                    }
                 },
-                require: true,
             },
-            where: {userId},
-            attributes: ['progress', 'createdAt']
+            attributes: ['progress', 'createdAt'],
+            where,
         })
     }
 
-    async create({ name, description }) {
-        return await Course.create({ name, description })
+    async create({ name, description, logo }) {
+        return await Course.create({ name, description, logo })
     }
 
     async update({ id, name, description }) {

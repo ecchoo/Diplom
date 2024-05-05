@@ -5,16 +5,13 @@ import BookIcon from '@/assets/icons/book.svg'
 import { ButtonActions } from "../ButtonActions"
 
 
-export const CardCourse = ({ name, logo, author }) => {
+export const CardCourse = ({ name, logo, progress, author, countLeassons, courseTime }) => {
+    const hours = (courseTime / 60).toFixed(1)
+
     return (
         <Card>
             <CardHeader>
                 <CourseLogo src={logo} alt="Course logo" />
-                {/* <ButtonActionsCourse>
-                    <Dot />
-                    <Dot />
-                    <Dot />
-                </ButtonActionsCourse> */}
                 <ButtonActions direction='row' />
             </CardHeader>
             <CardBody>
@@ -26,18 +23,18 @@ export const CardCourse = ({ name, logo, author }) => {
                 <CourseInfo>
                     <div>
                         <img src={BookIcon} alt="Book" />
-                        15 уроков
+                        {countLeassons} уроков
                     </div>
                     <div>
                         <img src={ClockIcon} alt="Clock" />
-                        40 часов
+                        {hours} ч
                     </div>
                 </CourseInfo>
             </CardBody>
             <CardFooter>
-                <span>70 %</span>
+                <span>{progress} %</span>
                 <WrapperCourseProgressBar>
-                    <CourseProgressBar variant="determinate" value={70} />
+                    <CourseProgressBar variant="determinate" value={progress} />
                 </WrapperCourseProgressBar>
             </CardFooter>
         </Card>
