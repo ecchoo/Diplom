@@ -10,7 +10,7 @@ class ChatService {
 
         return await Promise.all(userChats.map(async ({ chat }) => {
             const { type, status, createdAt, user, message } = await messageRepository.getLastChatMessage(chat.id);
-            const countNewMessages = await messageRepository.getCountNewMessagesInChat(chat.id)
+            const countNewMessages = (await messageRepository.getNewMessages(chat.id, userId)).length
 
             return {
                 ...chat.dataValues,
@@ -51,6 +51,25 @@ class ChatService {
             createdAt,
             status: MESSAGE_STATUSES.SENT,
         }
+    }
+
+    async readNewMessages(chatId, userId) {
+        const newMessages = await messageRepository.getNewMessages(chatId, userId)
+
+        await Promise.all(newMessages.map(async newMessage => {
+            const outgoingMessage = await messageRepository.getOutgoingMessageById(newMessage.messageId)
+
+            await Promise.all([
+                messageRepository.updateUserMessage({
+                    ...outgoingMessage.dataValues,
+                    status: MESSAGE_STATUSES.READ
+                }),
+                messageRepository.updateUserMessage({
+                    ...newMessage.dataValues,
+                    status: MESSAGE_STATUSES.READ
+                })
+            ]);
+        }));
     }
 }
 

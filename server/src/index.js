@@ -32,22 +32,16 @@ io.on('connection', socket => {
     socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
 
-        const chatMessages = await chatService.getChatMessages(userId, chatId)
+        await chatService.readNewMessages(chatId, userId)
+        io.to(chatId).emit('messagesRead', { readerId: userId })
 
-        socket.emit('chatMessages', {
-            data: {
-                chatMessages
-            }
-        })
+        const chatMessages = await chatService.getChatMessages(userId, chatId)
+        socket.emit('chatMessages', { chatMessages })
     })
 
     socket.on('sendMessage', async ({ chatId, userId, text }) => {
-        try {
-            const newMesssage = await chatService.sendMessage(userId, chatId, text)
-            io.to(chatId).emit('messageReceived', newMesssage)
-        } catch (err) {
-            console.log(err.message)
-        }
+        const newMesssage = await chatService.sendMessage(userId, chatId, text)
+        io.to(chatId).emit('messageReceived', newMesssage)
     })
 
     io.on('disconnection', () => {

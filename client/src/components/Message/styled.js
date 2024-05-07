@@ -18,10 +18,17 @@ export const MessageAvatar = styled(Avatar)`
     align-self: flex-end;
 `
 
-export const MessageText = styled.p`
+export const MessageBody = styled.div`
     background-color: ${({ isIncoming }) => isIncoming ? '#ffffed' : '#f4edff'};
     font-size: 14px;
     border-radius: ${({ theme }) => theme.spacing(1)};
     padding: ${({ theme }) => theme.spacing(1.5)};
     width: ${({ theme }) => theme.spacing(40)};
+    display: flex;
+    justify-content: space-between;
 `
+
+export const CheckMark = styled.img`
+    align-self: flex-end;
+`
+

@@ -6,14 +6,15 @@ import { setSelectedChat } from "@/store/reducers"
 
 export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, title }) => {
     const dispatch = useDispatch()
-    const { selectedChat: { chatId: selectedChatId } } = useSelector(state => state)
+    const { chats: { selectedChat: { chatId: selectedChatId } } } = useSelector(state => state)
 
     const isSelectedChat = selectedChatId === chatId
     const timeLastMessage = getTime(lastMessage.createdAt)
 
     const handleClick = () => {
         if (isSelectedChat) return
-
+        // const chat = chats.find(c => c.id === chatId)
+        // console.log(chat)
         dispatch(setSelectedChat({
             id: chatId,
             title: title,
@@ -33,7 +34,7 @@ export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, titl
             </ChatPreview>
             <LastMessageInfo>
                 <Time>{timeLastMessage}</Time>
-                {/* {
+                {
                     countNewMessages ? (
                         <NewMessagesCount>
                             {countNewMessages}
@@ -41,7 +42,7 @@ export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, titl
                     ) : (
                         null
                     )
-                } */}
+                }
             </LastMessageInfo>
         </Card>
     )

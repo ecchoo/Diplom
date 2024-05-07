@@ -1,27 +1,31 @@
 import { Avatar } from "@/UI"
-import { ChatActions, ChatContainer, ChatHeader, Input, MessageInput, Messages, SubTitle, TypeMessage, ChatInfo, UserInfo, Title } from "./styled"
+import { ChatActions, ChatContainer, ChatHeader, Input, MessageInput, Messages, SubTitle, TypeMessage, ChatInfo, UserInfo, Title, ButtonSendMessage } from "./styled"
 import AsideImg from '/aside1.png'
 import { ButtonActions } from "../ButtonActions"
 import { Message } from "../Message"
 import PaperClip from '@/assets/icons/paperClip.svg'
 import SendMessage from '@/assets/icons/sendMessage2.svg'
-import io from "socket.io-client"
 import { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
-import { MESSAGE_TYPES } from "@/constants"
+import { useDispatch, useSelector } from "react-redux"
+import { MESSAGE_STATUSES, MESSAGE_TYPES } from "@/constants"
+import { setChatList } from "@/store/reducers"
+import { socket } from "@/socket"
 
 export const Chat = () => {
-    const socket = io.connect(process.env.REACT_APP_SERVER_URL)
+    const dispatch = useDispatch()
 
     const {
         user: {
             id: userId
         },
-        selectedChat: {
-            id: chatId,
-            logo,
-            title,
-            subTitle
+        chats: {
+            selectedChat: {
+                id: chatId,
+                logo,
+                title,
+                subTitle
+            },
+            chatList
         }
     } = useSelector(state => state)
 
@@ -31,8 +35,7 @@ export const Chat = () => {
     useEffect(() => {
         socket.emit('join', { userId, chatId })
 
-        socket.on("chatMessages", ({ data: { chatMessages } }) => {
-            // console.log('messages', chatMessages)
+        socket.on("chatMessages", ({ chatMessages }) => {
             setMessages(chatMessages)
         })
 
@@ -44,10 +47,39 @@ export const Chat = () => {
                         ...newMessage,
                         type: newMessage.user.id === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
                     }
-                ];
-                return updatedMessages;
-            });
-        });
+                ]
+
+                return updatedMessages
+            })
+
+            const updatedChatList = chatList.map(chat =>
+                chat.id === chatId ? { 
+                    ...chat,
+                    lastMessage: {
+                        ...newMessage,
+                        type: newMessage.user.id === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
+                    }  
+                } : chat
+            )
+
+            dispatch(setChatList(updatedChatList))
+        })
+
+        socket.on('messagesRead', ({ readerId }) => {
+            if (readerId === userId) {
+                const updatedChatList = chatList.map(chat =>
+                    chat.id === chatId ? { ...chat, countNewMessages: 0 } : chat
+                )
+
+                dispatch(setChatList(updatedChatList))
+            } else {
+                setMessages(prevMessages =>
+                    prevMessages.map(message =>
+                        message.status === MESSAGE_STATUSES.SENT ? { ...message, status: MESSAGE_STATUSES.READ } : message
+                    )
+                )
+            }
+        })
     }, [chatId])
 
 
@@ -78,19 +110,15 @@ export const Chat = () => {
                     <ButtonActions direction='column' />
                 </ChatActions>
             </ChatHeader>
-            <Messages>
-                {messages.length && messages.map((message) => {
-                    console.log('Map message', message)
-                    return (
-                        <Message
-                            key={message.id}
-                            userAvatar={message.user.photo}
-                            messageText={message.text}
-                            isIncoming={message.type === 'incoming'}
-                        />
-                    )
-                }
-
+            <Messages className="messages">
+                {messages.length && messages.map((message) =>
+                    <Message
+                        key={message.id}
+                        userAvatar={message.user.photo}
+                        text={message.text}
+                        status={message.status}
+                        type={message.type}
+                    />
                 )}
             </Messages>
             <form onSubmit={handleSubmit} >
@@ -99,9 +127,9 @@ export const Chat = () => {
                         <img src={PaperClip} alt="Paper clip" />
                         <Input onChange={handleChange} value={newMessage} placeholder="Написать сообщение" />
                     </TypeMessage>
-                    <button>
+                    <ButtonSendMessage>
                         <img src={SendMessage} alt="Send message" />
-                    </button>
+                    </ButtonSendMessage>
                 </MessageInput>
             </form>
         </ChatContainer>

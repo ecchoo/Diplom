@@ -4,7 +4,7 @@ import { ChatList } from "../ChatList"
 import { DashboardChatsContainer } from "./styled"
 
 export const DashboardChats = () => {
-    const { selectedChat: { id: chatId } } = useSelector(state => state)
+    const { chats: { selectedChat: { id: chatId } } } = useSelector(state => state)
 
     return (
         <DashboardChatsContainer>
@@ -13,7 +13,8 @@ export const DashboardChats = () => {
                 chatId ? (
                     <Chat />
                 ) : (
-                    <span>Выбери</span>
+                    null
+                    // <span>Выбери</span>
                 )
             }
         </DashboardChatsContainer>
