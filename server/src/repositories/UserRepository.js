@@ -6,7 +6,7 @@ class UserRepository {
     }
 
     async getById(id) {
-        return await User.findByPk(id)
+        return await User.findByPk(id, { attributes: ['id', 'name', 'role', 'photo'] })
     }
 
     async getChatUsers(chatId) {
@@ -15,7 +15,7 @@ class UserRepository {
         })
     }
 
-    async getCourseAuthor(courseId){
+    async getCourseAuthor(courseId) {
         return await TeacherCourse.findOne({
             where: { isAuthor: true, courseId },
             attributes: [],

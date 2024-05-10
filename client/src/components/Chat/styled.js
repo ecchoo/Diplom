@@ -5,6 +5,7 @@ export const ChatContainer = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow-y: hidden;
 `
 
 export const ChatHeader = styled.div`
@@ -47,8 +48,9 @@ export const Messages = styled.div`
     padding: ${({ theme }) => theme.spacing(3)} 0;
     display: flex;
     flex-direction: column;
-    justify-content: end;
-    height: 100%;
+    /* justify-content: end; // вот это */
+    height: 450px;
+    overflow-y: auto;
     row-gap: ${({ theme }) => theme.spacing(3)};
 `
 
@@ -66,6 +68,12 @@ export const TypeMessage = styled.div`
     display: flex;
     column-gap: ${({ theme }) => theme.spacing(1)};
     width: 100%;
+`
+
+export const ButtonSendMessage = styled.button`
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `
 
 export const Input = styled.input`

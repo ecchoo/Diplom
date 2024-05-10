@@ -16,10 +16,12 @@ import { DASHBOARD_SECTIONS } from "@/constants"
 
 export const Aside = () => {
     const dispatch = useDispatch()
-    const { dashboard: { activeSection } } = useSelector(state => state)
+    const {
+        dashboard: { activeSection },
+        user: { name }
+    } = useSelector(state => state)
 
     const handleClickNavItem = (section) => {
-        console.log(section)
         dispatch(setActiveDashboardSection(section))
     }
 
@@ -35,7 +37,7 @@ export const Aside = () => {
                         <div></div>
                         <div></div>
                     </Lines>
-                    <UserName>David Nikolson</UserName>
+                    <UserName>{name}</UserName>
                 </UserProfile>
             </AsideHeader>
             <nav>

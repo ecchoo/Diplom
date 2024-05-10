@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require('sequelize')
+const { Op } = require('sequelize')
 const { Chat, User, UserChat, Message } = require('../models')
 
 class ChatRepository {
