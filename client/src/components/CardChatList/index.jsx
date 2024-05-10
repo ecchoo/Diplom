@@ -1,6 +1,6 @@
 import { Avatar } from "@/UI"
 import { LastMessageInfo, LastMessageText, Card, ChatPreview, NewMessagesCount, Time, ChatPreviewInfo, Title } from "./styled"
-import { getTime } from "@/utils/getTime"
+import { getTime, strLimit } from "@/utils"
 import { useDispatch, useSelector } from "react-redux"
 import { setSelectedChat } from "@/store/reducers"
 
@@ -10,6 +10,7 @@ export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, titl
 
     const isSelectedChat = selectedChatId === chatId
     const timeLastMessage = getTime(lastMessage.createdAt)
+    const lastMessageText = strLimit(lastMessage.text, 35)
 
     const handleClick = () => {
         if (isSelectedChat) return
@@ -29,7 +30,7 @@ export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, titl
                 <Avatar src={logo} alt="Chat logo" />
                 <ChatPreviewInfo>
                     <Title>{title}</Title>
-                    <LastMessageText>{lastMessage.text}</LastMessageText>
+                    <LastMessageText>{lastMessageText}</LastMessageText>
                 </ChatPreviewInfo>
             </ChatPreview>
             <LastMessageInfo>

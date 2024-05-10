@@ -52,13 +52,17 @@ export const Chat = () => {
                 return updatedMessages
             })
 
+            if (newMessage.user.id !== userId) {
+                console.log('Сообщение мне')
+            }
+
             const updatedChatList = chatList.map(chat =>
-                chat.id === chatId ? { 
+                chat.id === chatId ? {
                     ...chat,
                     lastMessage: {
                         ...newMessage,
                         type: newMessage.user.id === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
-                    }  
+                    }
                 } : chat
             )
 

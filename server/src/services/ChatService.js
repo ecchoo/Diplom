@@ -29,17 +29,23 @@ class ChatService {
         })))
     }
 
-    async sendMessage(userId, chatId, text) {
+    async sendMessage(userId, chatId, text, usersInChat) {
         const { id: newMessageId, createdAt } = await messageRepository.createMessage(text, chatId)
         const chatUsers = await userRepository.getChatUsers(chatId)
         const user = await userRepository.getById(userId)
 
         await Promise.all(chatUsers.map(async (chatUser) => {
+            const type = chatUser.userId === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
+            let status = MESSAGE_STATUSES.SENT
+            
+            // if(type === MESSAGE_TYPES.OUTGOING && usersInChat.length > 1) status = MESSAGE_STATUSES.READ
+            // if(type === MESSAGE_TYPES.INCOMING && usersInChat.includes(chatUser.userId)) status = MESSAGE_STATUSES.READ
+
             const userMessage = {
                 messageId: newMessageId,
                 userId: chatUser.userId,
-                status: MESSAGE_STATUSES.SENT,
-                type: chatUser.userId === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING,
+                status,
+                type
             }
 
             await messageRepository.createUserMessage(userMessage)

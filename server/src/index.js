@@ -6,7 +6,6 @@ const cors = require('cors')
 const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')
-const messageRepository = require('./repositories/MessageRepository')
 const chatService = require('./services/ChatService')
 
 const app = express()
@@ -28,9 +27,20 @@ const io = new Server(server, {
     }
 })
 
+const usersInChat = {}
+
 io.on('connection', socket => {
+    
     socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
+
+        if (!usersInChat[chatId]) {
+            usersInChat[chatId] = []
+        }
+
+        usersInChat[chatId].push(userId)
+
+        console.log(usersInChat)
 
         await chatService.readNewMessages(chatId, userId)
         io.to(chatId).emit('messagesRead', { readerId: userId })
@@ -40,7 +50,7 @@ io.on('connection', socket => {
     })
 
     socket.on('sendMessage', async ({ chatId, userId, text }) => {
-        const newMesssage = await chatService.sendMessage(userId, chatId, text)
+        const newMesssage = await chatService.sendMessage(userId, chatId, text, usersInChat[chatId])
         io.to(chatId).emit('messageReceived', newMesssage)
     })
 

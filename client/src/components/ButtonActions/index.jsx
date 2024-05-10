@@ -1,8 +1,8 @@
 import { Button, Dot } from "./styled"
 
-export const ButtonActions = ({ direction }) => {
+export const ButtonActions = ({ direction, handleClick }) => {
     return (
-        <Button className="button-actions" direction={direction}>
+        <Button onClick={handleClick} className="button-actions" direction={direction}>
             <Dot />
             <Dot />
             <Dot />

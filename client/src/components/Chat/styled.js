@@ -49,7 +49,7 @@ export const Messages = styled.div`
     display: flex;
     flex-direction: column;
     /* justify-content: end; // вот это */
-    height: 400px;
+    height: 450px;
     overflow-y: auto;
     row-gap: ${({ theme }) => theme.spacing(3)};
 `
