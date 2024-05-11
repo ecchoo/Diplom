@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux"
 import { Logo } from "../Logo"
 import { setActiveFormAuthModal, setIsOpenAuthModal } from "@/store/reducers"
-import { AUTH_FORMS, DASHBOARD } from "@/constants"
+import { AUTH_FORMS, COURSES, DASHBOARD } from "@/constants"
 import { useAuth } from "@/hooks"
 import ProfileIcon from '@/assets/icons/profile.svg'
 import { ButtonLogin, ButtonRegister, Container, HeaderNav, NavActions, NavItem, NavList } from "./styled"
@@ -28,7 +28,7 @@ export const Header = () => {
                 <nav>
                     <NavList>
                         <NavItem>О нас</NavItem>
-                        <NavItem>Курсы</NavItem>
+                        <NavItem><Link to={COURSES}>Курсы</Link></NavItem>
                         <NavItem>Преподаватели</NavItem>
                         <NavItem>Отзывы студентов</NavItem>
                     </NavList>

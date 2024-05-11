@@ -23,7 +23,7 @@ class UserRepository {
                 model: User,
                 as: 'teacher',
                 attributes: ['name', 'photo']
-            }
+            }   
         })
     }
 

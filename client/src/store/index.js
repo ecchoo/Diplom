@@ -4,6 +4,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit'
 
 import userReducer from './reducers/User'
 import authModalReducer from './reducers/AuthModal'
+import courseModalReducer from './reducers/CourseModal'
 import chatsReducer from './reducers/Chats'
 import dashboardReducer from './reducers/Dashboard'
 
@@ -16,6 +17,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     user: userReducer,
     authModal: authModalReducer,
+    courseModal: courseModalReducer,
     chats: chatsReducer,
     dashboard: dashboardReducer
 })

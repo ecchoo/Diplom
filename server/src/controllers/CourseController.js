@@ -5,7 +5,7 @@ const courseService = require("../services/CourseService");
 class CourseController {
     async list(req, res) {
         try {
-            const courseList = await courseRepository.list()
+            const courseList = await courseService.getCourseList()
 
             return res.status(StatusCodes.OK).json({ courses: courseList })
         } catch (err) {

@@ -1,4 +1,4 @@
-const { Course, Module, Partition, Leasson, User, UserCourse } = require('../models')
+const { Course, Module, Partition, Leasson, User, TeacherCourse, UserCourse } = require('../models')
 const { ROLES } = require('../constants/roles')
 const { filter: filterParams } = require('../config/params')
 const { Op } = require('sequelize')
@@ -16,13 +16,9 @@ class CourseRepository {
                         include: {
                             model: Leasson,
                             as: 'leassons'
-                        }
+
+                        } // мб как-то можно isAuthor вытянуть
                     }
-                },
-                {
-                    model: User,
-                    as: 'courseUsers',
-                    where: { role: ROLES.TEACHER },
                 },
             ]
         })
@@ -43,6 +39,11 @@ class CourseRepository {
                         }
                     }
                 },
+                {
+                    model: User,
+                    as: 'courseTeachers',
+                    attributes: ['id', 'name', 'photo']
+                }
             ]
         })
     }

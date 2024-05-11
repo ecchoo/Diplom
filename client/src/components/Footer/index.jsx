@@ -2,6 +2,8 @@ import { Title2 } from "@/UI"
 import { Column, ContainerFooter, NavItem, NavList, StyledFooter, SubscribeBlock } from "./styled"
 import { ButtonArrow } from "../ButtonArrow"
 import { Logo } from "../Logo"
+import { Link } from "react-router-dom"
+import { COURSES } from "@/constants"
 
 export const Footer = () => {
     return (
@@ -12,7 +14,7 @@ export const Footer = () => {
                     <NavList>
                         <Column>
                             <NavItem>О нас</NavItem>
-                            <NavItem>Курсы</NavItem>
+                            <NavItem><Link to={COURSES}>Курсы</Link></NavItem>
                         </Column>
                         <Column>
                             <NavItem>Преподаватели</NavItem>
