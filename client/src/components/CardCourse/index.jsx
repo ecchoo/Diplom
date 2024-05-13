@@ -4,6 +4,7 @@ import BookIcon from '@/assets/icons/book.svg'
 import QuickViewIcon from '@/assets/icons/quickView.svg'
 import { useDispatch } from "react-redux"
 import { setIsOpenCourseModal, setSelectedCourseId } from "@/store/reducers"
+import { COURSES } from "@/constants"
 
 export const CardCourse = ({ courseId, name, logo, author, countLeassons, courseTime }) => {
     const dispatch = useDispatch()
@@ -44,7 +45,7 @@ export const CardCourse = ({ courseId, name, logo, author, countLeassons, course
                 </CardBody>
                 <CardFooter>
                     <ButtonRecord>Записаться</ButtonRecord>
-                    <ButtonDetail>Подробней</ButtonDetail>
+                    <ButtonDetail to={`${COURSES}${courseId}`}>Подробней</ButtonDetail>
                 </CardFooter>
             </Card>
         </CardWrapper>

@@ -11,6 +11,11 @@ export const ModuleHeader = styled.div`
     align-items: center;
 `
 
+export const ModuleTitle = styled.h1`
+    font-size: 18px;
+    font-weight: 500;
+`
+
 export const ButtonShow = styled.button`
     display: flex;
     justify-content: center;

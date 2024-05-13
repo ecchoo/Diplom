@@ -1,5 +1,6 @@
 import { Avatar } from "@/UI";
 import { LinearProgress } from "@mui/material";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const CardWrapper = styled.div`
@@ -28,6 +29,7 @@ export const CardWrapper = styled.div`
 
 export const Card = styled.div`
     display: flex;
+    max-width: 340px;
     flex-direction: column;
     row-gap: ${({ theme }) => theme.spacing(2)};
     padding: ${({ theme }) => theme.spacing(2)};
@@ -111,9 +113,15 @@ export const CardFooter = styled.div`
     align-items: center;
     column-gap: ${({ theme }) => theme.spacing(1)};
     /* justify-content: space-between; */
+
+    /* & button, & a {
+        width: 50%;
+    } */
 `
 
-const StyledButton = styled.button`
+
+export const ButtonDetail = styled(Link)`
+    background-color: #ffc773;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -123,11 +131,14 @@ const StyledButton = styled.button`
     width: 100%;
 `
 
-export const ButtonDetail = styled(StyledButton)`
-    background-color: #ffc773;
-`
-
-export const ButtonRecord = styled(StyledButton)`
+export const ButtonRecord = styled.button`
     background-color: ${({ theme }) => theme.colors.accent};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: ${({ theme }) => theme.spacing(1, 2)};
+    border-radius: ${({ theme }) => theme.spacing(1)};
+    color: ${({ theme }) => theme.colors.white};
+    width: 100%;
 `
 

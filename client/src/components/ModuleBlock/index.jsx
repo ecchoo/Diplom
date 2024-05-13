@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ButtonShow, Module, ModuleHeader } from "./styled"
+import { ButtonShow, Module, ModuleHeader, ModuleTitle } from "./styled"
 import PlusIcon from '@/assets/icons/plusWhite.svg'
 import MinusIcon from '@/assets/icons/minus.svg'
 
@@ -14,7 +14,7 @@ export const ModuleBlock = ({ name, description }) => {
     return (
         <Module>
             <ModuleHeader>
-                <h1>Модуль {name}</h1>
+                <ModuleTitle>Модуль {name}</ModuleTitle>
                 <ButtonShow onClick={handleClick}>
                     <img src={ShowModuleIcon} alt="Plus icon" />
                 </ButtonShow>

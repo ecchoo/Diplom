@@ -3,10 +3,11 @@ import { CourseList } from "./styled"
 import { useEffect, useState } from "react"
 import { getCourseList } from "@/api"
 import { CardCourse } from "@/components/CardCourse"
+import { Footer } from "@/components/Footer"
 
 export const Courses = () => {
     const [courseList, setCourseList] = useState([])
-    
+
     useEffect(() => {
         const fetchCourseList = async () => {
             const { courses } = await getCourseList()
@@ -32,6 +33,7 @@ export const Courses = () => {
                     />
                 )}
             </CourseList>
+            {/* <Footer /> */}
         </>
     )
 }
