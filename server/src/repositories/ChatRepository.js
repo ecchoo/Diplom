@@ -31,6 +31,14 @@ class ChatRepository {
             attributes: [],
         })
     }
+
+    async createChat({ name, type, logo }) {
+        return await Chat.create({ name, type, logo })
+    }
+
+    async createUserChat({ userId, chatId }) {
+        return await UserChat.create({ userId, chatId })
+    }
 }
 
 module.exports = new ChatRepository()

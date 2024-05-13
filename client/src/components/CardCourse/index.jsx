@@ -1,21 +1,27 @@
-import { AuthorAvatar, AuthorInfo, AuthorName, ButtonDetail, ButtonRecord, Card, CardBody, CardFooter, CardHeader, CardWrapper, CourseInfo, CourseLogo, TitleCourse } from "./styled"
+import { AuthorAvatar, AuthorInfo, AuthorName, ButtonDetail, ButtonEnroll, Card, CardBody, CardFooter, CardHeader, CardWrapper, CourseInfo, CourseLogo, TitleCourse } from "./styled"
 import ClockIcon from '@/assets/icons/clock.svg'
 import BookIcon from '@/assets/icons/book.svg'
 import QuickViewIcon from '@/assets/icons/quickView.svg'
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setIsOpenCourseModal, setSelectedCourseId } from "@/store/reducers"
 import { COURSES } from "@/constants"
+import { enrollCourse } from "@/api"
 
 export const CardCourse = ({ courseId, name, logo, author, countLeassons, courseTime }) => {
     const dispatch = useDispatch()
-    
+
     const hours = (courseTime / 60).toFixed(1)
 
     const handleClickQuickView = () => {
         dispatch(setIsOpenCourseModal(true))
         dispatch(setSelectedCourseId(courseId))
     }
-    
+
+    const handleClickEnroll = async () => {
+        const res = await enrollCourse({ courseId })
+        console.log(res)
+    }
+
     return (
         <CardWrapper>
             <div className="bgCard"></div>
@@ -44,7 +50,7 @@ export const CardCourse = ({ courseId, name, logo, author, countLeassons, course
                     </CourseInfo>
                 </CardBody>
                 <CardFooter>
-                    <ButtonRecord>Записаться</ButtonRecord>
+                    <ButtonEnroll onClick={handleClickEnroll}>Записаться</ButtonEnroll>
                     <ButtonDetail to={`${COURSES}${courseId}`}>Подробней</ButtonDetail>
                 </CardFooter>
             </Card>

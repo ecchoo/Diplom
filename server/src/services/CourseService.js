@@ -1,7 +1,10 @@
 const courseRepository = require("../repositories/CourseRepository")
+const chatRepository = require("../repositories/ChatRepository")
+const userRepository = require('../repositories/UserRepository')
+const chatService = require("../services/ChatService")
 const moduleService = require('./ModuleService')
 const teacherService = require('./TeacherService')
-const userRepository = require('../repositories/UserRepository')
+const { CHAT_TYPES } = require("../constants/chatTypes")
 
 class CourseService {
     async getCourseList() {
@@ -36,7 +39,8 @@ class CourseService {
     }
 
     async createCourse({ name, description, logo, modules, teacherIds }) {
-        const { id: courseId } = await courseRepository.create({ name, description, logo })
+        const { id: chatId } = await chatService.create({ name, logo, type: CHAT_TYPES.GROUP })
+        const { id: courseId } = await courseRepository.createCourse({ name, description, logo, chatId })
 
         await teacherService.createCourseTeachers(teacherIds, courseId)
         await moduleService.createCourseModules(modules, courseId)
@@ -62,6 +66,15 @@ class CourseService {
         //         }));
         //     }));
         // }));
+
+        return true
+    }
+
+    async enrollCourse({ userId, courseId }) {
+        const { chatId } = await courseRepository.getById(courseId)
+        
+        await courseRepository.createUserCourse({ userId, courseId })
+        await chatService.addUserInChat({ userId, chatId })
 
         return true
     }

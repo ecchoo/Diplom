@@ -79,8 +79,8 @@ class CourseRepository {
         })
     }
 
-    async create({ name, description, logo }) {
-        return await Course.create({ name, description, logo })
+    async createCourse({ name, description, logo, chatId }) {
+        return await Course.create({ name, description, logo, chatId })
     }
 
     async update({ id, name, description }) {
@@ -89,6 +89,10 @@ class CourseRepository {
 
     async delete(courseId) {
         return await Course.destroy({ where: { id: courseId } })
+    }
+
+    async createUserCourse({ courseId, userId }) {
+        return await UserCourse.create({ courseId, userId })
     }
 }
 

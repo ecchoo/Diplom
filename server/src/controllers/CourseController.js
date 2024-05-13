@@ -18,7 +18,7 @@ class CourseController {
         try {
             const { id: courseId } = req.params
             const course = await courseRepository.getById(courseId)
-    
+
             return res.status(StatusCodes.OK).json({ course })
         } catch (err) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
@@ -56,6 +56,18 @@ class CourseController {
 
             return res.status(StatusCodes.NO_CONTENT).json({ course: deletedCourse })
         } catch (err) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
+        }
+    }
+
+    async enroll(req, res) {
+        try {
+            const { userId, body: { courseId } } = req
+            const result = await courseService.enrollCourse({ userId, courseId })
+
+            return res.status(StatusCodes.OK).json({ result })
+        } catch (err) {
+            console.log(err)
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
         }
     }

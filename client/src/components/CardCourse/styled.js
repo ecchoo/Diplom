@@ -131,7 +131,7 @@ export const ButtonDetail = styled(Link)`
     width: 100%;
 `
 
-export const ButtonRecord = styled.button`
+export const ButtonEnroll = styled.button`
     background-color: ${({ theme }) => theme.colors.accent};
     display: flex;
     justify-content: center;
