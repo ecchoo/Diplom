@@ -7,7 +7,7 @@ const { MESSAGE_TYPES } = require('../constants/messageTypes')
 class ChatService {
     async getUserChatList(userId) {
         const userChats = await chatRepository.getUserChats(userId)
-
+        // return userChats
         return await Promise.all(userChats.map(async ({ chat }) => {
             const { type, status, createdAt, user, message } = await messageRepository.getLastChatMessage(chat.id);
             const countNewMessages = (await messageRepository.getNewMessages(chat.id, userId)).length
@@ -30,14 +30,14 @@ class ChatService {
     }
 
     async sendMessage(userId, chatId, text, usersInChat) {
-        const { id: newMessageId, createdAt } = await messageRepository.createMessage(text, chatId)
+        const { id: newMessageId, createdAt } = await messageRepository.createMessage({ text, chatId })
         const chatUsers = await userRepository.getChatUsers(chatId)
         const user = await userRepository.getById(userId)
 
         await Promise.all(chatUsers.map(async (chatUser) => {
             const type = chatUser.userId === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
             let status = MESSAGE_STATUSES.SENT
-            
+
             // if(type === MESSAGE_TYPES.OUTGOING && usersInChat.length > 1) status = MESSAGE_STATUSES.READ
             // if(type === MESSAGE_TYPES.INCOMING && usersInChat.includes(chatUser.userId)) status = MESSAGE_STATUSES.READ
 
@@ -76,6 +76,24 @@ class ChatService {
                 })
             ]);
         }));
+    }
+
+    async create({ name, type, logo }) {
+        const chat = await chatRepository.createChat({ name, type, logo })
+
+        await messageRepository.createMessage({
+            text: 'Чат создан',
+            chatId: chat.id
+        }) //
+
+        return chat
+    }
+
+    async addUserInChat({ userId, chatId }) {
+        const { name } = await userRepository.getById(userId)
+
+        await chatRepository.createUserChat({ userId, chatId })
+        await messageRepository.createMessage({ text: `${name} присоединился к чату`, chatId })
     }
 }
 

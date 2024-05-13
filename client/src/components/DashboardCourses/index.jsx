@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CardCourse } from '../CardCourse'
+import { DashoardCardCourse } from '../DashoardCardCourse'
 import { CoursesTitle, CoursesBody, CoursesContainer, CoursesHeader, CoursesManagement, SortCourses, SortPlaceholder, SortSelect, SortSelectHeader } from './styled'
 import { getUserCourseList } from '@/api'
 import { Select } from '../Select'
@@ -19,7 +19,7 @@ export const DashboardCourses = () => {
     }, [queryParams])
 
     const handleChangeSelect = (option) => {
-        setQueryParams({...queryParams, filter: option.value})
+        setQueryParams({ ...queryParams, filter: option.value })
     }
 
     return (
@@ -37,7 +37,7 @@ export const DashboardCourses = () => {
             <CoursesBody>
                 {courses.length ? (
                     courses.map(({ id, name, logo, author, progress, countLeassons, courseTime }) =>
-                        <CardCourse
+                        <DashoardCardCourse
                             key={id}
                             name={name}
                             logo={logo}

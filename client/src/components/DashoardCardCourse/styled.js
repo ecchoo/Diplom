@@ -1,49 +1,15 @@
 import { Avatar } from "@/UI";
 import { LinearProgress } from "@mui/material";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
-
-export const CardWrapper = styled.div`
-    position: relative;
-    transition: all .3s ease-in-out;
-
-    & .bgCard {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        background: linear-gradient(197.84deg, rgb(224, 227, 246) 17.882%,rgb(219, 193, 240) 86.804%);
-        /* background-color: ${({ theme }) => theme.colors.secondary}; */
-        border-radius: ${({ theme }) => theme.spacing(2)};
-        z-index: -1;
-        transition: all .2s ease-in-out;
-    }  
-    
-    &:hover {
-        transform: translateY(${({ theme }) => theme.spacing(-1)});
-
-        & .bgCard {
-            transform: rotate(7deg);
-        }
-    }
-`
 
 export const Card = styled.div`
     display: flex;
-    max-width: 340px;
     flex-direction: column;
     row-gap: ${({ theme }) => theme.spacing(2)};
     padding: ${({ theme }) => theme.spacing(2)};
     border-radius: ${({ theme }) => theme.spacing(2)};
     width: ${({ theme }) => theme.spacing(38)};
     background-color: ${({ theme }) => theme.colors.white};
-
-    & .buttonQuickView{
-        display: none;
-    }
-
-    &:hover .buttonQuickView{
-        display: block;
-    }
 `
 
 export const CardHeader = styled.div`
@@ -110,35 +76,22 @@ export const CourseInfo = styled.div`
 export const CardFooter = styled.div`
     width: 100%;
     display: flex;
+    /* column-gap: 140px; */
     align-items: center;
-    column-gap: ${({ theme }) => theme.spacing(1)};
-    /* justify-content: space-between; */
-
-    /* & button, & a {
-        width: 50%;
-    } */
+    justify-content: space-between;
 `
 
-
-export const ButtonDetail = styled(Link)`
-    background-color: #ffc773;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: ${({ theme }) => theme.spacing(1, 2)};
-    border-radius: ${({ theme }) => theme.spacing(1)};
-    color: ${({ theme }) => theme.colors.white};
-    width: 100%;
+export const WrapperCourseProgressBar = styled.div`
+    width: 85%;
 `
 
-export const ButtonEnroll = styled.button`
-    background-color: ${({ theme }) => theme.colors.accent};
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: ${({ theme }) => theme.spacing(1, 2)};
-    border-radius: ${({ theme }) => theme.spacing(1)};
-    color: ${({ theme }) => theme.colors.white};
-    width: 100%;
+export const CourseProgressBar = styled(LinearProgress)`
+    border-radius: ${({ theme }) => theme.spacing(0.4)};
+    background-color: ${({ theme }) => theme.colors.progressBar.primary} !important;
+
+    & span {
+        border-radius: 5px;
+        background-color: ${({ theme }) => theme.colors.progressBar.secondary};
+    }
 `
 

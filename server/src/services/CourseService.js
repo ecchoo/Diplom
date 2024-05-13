@@ -1,24 +1,46 @@
 const courseRepository = require("../repositories/CourseRepository")
+const chatRepository = require("../repositories/ChatRepository")
+const userRepository = require('../repositories/UserRepository')
+const chatService = require("../services/ChatService")
 const moduleService = require('./ModuleService')
 const teacherService = require('./TeacherService')
+const { CHAT_TYPES } = require("../constants/chatTypes")
 
 class CourseService {
-    async getCountLeassonsAndCourseTime(course) {
-        const { modules } = course;
+    async getCourseList() {
+        const courseList = await courseRepository.list()
 
-        const { countLeassons, courseTime } = modules.reduce((accumulator, { partitions }) => {
+        return await Promise.all(courseList.map(async ({ id, name, logo, modules }) => {
+            const { teacher: author } = await userRepository.getCourseAuthor(id)
+            const { countLeassons, courseTime } = await this.getCountLeassonsAndCourseTime(modules)
+
+            return {
+                id,
+                name,
+                logo,
+                author,
+                countLeassons,
+                courseTime,
+            };
+        }))
+    }
+
+    async getCountLeassonsAndCourseTime(courseModules) {
+        const { countLeassons, courseTime } = courseModules.reduce((accumulator, { partitions }) => {
             partitions.forEach(({ leassons }) => {
-                accumulator.countLeassons += leassons.length;
-                leassons.forEach(lesson => accumulator.courseTime += lesson.time);
-            });
-            return accumulator;
-        }, { countLeassons: 0, courseTime: 0 });
+                accumulator.countLeassons += leassons.length
+                leassons.forEach(lesson => accumulator.courseTime += lesson.time)
+            })
 
-        return { countLeassons, courseTime };
+            return accumulator
+        }, { countLeassons: 0, courseTime: 0 })
+
+        return { countLeassons, courseTime }
     }
 
     async createCourse({ name, description, logo, modules, teacherIds }) {
-        const { id: courseId } = await courseRepository.create({ name, description, logo })
+        const { id: chatId } = await chatService.create({ name, logo, type: CHAT_TYPES.GROUP })
+        const { id: courseId } = await courseRepository.createCourse({ name, description, logo, chatId })
 
         await teacherService.createCourseTeachers(teacherIds, courseId)
         await moduleService.createCourseModules(modules, courseId)
@@ -44,6 +66,15 @@ class CourseService {
         //         }));
         //     }));
         // }));
+
+        return true
+    }
+
+    async enrollCourse({ userId, courseId }) {
+        const { chatId } = await courseRepository.getById(courseId)
+        
+        await courseRepository.createUserCourse({ userId, courseId })
+        await chatService.addUserInChat({ userId, chatId })
 
         return true
     }

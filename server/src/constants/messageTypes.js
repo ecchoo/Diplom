@@ -3,4 +3,5 @@ module.exports.MESSAGE_TYPES = {
     OUTGOING: 'outgoing',
     FORWARDED: 'forwarded',
     REPLY: 'reply',
+    NOTIFICATION: 'notification'
 }

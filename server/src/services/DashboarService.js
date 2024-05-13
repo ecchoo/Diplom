@@ -7,9 +7,9 @@ class DashboardService {
         const userCourses = await courseRepository.getUserCourses(userId, params);
         // return userCourses
         return await Promise.all(userCourses.map(async ({ course, progress, createdAt: enrolmentDate }) => {
-            const { id, name, logo } = course
+            const { id, name, logo, modules } = course
             const { teacher: author } = await userRepository.getCourseAuthor(course.id)
-            const { countLeassons, courseTime } = await courseService.getCountLeassonsAndCourseTime(course)
+            const { countLeassons, courseTime } = await courseService.getCountLeassonsAndCourseTime(modules)
 
             return {
                 id,

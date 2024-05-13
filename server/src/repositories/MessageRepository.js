@@ -46,7 +46,7 @@ class MessageRepository {
     }
 
     async getOutgoingMessageById(messageId) {
-        return await UserMessage.findOne({ 
+        return await UserMessage.findOne({
             where: { type: MESSAGE_TYPES.OUTGOING, messageId },
             attributes: ['id', 'type', 'status', 'messageId', 'userId']
         })
@@ -67,7 +67,7 @@ class MessageRepository {
         })
     }
 
-    async createMessage(text, chatId) {
+    async createMessage({ text, chatId }) {
         return await Message.create({ text, chatId })
     }
 
