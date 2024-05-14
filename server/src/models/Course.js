@@ -23,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
         name: DataTypes.STRING,
         description: DataTypes.STRING,
         logo: DataTypes.STRING,
-        chatId: DataTypes.INTEGER
     }, {
         sequelize,
         modelName: 'Course',
@@ -31,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'courses'
     });
 
-    return Course;
+    return Course; 
 };
 
 

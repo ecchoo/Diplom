@@ -1,6 +1,7 @@
 const chatRepository = require('../repositories/ChatRepository')
 const messageRepository = require('../repositories/MessageRepository')
 const userRepository = require('../repositories/UserRepository')
+const chatNotificationRepository = require('../repositories/ChatNotificationRepository')
 const { MESSAGE_STATUSES } = require('../constants/messageStatuses')
 const { MESSAGE_TYPES } = require('../constants/messageTypes')
 
@@ -78,13 +79,17 @@ class ChatService {
         }));
     }
 
-    async create({ name, type, logo }) {
+    async createCourseChat({ name, type, logo, teachers, courseId }) {
         const chat = await chatRepository.createChat({ name, type, logo })
 
-        await messageRepository.createMessage({
+        await chatRepository.createCourseChat({ courseId, chatId: chat.id })
+        await chatNotificationRepository.create({
             text: 'Чат создан',
             chatId: chat.id
-        }) //
+        })
+        await Promise.all(teachers.map(async ({ id }) => {
+            await this.addUserInChat({ userId: id, chatId: chat.id })
+        }))
 
         return chat
     }
@@ -93,7 +98,10 @@ class ChatService {
         const { name } = await userRepository.getById(userId)
 
         await chatRepository.createUserChat({ userId, chatId })
-        await messageRepository.createMessage({ text: `${name} присоединился к чату`, chatId })
+        await chatNotificationRepository.create({
+            text: `${name} присоединился к чату`,
+            chatId: chatId
+        })
     }
 }
 

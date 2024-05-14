@@ -79,8 +79,8 @@ class CourseRepository {
         })
     }
 
-    async createCourse({ name, description, logo, chatId }) {
-        return await Course.create({ name, description, logo, chatId })
+    async createCourse({ name, description, logo }) {
+        return await Course.create({ name, description, logo })
     }
 
     async update({ id, name, description }) {

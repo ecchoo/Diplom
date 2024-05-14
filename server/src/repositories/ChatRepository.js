@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const { Chat, User, UserChat, Message } = require('../models')
+const { Chat, User, UserChat, Message, CourseChat } = require('../models')
 
 class ChatRepository {
     async getUserChats(userId) {
@@ -32,12 +32,20 @@ class ChatRepository {
         })
     }
 
+    async getCourseChat(courseId) {
+        return await CourseChat.findOne({ where: { courseId } })
+    }
+
     async createChat({ name, type, logo }) {
         return await Chat.create({ name, type, logo })
     }
 
     async createUserChat({ userId, chatId }) {
         return await UserChat.create({ userId, chatId })
+    }
+
+    async createCourseChat({ courseId, chatId }) {
+        return await CourseChat.create({ courseId, chatId })
     }
 }
 

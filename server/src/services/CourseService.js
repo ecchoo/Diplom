@@ -38,12 +38,19 @@ class CourseService {
         return { countLeassons, courseTime }
     }
 
-    async createCourse({ name, description, logo, modules, teacherIds }) {
-        const { id: chatId } = await chatService.create({ name, logo, type: CHAT_TYPES.GROUP })
-        const { id: courseId } = await courseRepository.createCourse({ name, description, logo, chatId })
+    async createCourse({ name, description, logo, modules, teachers }) {
+        const { id: courseId } = await courseRepository.createCourse({ name, description, logo })
+        
+        await teacherService.createCourseTeachers({ teachers, courseId })
+        await moduleService.createCourseModules({ modules, courseId })
 
-        await teacherService.createCourseTeachers(teacherIds, courseId)
-        await moduleService.createCourseModules(modules, courseId)
+        await chatService.createCourseChat({
+            name, 
+            logo, 
+            courseId, 
+            teachers,
+            type: CHAT_TYPES.GROUP,
+        })
 
         return courseId
     }
@@ -71,8 +78,8 @@ class CourseService {
     }
 
     async enrollCourse({ userId, courseId }) {
-        const { chatId } = await courseRepository.getById(courseId)
-        
+        const { chatId } = await chatRepository.getCourseChat(courseId)
+
         await courseRepository.createUserCourse({ userId, courseId })
         await chatService.addUserInChat({ userId, chatId })
 
