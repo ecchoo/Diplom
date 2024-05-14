@@ -44,13 +44,32 @@ export const ChatActions = styled.div`
     column-gap: ${({ theme }) => theme.spacing(1.5)};
 `
 
+export const MessagesWrapper = styled.div`
+    &::-webkit-scrollbar{
+        width: 5px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background-color: ${({ theme }) => theme.colors.gray}
+    }
+
+    max-height: 450px;
+    height: 100%;
+    overflow-y: auto;
+    padding-right: ${({ theme }) => theme.spacing(1)}
+`
+
 export const Messages = styled.div`
-    padding: ${({ theme }) => theme.spacing(3)} 0;
+    padding: ${({ theme }) => theme.spacing(3, 0)};
     display: flex;
     flex-direction: column;
-    /* justify-content: end; // вот это */
-    height: 450px;
-    overflow-y: auto;
+    justify-content: end;
+    min-height: 450px;
     row-gap: ${({ theme }) => theme.spacing(3)};
 `
 

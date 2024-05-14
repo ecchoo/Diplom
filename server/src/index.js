@@ -27,30 +27,20 @@ const io = new Server(server, {
     }
 })
 
-const usersInChat = {}
-
 io.on('connection', socket => {
-    
+
     socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
 
-        if (!usersInChat[chatId]) {
-            usersInChat[chatId] = []
-        }
+        // await chatService.readNewMessages(chatId, userId)
+        // io.to(chatId).emit('messagesRead', { readerId: userId })
 
-        usersInChat[chatId].push(userId)
-
-        console.log(usersInChat)
-
-        await chatService.readNewMessages(chatId, userId)
-        io.to(chatId).emit('messagesRead', { readerId: userId })
-
-        const chatMessages = await chatService.getChatMessages(userId, chatId)
-        socket.emit('chatMessages', { chatMessages })
+        const { messages, notifications } = await chatService.getChatMessagesAndNotification({ userId, chatId })
+        socket.emit('chatMessages', { messages, notifications })
     })
 
     socket.on('sendMessage', async ({ chatId, userId, text }) => {
-        const newMesssage = await chatService.sendMessage(userId, chatId, text, usersInChat[chatId])
+        const newMesssage = await chatService.sendMessage(userId, chatId, text)
         io.to(chatId).emit('messageReceived', newMesssage)
     })
 

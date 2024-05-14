@@ -1,18 +1,20 @@
 import { Avatar } from "@/UI"
-import { ChatActions, ChatContainer, ChatHeader, Input, MessageInput, Messages, SubTitle, TypeMessage, ChatInfo, UserInfo, Title, ButtonSendMessage } from "./styled"
+import { ChatActions, ChatContainer, ChatHeader, Input, MessageInput, Messages, SubTitle, TypeMessage, ChatInfo, UserInfo, Title, ButtonSendMessage, MessagesWrapper } from "./styled"
 import AsideImg from '/aside1.png'
 import { ButtonActions } from "../ButtonActions"
 import { Message } from "../Message"
 import PaperClip from '@/assets/icons/paperClip.svg'
 import SendMessage from '@/assets/icons/sendMessage2.svg'
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { MESSAGE_STATUSES, MESSAGE_TYPES } from "@/constants"
 import { setChatList } from "@/store/reducers"
 import { socket } from "@/socket"
+import { ChatNotification } from "../ChatNotification"
 
 export const Chat = () => {
     const dispatch = useDispatch()
+    const messagesRef = useRef(null)
 
     const {
         user: {
@@ -33,10 +35,19 @@ export const Chat = () => {
     const [newMessage, setNewMessage] = useState('')
 
     useEffect(() => {
+        messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+    }, [messages])
+
+    useEffect(() => {
         socket.emit('join', { userId, chatId })
 
-        socket.on("chatMessages", ({ chatMessages }) => {
-            setMessages(chatMessages)
+        socket.on("chatMessages", ({ messages, notifications }) => {
+            const messagesAndNotification = (messages.concat(notifications))
+                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+
+            console.log('sorted', messagesAndNotification)
+
+            setMessages(messagesAndNotification)
         })
 
         socket.on('messageReceived', (newMessage) => {
@@ -114,17 +125,22 @@ export const Chat = () => {
                     <ButtonActions direction='column' />
                 </ChatActions>
             </ChatHeader>
-            <Messages className="messages">
-                {messages.length && messages.map((message) =>
-                    <Message
-                        key={message.id}
-                        userAvatar={message.user.photo}
-                        text={message.text}
-                        status={message.status}
-                        type={message.type}
-                    />
-                )}
-            </Messages>
+            <MessagesWrapper ref={messagesRef}>
+                <Messages className="messages">
+                    {messages.length && messages.map((message) => {
+                        if (!message.type) {
+                            return <ChatNotification text={message.text} />
+                        }
+                        return <Message
+                            key={message.id}
+                            userAvatar={message.user.photo}
+                            text={message.text}
+                            status={message.status}
+                            type={message.type}
+                        />
+                    })}
+                </Messages>
+            </MessagesWrapper>
             <form onSubmit={handleSubmit} >
                 <MessageInput>
                     <TypeMessage>

@@ -27,16 +27,20 @@ class ChatService {
         }))
     }
 
-    async getChatMessages(userId, chatId) {
+    async getChatMessagesAndNotification({ userId, chatId }) {
         const chatMessages = await messageRepository.getChatMessages(userId, chatId)
+        const chatNotifications = await chatNotificationRepository.getChatNotification(chatId)
 
-        return await Promise.all(chatMessages.map(async (chatMessage) => ({
-            ...chatMessage.dataValues,
-            text: chatMessage.message.text
-        })))
+        const transformMessages = await Promise.all(chatMessages.map(async (chatMessage) => {
+            const { message: { text }, ...messageInfo } = chatMessage.toJSON()
+
+            return { ...messageInfo, text }
+        }))
+
+        return { messages: transformMessages, notifications: chatNotifications }
     }
 
-    async sendMessage(userId, chatId, text, usersInChat) {
+    async sendMessage(userId, chatId, text) {
         const { id: newMessageId, createdAt } = await messageRepository.createMessage({ text, chatId })
         const chatUsers = await userRepository.getChatUsers(chatId)
         const user = await userRepository.getById(userId)

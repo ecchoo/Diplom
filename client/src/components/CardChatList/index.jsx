@@ -22,7 +22,7 @@ export const CardChatList = ({ chatId, name, type, logo, lastMessage, lastNotifi
         dispatch(setSelectedChat({
             id: chatId,
             title: name,
-            subTitle: type === CHAT_TYPES.DEFAULT ? 'В сети' : countUsers,
+            subTitle: type === CHAT_TYPES.DEFAULT ? 'В сети' : `${countUsers} участников`,
             logo: logo,
         }))
     }

@@ -19,7 +19,11 @@ export const MessageAvatar = styled(Avatar)`
 `
 
 export const MessageBody = styled.div`
-    background-color: ${({ isIncoming }) => isIncoming ? '#ffffed' : '#f4edff'};
+    background-color: ${({ isIncoming, theme }) =>
+        isIncoming ? theme.colors.message.incoming
+            : theme.colors.message.outgoing
+    };
+    
     font-size: 14px;
     border-radius: ${({ theme }) => theme.spacing(1)};
     padding: ${({ theme }) => theme.spacing(1.5)};
