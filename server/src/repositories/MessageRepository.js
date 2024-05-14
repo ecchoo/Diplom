@@ -25,24 +25,41 @@ class MessageRepository {
         })
     }
 
-    async getLastChatMessage(chatId) {
-        return await UserMessage.findOne({
-            attributes: ['type', 'status', 'createdAt'],
-            order: [['createdAt', 'DESC']],
-            include: [
-                {
-                    model: User,
-                    as: 'user',
-                    attributes: ['id', 'name', 'role', 'photo'],
+    async getLastChatMessage({ userId, chatId }) {
+        // return await UserMessage.findOne({
+        //     attributes: ['type', 'status', 'createdAt'],
+        //     order: [['createdAt', 'DESC']],
+        //     include: [
+        //         {
+        //             model: User,
+        //             as: 'user',
+        //             attributes: ['id', 'name', 'role', 'photo'],
+        //             // required: false,
+        //         },
+        //         {
+        //             model: Message,
+        //             as: 'message',
+        //             where: { chatId },
+        //             attributes: ['text'],
+        //             // required: false,
+        //         },
+        //     ],
+        // })
+
+        return await Message.findOne({
+            where: { chatId },
+            order: [['createdAt', 'DESC']], // Сортировка по убыванию даты создания сообщения, чтобы получить последнее сообщение
+            include: {
+                model: User,
+                attributes: ['id', 'name', 'photo'],
+                as: 'messageUser',
+                through: {
+                    attributes: ['userId', 'status', 'type', 'createdAt'],
+                    where: { userId }
                 },
-                {
-                    model: Message,
-                    as: 'message',
-                    where: { chatId },
-                    attributes: ['text'],
-                },
-            ],
-        })
+            }
+        });
+
     }
 
     async getOutgoingMessageById(messageId) {
@@ -52,7 +69,7 @@ class MessageRepository {
         })
     }
 
-    async getNewMessages(chatId, userId) {
+    async getNewMessages({ chatId, userId }) {
         return await UserMessage.findAll({
             where: { status: MESSAGE_STATUSES.SENT, type: MESSAGE_TYPES.INCOMING, userId },
             include: {

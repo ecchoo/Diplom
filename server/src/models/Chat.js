@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'chatUsers'
             })
             Chat.hasMany(models.Message, { foreignKey: 'chatId', as: 'messages' })
+            Chat.hasMany(models.ChatNotification, { foreignKey: 'chatId', as: 'notifications' })
         }
     }
 

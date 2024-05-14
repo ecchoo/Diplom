@@ -1,10 +1,8 @@
 import { ChatListContainer, ChatSearch, ChatSearchIcon, ChatSearchInput, List } from "./styled"
 import SearchIcon from '@/assets/icons/search.svg'
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { getChatList } from "@/api"
 import { CardChatList } from "../CardChatList"
-import { CHAT_TYPES } from "@/constants"
-import { getInterlocutor } from "@/utils"
 import { useDispatch, useSelector } from "react-redux"
 import { setChatList } from "@/store/reducers"
 
@@ -15,6 +13,7 @@ export const ChatList = () => {
             chatList,
         },
     } = useSelector(state => state)
+    console.log(chatList)
 
     useEffect(() => {
         const fetchChatList = async () => {
@@ -32,24 +31,19 @@ export const ChatList = () => {
                 <ChatSearchIcon src={SearchIcon} alt="Search icon" />
             </ChatSearch>
             <List>
-                {chatList.length && chatList.map((chat) => {
-                    const chatInfo = { ...chat }
-
-                    if (chat.type === CHAT_TYPES.DEFAULT) {
-                        const { photo, name } = getInterlocutor(chat.chatUsers)
-                        chatInfo.logo = photo
-                        chatInfo.name = name
-                    }
-
-                    return <CardChatList
-                        key={chatInfo.id}
-                        chatId={chatInfo.id}
-                        logo={chatInfo.logo}
-                        lastMessage={chatInfo.lastMessage}
-                        countNewMessages={chatInfo.countNewMessages}
-                        title={chatInfo.name}
+                {chatList.length && chatList.map(({ id, name, type, logo, lastMessage, lastNotification, countNewMessages, countUsers }) =>
+                    <CardChatList
+                        key={id}
+                        chatId={id}
+                        name={name}
+                        type={type}
+                        logo={logo}
+                        lastMessage={lastMessage}
+                        lastNotification={lastNotification}
+                        countUsers={countUsers}
+                        countNewMessages={countNewMessages}
                     />
-                })}
+                )}
             </List>
         </ChatListContainer>
     )

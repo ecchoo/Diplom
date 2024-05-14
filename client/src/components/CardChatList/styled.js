@@ -27,8 +27,18 @@ export const Title = styled.span`
     color: ${({ theme }) => theme.colors.primary};
 `
 
-export const LastMessageText = styled.span`
+export const LastMessage = styled.div`
     font-size: 13px;
+    display: flex;
+    column-gap: ${({ theme }) => theme.spacing(0.5)}
+    
+`
+
+export const LastMessageInterlocutor = styled.span`
+    color: ${({ theme }) => theme.colors.accent};
+`
+
+export const LastMessageText = styled.span`
     color: ${({ theme }) => theme.colors.primary};
     opacity: 0.5;
 `
@@ -37,6 +47,8 @@ export const LastMessageInfo = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
+    align-self: flex-start;
 `
 
 export const Time = styled.span`

@@ -4,21 +4,27 @@ const userRepository = require('../repositories/UserRepository')
 const chatNotificationRepository = require('../repositories/ChatNotificationRepository')
 const { MESSAGE_STATUSES } = require('../constants/messageStatuses')
 const { MESSAGE_TYPES } = require('../constants/messageTypes')
+const { CHAT_TYPES } = require('../constants/chatTypes')
 
 class ChatService {
     async getUserChatList(userId) {
         const userChats = await chatRepository.getUserChats(userId)
-        // return userChats
-        return await Promise.all(userChats.map(async ({ chat }) => {
-            const { type, status, createdAt, user, message } = await messageRepository.getLastChatMessage(chat.id);
-            const countNewMessages = (await messageRepository.getNewMessages(chat.id, userId)).length
 
-            return {
-                ...chat.dataValues,
-                countNewMessages,
-                lastMessage: { text: message.text, type, status, createdAt, user }
+        return Promise.all(userChats.map(async ({ chat }) => {
+            const { messages, notifications, chatUsers, ...chatInfo } = chat.toJSON()
+
+            chatInfo.countUsers = chatUsers.length
+            chatInfo.countNewMessages = (await messageRepository.getNewMessages({ chatId: chatInfo.id, userId })).length
+            chatInfo.lastMessage = messages?.[0] || null
+            chatInfo.lastNotification = notifications?.[0] || null
+
+            if (chatInfo.type === CHAT_TYPES.DEFAULT) {
+                const { name, photo } = chatUsers.find(u => u.id !== userId)
+                Object.assign(chatInfo, { name, logo: photo })
             }
-        }));
+
+            return chatInfo
+        }))
     }
 
     async getChatMessages(userId, chatId) {
@@ -75,8 +81,8 @@ class ChatService {
                     ...newMessage.dataValues,
                     status: MESSAGE_STATUSES.READ
                 })
-            ]);
-        }));
+            ])
+        }))
     }
 
     async createCourseChat({ name, type, logo, teachers, courseId }) {

@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
                 through: 'UserMessage',
                 foreignKey: 'userId',
                 otherKey: 'messageId',
+                as: 'userMessages'
             })
         }
     }
