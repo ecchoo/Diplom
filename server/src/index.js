@@ -6,7 +6,9 @@ const cors = require('cors')
 const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')
+
 const chatService = require('./services/ChatService')
+const messageRepository = require('./repositories/MessageRepository')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -27,21 +29,41 @@ const io = new Server(server, {
     }
 })
 
+const currentChatsUsers = {}
+
 io.on('connection', socket => {
     socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
 
-        // await chatService.readNewMessages(chatId, userId)
-        // io.to(chatId).emit('messagesRead', { readerId: userId })
+        if (chatId in currentChatsUsers) {
+            currentChatsUsers[chatId].push(userId)
+        } else {
+            currentChatsUsers[chatId] = [userId]
+        }
+
+        const countNewMessages = (await messageRepository.getNewMessages({ chatId, userId })).length
+        if (countNewMessages) {
+            await chatService.readNewMessages({ chatId, userId })
+            io.emit('messagesRead', { readerId: userId, readChatId: chatId })
+        }
 
         const { messages, notifications } = await chatService.getChatMessagesAndNotification({ userId, chatId })
         socket.emit('chatMessages', { messages, notifications })
     })
 
     socket.on('sendMessage', async ({ chatId, userId, text }) => {
-        const newMesssage = await chatService.sendMessage({ userId, chatId, text })
+        const newMesssage = await chatService.sendMessage({
+            userId,
+            chatId,
+            text,
+            currentChatUsers: currentChatsUsers[chatId]
+        })
+
         io.emit('messageReceived', newMesssage)
-        // socket.broadcast.emit('messageReceived', newMesssage)
+    })
+
+    socket.on('exit', async ({ chatId, userId }) => {
+        currentChatsUsers[chatId] = currentChatsUsers[chatId].filter(u => u !== userId)
     })
 
     io.on('disconnection', () => {

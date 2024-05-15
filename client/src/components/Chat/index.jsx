@@ -27,7 +27,6 @@ export const Chat = () => {
                 title,
                 subTitle
             },
-            chatList
         }
     } = useSelector(state => state)
 
@@ -39,6 +38,7 @@ export const Chat = () => {
     }, [messages])
 
     useEffect(() => {
+        console.log('use effect', chatId)
         socket.emit('join', { userId, chatId })
 
         socket.on("chatMessages", ({ messages, notifications }) => {
@@ -49,14 +49,17 @@ export const Chat = () => {
         })
 
         socket.on('messageReceived', (newMessage) => {
-            if(newMessage.chatId !== chatId) return 
-            
+            if (newMessage.chatId !== chatId) return
+
+            const isIncoming = newMessage.user.id !== userId
+
             setMessages(prevMessages => {
                 const updatedMessages = [
                     ...prevMessages,
                     {
                         ...newMessage,
-                        type: newMessage.user.id === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
+                        type: isIncoming ? MESSAGE_TYPES.INCOMING : MESSAGE_TYPES.OUTGOING,
+                        status: !isIncoming && newMessage.readers.length ? MESSAGE_STATUSES.READ : MESSAGE_STATUSES.SENT
                     }
                 ]
 
@@ -64,21 +67,20 @@ export const Chat = () => {
             })
         })
 
-        socket.on('messagesRead', ({ readerId }) => {
-            if (readerId === userId) {
-                const updatedChatList = chatList.map(chat =>
-                    chat.id === chatId ? { ...chat, countNewMessages: 0 } : chat
-                )
+        socket.on('messagesRead', ({ readChatId }) => {
+            if (readChatId !== chatId) return
 
-                dispatch(setChatList(updatedChatList))
-            } else {
-                setMessages(prevMessages =>
-                    prevMessages.map(message =>
-                        message.status === MESSAGE_STATUSES.SENT ? { ...message, status: MESSAGE_STATUSES.READ } : message
-                    )
+            setMessages(prevMessages =>
+                prevMessages.map(message =>
+                    message.status === MESSAGE_STATUSES.SENT ? { ...message, status: MESSAGE_STATUSES.READ } : message
                 )
-            }
+            )
         })
+
+        return () => {
+            console.log('exit')
+            socket.emit('exit', { chatId, userId })
+        }
     }, [chatId])
 
 
@@ -111,10 +113,11 @@ export const Chat = () => {
             </ChatHeader>
             <MessagesWrapper ref={messagesRef}>
                 <Messages className="messages">
-                    {messages.length && messages.map((message) => {
+                    {messages.length ? messages.map((message) => {
                         if (!message.type) {
                             return <ChatNotification text={message.text} />
                         }
+
                         return <Message
                             key={message.id}
                             userAvatar={message.user.photo}
@@ -122,7 +125,7 @@ export const Chat = () => {
                             status={message.status}
                             type={message.type}
                         />
-                    })}
+                    }) : null}
                 </Messages>
             </MessagesWrapper>
             <form onSubmit={handleSubmit} >

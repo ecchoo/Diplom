@@ -20,11 +20,11 @@ export const Message = ({ userAvatar, text, status, type }) => {
             <MessageAvatar src={userAvatar} alt="User avatar" />
             <MessageBody isIncoming={isIncoming}>
                 <p>{text}</p>
-                {/* {
+                {
                     !isIncoming ? (
                         <CheckMark src={checkMark} alt="Check mark" />
                     ) : null
-                } */}
+                }
             </MessageBody>
             
             <ButtonActions direction='row' handleClick={handleClick} />

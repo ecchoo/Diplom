@@ -15,9 +15,13 @@ class ChatService {
 
             chatInfo.countUsers = chatUsers.length
             chatInfo.countNewMessages = (await messageRepository.getNewMessages({ chatId: chatInfo.id, userId })).length
-            chatInfo.lastMessage = messages?.[0] || null
-            chatInfo.lastMessage.user = messages?.[0]?.user?.[0] || null
+            chatInfo.lastMessage = null
             chatInfo.lastNotification = notifications?.[0] || null
+
+            if (messages.length) {
+                const { user: [{ UserMessage, ...userInfo }], ...messageInfo } = messages[0]
+                chatInfo.lastMessage = { ...messageInfo, ...UserMessage, user: userInfo }
+            }
 
             if (chatInfo.type === CHAT_TYPES.DEFAULT) {
                 const { name, photo } = chatUsers.find(u => u.id !== userId)
@@ -41,36 +45,38 @@ class ChatService {
         return { messages: transformMessages, notifications: chatNotifications }
     }
 
-    async sendMessage({ userId, chatId, text }) {
-        const { id: newMessageId, createdAt } = await messageRepository.createMessage({ text, chatId })
+    async sendMessage({ userId, chatId, text, currentChatUsers }) {
+        const { id: messageId, createdAt } = await messageRepository.createMessage({ text, chatId })
         const chatUsers = await userRepository.getChatUsers(chatId)
         const { id, name, photo } = await userRepository.getById(userId)
+        const readers = []
 
-        await Promise.all(chatUsers.map(async (chatUser) => {
-            const type = chatUser.userId === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
+        await Promise.all(chatUsers.map(async ({userId: chatUserId}) => {
+            const type = chatUserId === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
+            let status = MESSAGE_STATUSES.SENT
 
-            const userMessage = {
-                messageId: newMessageId,
-                userId: chatUser.userId,
-                status: MESSAGE_STATUSES.SENT,
-                type
+            if (chatUserId === userId && currentChatUsers.length > 1) {
+                status = MESSAGE_STATUSES.READ
+            } else if (chatUserId !== userId && currentChatUsers.includes(chatUserId)) {
+                status = MESSAGE_STATUSES.READ
+                readers.push(chatUserId)
             }
 
-            await messageRepository.createUserMessage(userMessage)
+            await messageRepository.createUserMessage({ messageId, userId: chatUserId, status, type })
         }))
 
         return {
-            id: newMessageId,
+            id: messageId,
+            user: { id, name, photo },
             text,
             chatId,
             createdAt,
-            status: MESSAGE_STATUSES.SENT,
-            user: { id, name, photo },
+            readers
         }
     }
 
-    async readNewMessages(chatId, userId) {
-        const newMessages = await messageRepository.getNewMessages(chatId, userId)
+    async readNewMessages({ chatId, userId }) {
+        const newMessages = await messageRepository.getNewMessages({ chatId, userId })
 
         await Promise.all(newMessages.map(async newMessage => {
             const outgoingMessage = await messageRepository.getOutgoingMessageById(newMessage.messageId)
