@@ -45,12 +45,12 @@ export const Chat = () => {
             const messagesAndNotification = (messages.concat(notifications))
                 .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
 
-            console.log('sorted', messagesAndNotification)
-
             setMessages(messagesAndNotification)
         })
 
         socket.on('messageReceived', (newMessage) => {
+            if(newMessage.chatId !== chatId) return 
+            
             setMessages(prevMessages => {
                 const updatedMessages = [
                     ...prevMessages,
@@ -62,22 +62,6 @@ export const Chat = () => {
 
                 return updatedMessages
             })
-
-            if (newMessage.user.id !== userId) {
-                console.log('Сообщение мне')
-            }
-
-            const updatedChatList = chatList.map(chat =>
-                chat.id === chatId ? {
-                    ...chat,
-                    lastMessage: {
-                        ...newMessage,
-                        type: newMessage.user.id === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
-                    }
-                } : chat
-            )
-
-            dispatch(setChatList(updatedChatList))
         })
 
         socket.on('messagesRead', ({ readerId }) => {

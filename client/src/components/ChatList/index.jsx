@@ -5,15 +5,20 @@ import { getChatList } from "@/api"
 import { CardChatList } from "../CardChatList"
 import { useDispatch, useSelector } from "react-redux"
 import { setChatList } from "@/store/reducers"
+import { socket } from "@/socket"
+import { MESSAGE_TYPES } from "@/constants"
 
 export const ChatList = () => {
     const dispatch = useDispatch()
     const {
         chats: {
             chatList,
+            selectedChat: { id: selectedChatId }
         },
+        user: {
+            id: userId
+        }
     } = useSelector(state => state)
-    console.log(chatList)
 
     useEffect(() => {
         const fetchChatList = async () => {
@@ -23,6 +28,28 @@ export const ChatList = () => {
 
         fetchChatList()
     }, [])
+
+    useEffect(() => {
+        socket.on('messageReceived', (newMessage) => {
+            const isIncoming = newMessage.user.id !== userId
+            
+            const updatedChatList = chatList.map(chat => {
+                if (chat.id !== newMessage.chatId) return chat
+
+                const isSelectedChat = chat.id === selectedChatId
+                const type = isIncoming ? MESSAGE_TYPES.INCOMING : MESSAGE_TYPES.OUTGOING
+                const countNewMessages = isIncoming && !isSelectedChat? chat.countNewMessages + 1: chat.countNewMessages
+                
+                return {
+                    ...chat,
+                    countNewMessages,
+                    lastMessage: { ...newMessage, type },
+                }
+            })
+
+            dispatch(setChatList(updatedChatList))
+        })
+    })
 
     return (
         <ChatListContainer>

@@ -28,7 +28,6 @@ const io = new Server(server, {
 })
 
 io.on('connection', socket => {
-
     socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
 
@@ -40,8 +39,9 @@ io.on('connection', socket => {
     })
 
     socket.on('sendMessage', async ({ chatId, userId, text }) => {
-        const newMesssage = await chatService.sendMessage(userId, chatId, text)
-        io.to(chatId).emit('messageReceived', newMesssage)
+        const newMesssage = await chatService.sendMessage({ userId, chatId, text })
+        io.emit('messageReceived', newMesssage)
+        // socket.broadcast.emit('messageReceived', newMesssage)
     })
 
     io.on('disconnection', () => {

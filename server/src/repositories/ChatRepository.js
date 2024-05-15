@@ -1,5 +1,6 @@
 const { Op, Sequelize, where } = require('sequelize')
 const { Chat, User, UserChat, Message, CourseChat, ChatNotification } = require('../models')
+const { MESSAGE_TYPES } = require('../constants/messageTypes')
 
 class ChatRepository {
     async getUserChats(userId) {
@@ -30,7 +31,7 @@ class ChatRepository {
                             as: 'user',
                             through: {
                                 attributes: ['status', 'type'],
-                                where: { userId }
+                                where: { type: MESSAGE_TYPES.OUTGOING }
                             },
                         }
                     },
