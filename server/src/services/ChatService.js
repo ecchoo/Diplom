@@ -35,7 +35,7 @@ class ChatService {
         const { message: { id, text }, createdAt } = messages[messages.length - 1].toJSON()
         const { userId: senderId, status, type } = (await messageRepository.getOutgoingMessageById(id)).toJSON()
         const user = await userRepository.getById(senderId)
-        
+
         return { id, text, status, type, user, createdAt }
     }
 

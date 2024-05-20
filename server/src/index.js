@@ -62,6 +62,11 @@ io.on('connection', socket => {
         io.emit('messageReceived', newMesssage)
     })
 
+    socket.on('updateMessage', async ({ chatId, messageId, text }) => {
+        await messageRepository.updateMessage({ messageId, text })
+        io.emit('messageUpdated', { chatId, messageId, text })
+    })
+
     socket.on('deleteMessage', async ({ chatId, userId, messageId, isForAll }) => {
         await chatService.deleteMessage({ messageId, isForAll })
         const lastMessage = await chatService.getLastChatMessage({ userId, chatId })

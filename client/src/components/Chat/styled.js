@@ -61,7 +61,7 @@ export const MessagesWrapper = styled.div`
     max-height: 450px;
     height: 100%;
     overflow-y: auto;
-    padding-right: ${({ theme }) => theme.spacing(1)}
+    padding-right: ${({ theme }) => theme.spacing(1)};
 `
 
 export const Messages = styled.div`

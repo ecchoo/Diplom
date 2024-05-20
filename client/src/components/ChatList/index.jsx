@@ -82,6 +82,18 @@ export const ChatList = () => {
 
             dispatch(setChatList(updatedChatList))
         })
+
+        socket.on('messageUpdated', ({ messageId, text }) => {
+            const updatedChatList = chatList.map(chat => {
+                if (chat.lastMessage.id === messageId) {
+                    return { ...chat, lastMessage: { ...chat.lastMessage, text } }
+                }
+
+                return chat
+            })
+
+            dispatch(setChatList(updatedChatList))
+        })
     })
     return (
         <ChatListContainer>

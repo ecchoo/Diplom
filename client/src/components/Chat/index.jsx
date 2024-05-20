@@ -11,6 +11,8 @@ import { MESSAGE_STATUSES, MESSAGE_TYPES } from "@/constants"
 import { setChatList } from "@/store/reducers"
 import { socket } from "@/socket"
 import { ChatNotification } from "../ChatNotification"
+import { FormMessage } from "../FormMessage"
+import { EditMessage } from "../EditMessage"
 
 export const Chat = () => {
     const dispatch = useDispatch()
@@ -27,7 +29,8 @@ export const Chat = () => {
                 title,
                 subTitle
             },
-        }
+        },
+        editMessage: { isOpen: isOpenEditMessage }
     } = useSelector(state => state)
 
     const [messages, setMessages] = useState([])
@@ -78,10 +81,24 @@ export const Chat = () => {
 
         socket.on('messageDeleted', ({ chatId: chatIdDeletedMessage, messageId, userId: senderId, isForAll }) => {
             const isUpdateMessages = chatId === chatIdDeletedMessage && (isForAll || senderId === userId)
-            
+
             if (isUpdateMessages) {
                 setMessages(prevMessages => prevMessages.filter(m => m.id !== messageId))
             }
+        })
+
+        socket.on('messageUpdated', ({ chatId: chatIdUpdatedMessage, messageId, text }) => {
+            if (chatId !== chatIdUpdatedMessage) return
+
+            setMessages(prevMessages =>
+                prevMessages.map(message => {
+                    if (message.id === messageId) {
+                        return { ...message, text }
+                    }
+
+                    return message
+                })
+            )
         })
 
         return () => {
@@ -135,17 +152,15 @@ export const Chat = () => {
                     }) : null}
                 </Messages>
             </MessagesWrapper>
-            <form onSubmit={handleSubmit} >
-                <MessageInput>
-                    <TypeMessage>
-                        <img src={PaperClip} alt="Paper clip" />
-                        <Input onChange={handleChange} value={newMessage} placeholder="Написать сообщение" />
-                    </TypeMessage>
-                    <ButtonSendMessage>
-                        <img src={SendMessage} alt="Send message" />
-                    </ButtonSendMessage>
-                </MessageInput>
-            </form>
+            {isOpenEditMessage ? (
+                <EditMessage />
+            ) : (
+                <FormMessage
+                    value={newMessage}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                />
+            )}
         </ChatContainer>
     )
 }

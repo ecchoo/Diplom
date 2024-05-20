@@ -8,7 +8,7 @@ import DeletelIcon from '@/assets/icons/delete.png'
 import { useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useOnClickOutside } from "@/hooks"
-import { setDeleteMessageId, setIsOpenConfirmDeleteMessage } from "@/store/reducers"
+import { setDeleteMessageId, setEditMessage, setIsOpenConfirmDeleteMessage } from "@/store/reducers"
 
 export const Message = ({ messageId, userAvatar, text, status, type }) => {
     const dispatch = useDispatch()
@@ -23,6 +23,10 @@ export const Message = ({ messageId, userAvatar, text, status, type }) => {
     const handleClickDelete = () => {
         dispatch(setDeleteMessageId(messageId))
         dispatch(setIsOpenConfirmDeleteMessage(true))
+    }
+
+    const handleClickEdit = () => {
+        dispatch(setEditMessage({ id: messageId, text }))
     }
 
     useOnClickOutside(ref, handleClose)
@@ -43,12 +47,12 @@ export const Message = ({ messageId, userAvatar, text, status, type }) => {
                     {isShowActions ? (
                         <MessageOptions>
                             <MessageActions>
-                                <MessageAction>
-                                    <MessageActionIcon src={PencilIcon} alt="" />
+                                <MessageAction onClick={handleClickEdit}>
+                                    <MessageActionIcon src={PencilIcon} alt="Edit icon" />
                                     <span>Изменить</span>
                                 </MessageAction>
                                 <MessageAction onClick={handleClickDelete}>
-                                    <MessageActionIcon src={DeletelIcon} alt="" />
+                                    <MessageActionIcon src={DeletelIcon} alt="Delete icon" />
                                     <span>Удалить</span>
                                 </MessageAction>
                             </MessageActions>

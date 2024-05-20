@@ -8,6 +8,7 @@ import courseModalReducer from './reducers/CourseModal'
 import chatsReducer from './reducers/Chats'
 import dashboardReducer from './reducers/Dashboard'
 import confirmDeleteMessageReducer from './reducers/ConfirmDeleteMessage'
+import editMessageReducer from './reducers/EditMessage'
 
 const persistConfig = {
     key: 'root',
@@ -21,7 +22,8 @@ const rootReducer = combineReducers({
     courseModal: courseModalReducer,
     chats: chatsReducer,
     dashboard: dashboardReducer,
-    confirmDeleteMessage: confirmDeleteMessageReducer
+    confirmDeleteMessage: confirmDeleteMessageReducer,
+    editMessage: editMessageReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

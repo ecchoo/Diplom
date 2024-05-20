@@ -1,4 +1,4 @@
-const { Op, where } = require('sequelize')
+const { Op } = require('sequelize')
 const { MESSAGE_STATUSES } = require('../constants/messageStatuses')
 const { MESSAGE_TYPES } = require('../constants/messageTypes')
 const { Message, User, UserMessage } = require('../models')
@@ -78,6 +78,10 @@ class MessageRepository {
 
     async createMessage({ text, chatId }) {
         return await Message.create({ text, chatId })
+    }
+
+    async updateMessage({ messageId, text }) {
+        return await Message.update({ text }, { where: { id: messageId } })
     }
 
     async createUserMessage({ messageId, userId, type, status }) {
