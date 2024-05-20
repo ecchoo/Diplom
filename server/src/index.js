@@ -35,7 +35,7 @@ io.on('connection', socket => {
     socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
 
-        if (chatId in currentChatsUsers) {
+        if (chatId in currentChatsUsers && !currentChatsUsers[chatId].includes(userId)) {
             currentChatsUsers[chatId].push(userId)
         } else {
             currentChatsUsers[chatId] = [userId]
@@ -60,6 +60,12 @@ io.on('connection', socket => {
         })
 
         io.emit('messageReceived', newMesssage)
+    })
+
+    socket.on('deleteMessage', async ({ chatId, userId, messageId, isForAll }) => {
+        await chatService.deleteMessage({ messageId, isForAll })
+        const lastMessage = await chatService.getLastChatMessage({ userId, chatId })
+        io.emit('messageDeleted', { chatId, messageId, userId, isForAll, lastMessage })
     })
 
     socket.on('exit', async ({ chatId, userId }) => {

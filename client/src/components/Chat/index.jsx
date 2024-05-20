@@ -38,7 +38,6 @@ export const Chat = () => {
     }, [messages])
 
     useEffect(() => {
-        console.log('use effect', chatId)
         socket.emit('join', { userId, chatId })
 
         socket.on("chatMessages", ({ messages, notifications }) => {
@@ -77,8 +76,15 @@ export const Chat = () => {
             )
         })
 
+        socket.on('messageDeleted', ({ chatId: chatIdDeletedMessage, messageId, userId: senderId, isForAll }) => {
+            const isUpdateMessages = chatId === chatIdDeletedMessage && (isForAll || senderId === userId)
+            
+            if (isUpdateMessages) {
+                setMessages(prevMessages => prevMessages.filter(m => m.id !== messageId))
+            }
+        })
+
         return () => {
-            console.log('exit')
             socket.emit('exit', { chatId, userId })
         }
     }, [chatId])
@@ -120,6 +126,7 @@ export const Chat = () => {
 
                         return <Message
                             key={message.id}
+                            messageId={message.id}
                             userAvatar={message.user.photo}
                             text={message.text}
                             status={message.status}

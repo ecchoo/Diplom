@@ -7,6 +7,7 @@ import { Provider, useSelector } from "react-redux"
 import { PersistGate } from "redux-persist/integration/react"
 import { store, persistor } from "@/store"
 import { CourseModal } from "../CourseModal"
+import { ConfirmDeleteMessage } from "../ConfirmDeleteMessage"
 
 export const App = () => {
     return (
@@ -16,6 +17,7 @@ export const App = () => {
                     <ThemeProvider theme={theme}>
                         <AuthModal />
                         <CourseModal />
+                        <ConfirmDeleteMessage />
 
                         <AppRouter>
                         </AppRouter>

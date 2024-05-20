@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux"
-import { Dialog, DialogTitle, DialogContent, DialogHeader, Description, CourseLogo, Row, ListTeachers, ListTeachersItem, Modules, DialogWrapper } from "./styled"
+import { Dialog, DialogTitle, DialogContent, DialogHeader, Description, CourseLogo, Row, ListTeachers, ListTeachersItem, Modules, DialogContainer } from "./styled"
 import { setIsOpenCourseModal } from "@/store/reducers"
 import { Close } from "@mui/icons-material"
 import { IconButton } from "@mui/material"
@@ -30,7 +30,7 @@ export const CourseModal = () => {
     return (
         selectedCourse.id ? (
             <Dialog scroll="paper" open={isOpen} onClose={handleClose} >
-                <DialogWrapper>
+                <DialogContainer>
                     <DialogContent className="content">
                         <DialogHeader>
                             <DialogTitle>{selectedCourse.name}</DialogTitle>
@@ -59,7 +59,7 @@ export const CourseModal = () => {
                             )}
                         </Modules>
                     </DialogContent>
-                </DialogWrapper>
+                </DialogContainer>
             </Dialog >
         ) : (
             null

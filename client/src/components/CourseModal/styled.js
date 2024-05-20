@@ -1,4 +1,4 @@
-import { Dialog as DialogMUI, DialogContent as Content } from "@mui/material";
+import { Dialog as DialogMUI } from "@mui/material";
 import styled from "styled-components";
 
 
@@ -9,7 +9,7 @@ export const Dialog = styled(DialogMUI)`
     }
 `
 
-export const DialogWrapper = styled.div`
+export const DialogContainer = styled.div`
     width: 100%;
     padding: ${({ theme }) => theme.spacing(0, 0, 0, 2.5)};
     display: flex;

@@ -4,7 +4,7 @@ const { MESSAGE_TYPES } = require('../constants/messageTypes')
 const { Message, User, UserMessage } = require('../models')
 
 class MessageRepository {
-    async getChatMessages(userId, chatId) {
+    async getChatMessages({ userId, chatId }) {
         return await UserMessage.findAll({
             attributes: ['type', 'status', 'createdAt'],
             order: [['createdAt', 'ASC']],
@@ -18,48 +18,40 @@ class MessageRepository {
                     model: Message,
                     as: 'message',
                     where: { chatId },
-                    attributes: ['text'],
+                    attributes: ['id', 'text'],
                 },
             ],
-            where: { userId }
+            where: { userId, deletedAt: null }
         })
     }
 
+    async getUserMessagesByMessageId(messageId) {
+        return await UserMessage.findAll({ where: { messageId, deletedAt: null }, attributes: ['id', 'type', 'status'] })
+    }
+
     async getLastChatMessage({ userId, chatId }) {
-        // return await UserMessage.findOne({
-        //     attributes: ['type', 'status', 'createdAt'],
-        //     order: [['createdAt', 'DESC']],
-        //     include: [
-        //         {
-        //             model: User,
-        //             as: 'user',
-        //             attributes: ['id', 'name', 'role', 'photo'],
-        //             // required: false,
-        //         },
-        //         {
-        //             model: Message,
-        //             as: 'message',
-        //             where: { chatId },
-        //             attributes: ['text'],
-        //             // required: false,
-        //         },
-        //     ],
-        // })
-
-        return await Message.findOne({
-            where: { chatId },
-            order: [['createdAt', 'DESC']], // Сортировка по убыванию даты создания сообщения, чтобы получить последнее сообщение
-            include: {
-                model: User,
-                attributes: ['id', 'name', 'photo'],
-                as: 'messageUser',
-                through: {
-                    attributes: ['userId', 'status', 'type', 'createdAt'],
-                    where: { userId }
+        return await UserMessage.findOne({
+            attributes: ['type', 'status', 'createdAt'],
+            order: [['createdAt', 'DESC']],
+            where: { type: MESSAGE_TYPES.OUTGOING, deletedAt: null },
+            include: [
+                {
+                    model: Message,
+                    as: 'message',
+                    where: { chatId },
+                    attributes: ['id', 'text'],
+                    include: {
+                        model: User,
+                        attributes: ['id', 'name', 'photo'],
+                        as: 'user',
+                        through: {
+                            attributes: [],
+                            where: { type: MESSAGE_TYPES.OUTGOING }
+                        },
+                    }
                 },
-            }
-        });
-
+            ],
+        })
     }
 
     async getOutgoingMessageById(messageId) {
@@ -94,6 +86,10 @@ class MessageRepository {
 
     async updateUserMessage({ id, messageId, userId, type, status }) {
         return await UserMessage.update({ messageId, userId, type, status }, { where: { id } })
+    }
+
+    async deleteUserMessage(id) {
+        return await UserMessage.update({ deletedAt: new Date() }, { where: { id } })
     }
 }
 

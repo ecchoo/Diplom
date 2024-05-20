@@ -70,6 +70,18 @@ export const ChatList = () => {
 
             dispatch(setChatList(updatedChatList))
         })
+
+        socket.on('messageDeleted', ({ chatId, userId: senderId, messageId, isForAll, lastMessage }) => {
+            const updatedChatList = chatList.map(chat => {
+                if ((chat.lastMessage.id === messageId && (isForAll || userId === senderId))) {
+                    return { ...chat, lastMessage }
+                }
+
+                return chat
+            })
+
+            dispatch(setChatList(updatedChatList))
+        })
     })
     return (
         <ChatListContainer>
@@ -82,13 +94,13 @@ export const ChatList = () => {
                     <CardChatList
                         key={id}
                         chatId={id}
-                        // name={name}
-                        // type={type}
-                        // logo={logo}
-                        // lastMessage={lastMessage}
-                        // lastNotification={lastNotification}
-                        // countUsers={countUsers}
-                        // countNewMessages={countNewMessages}
+                    // name={name}
+                    // type={type}
+                    // logo={logo}
+                    // lastMessage={lastMessage}
+                    // lastNotification={lastNotification}
+                    // countUsers={countUsers}
+                    // countNewMessages={countNewMessages}
                     />
                 )}
             </List>
