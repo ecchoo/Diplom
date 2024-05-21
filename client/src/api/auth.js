@@ -20,6 +20,15 @@ export const register = async ({ name, email, password, passwordConfirm }) => {
     return data
 }
 
+
+export const verifyEmail = async ({ token, email }) => {
+    const res = await $host.post(AUTH_USER_ENDPOINTS.VERIFY_EMAIL, {
+        token,
+        email
+    })
+
+    return res
+}
 // export const login = async (mail, password) => {
 //     const response = await $host.post(UserAPI.LOGIN, {
 //         mail,

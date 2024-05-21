@@ -1,5 +1,5 @@
 import { ButtonSubmitForm, FormAuth } from "@/UI"
-import { register } from "@/api"
+import { register, verifyEmail } from "@/api"
 import { Input } from "../Input"
 import { useDispatch } from "react-redux"
 import { useState } from "react"

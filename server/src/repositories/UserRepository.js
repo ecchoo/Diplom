@@ -6,7 +6,7 @@ class UserRepository {
     }
 
     async getById(id) {
-        return await User.findByPk(id, { attributes: ['id', 'name', 'role', 'photo'] })
+        return await User.findByPk(id, { attributes: ['id', 'email', 'verified', 'name', 'role', 'photo'] })
     }
 
     async getChatUsers(chatId) {
@@ -23,8 +23,12 @@ class UserRepository {
                 model: User,
                 as: 'teacher',
                 attributes: ['name', 'photo']
-            }   
+            }
         })
+    }
+
+    async verify(userId) {
+        return await User.update({ verified: true }, { where: { id: userId } })
     }
 
     async create({ name, email, password, role }) {
