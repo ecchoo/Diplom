@@ -23,7 +23,8 @@ class DashboardController {
 
     async chatList(req, res) {
         try {
-            const userChats = await chatService.getUserChatList(req.userId)
+            const { userId, query: { search } } = req
+            const userChats = await chatService.getUserChatList({ userId, search })
             return res.status(StatusCodes.OK).json({ userChats })
         } catch (err) {
             console.log(err)

@@ -1,4 +1,4 @@
-const { Op, Sequelize, where } = require('sequelize')
+const { Op, Sequelize } = require('sequelize')
 const { Chat, User, UserChat, Message, CourseChat, ChatNotification } = require('../models')
 const { MESSAGE_TYPES } = require('../constants/messageTypes')
 
@@ -19,22 +19,6 @@ class ChatRepository {
                         through: { attributes: [] },
                         required: false
                     },
-                    // {
-                    //     model: Message,
-                    //     as: 'messages',
-                    //     attributes: ['id', 'text', 'createdAt'],
-                    //     order: [['createdAt', 'DESC']],
-                    //     // limit: 1,
-                        // include: {
-                        //     model: User,
-                        //     attributes: ['id', 'name', 'photo'],
-                        //     as: 'user',
-                        //     through: {
-                        //         attributes: ['status', 'type', 'deletedAt'],
-                        //         where: { deletedAt: null, type: MESSAGE_TYPES.OUTGOING }
-                        //     },
-                        // }
-                    // },
                     {
                         model: ChatNotification,
                         as: 'notifications',

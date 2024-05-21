@@ -7,11 +7,10 @@ const { MESSAGE_TYPES } = require('../constants/messageTypes')
 const { CHAT_TYPES } = require('../constants/chatTypes')
 
 class ChatService {
-    async getUserChatList(userId) {
+    async getUserChatList({ userId, search }) {
         const userChats = await chatRepository.getUserChats(userId)
-        // return userChats
 
-        return Promise.all(userChats.map(async ({ chat }) => {
+        const transformUserChats = await Promise.all(userChats.map(async ({ chat }) => {
             const { notifications, chatUsers, ...chatInfo } = chat.toJSON()
 
             chatInfo.countUsers = chatUsers.length
@@ -26,6 +25,13 @@ class ChatService {
 
             return chatInfo
         }))
+
+        if (search && search.length)
+            return transformUserChats.filter(c =>
+                c.name.toLowerCase().includes(search.toLowerCase())
+            )
+
+        return transformUserChats
     }
 
     async getLastChatMessage({ userId, chatId }) {

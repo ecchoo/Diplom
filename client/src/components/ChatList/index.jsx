@@ -1,6 +1,6 @@
 import { ChatListContainer, ChatSearch, ChatSearchIcon, ChatSearchInput, List } from "./styled"
 import SearchIcon from '@/assets/icons/search.svg'
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { getChatList } from "@/api"
 import { CardChatList } from "../CardChatList"
 import { useDispatch, useSelector } from "react-redux"
@@ -20,14 +20,18 @@ export const ChatList = () => {
         }
     } = useSelector(state => state)
 
-    useEffect(() => {
-        const fetchChatList = async () => {
-            const { userChats } = await getChatList()
-            dispatch(setChatList(userChats))
-        }
+    const [search, setSearch] = useState('')
 
+    const fetchChatList = async () => {
+        const { userChats } = await getChatList({ search })
+        dispatch(setChatList(userChats))
+    }
+
+    const handleChange = async (e) => setSearch(e.target.value)
+
+    useEffect(() => {
         fetchChatList()
-    }, [])
+    }, [search])
 
     useEffect(() => {
         socket.on('messageReceived', (newMessage) => {
@@ -95,25 +99,20 @@ export const ChatList = () => {
             dispatch(setChatList(updatedChatList))
         })
     })
+
     return (
         <ChatListContainer>
             <ChatSearch>
-                <ChatSearchInput placeholder="Поиск" />
+                <ChatSearchInput onChange={handleChange} placeholder="Поиск" />
                 <ChatSearchIcon src={SearchIcon} alt="Search icon" />
             </ChatSearch>
             <List>
-                {chatList.length && chatList.map(({ id }) =>
-                    <CardChatList
-                        key={id}
-                        chatId={id}
-                    // name={name}
-                    // type={type}
-                    // logo={logo}
-                    // lastMessage={lastMessage}
-                    // lastNotification={lastNotification}
-                    // countUsers={countUsers}
-                    // countNewMessages={countNewMessages}
-                    />
+                {chatList.length ? (
+                    chatList.map(({ id }) =>
+                        <CardChatList key={id} chatId={id} />
+                    )
+                ) : (
+                    null
                 )}
             </List>
         </ChatListContainer>
