@@ -1,33 +1,70 @@
 import { MESSAGE_STATUSES, MESSAGE_TYPES } from "@/constants"
 import { ButtonActions } from "../ButtonActions"
-import { CheckMark, MessageAvatar, MessageContainer, MessageBody } from "./styled"
+import { MessageAvatar, MessageContainer, MessageBody, MessageOptions, MessageActions, MessageAction, ReadInfo, MessageActionIcon } from "./styled"
 import CheckMarkReadIcon from '@/assets/icons/markRead.svg'
 import CheckMarkSendIcon from '@/assets/icons/markSend.svg'
-import { useState } from "react"
+import PencilIcon from '@/assets/icons/pencil.png'
+import DeletelIcon from '@/assets/icons/delete.png'
+import { useRef, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useOnClickOutside } from "@/hooks"
+import { setDeleteMessageId, setEditMessage, setIsOpenConfirmDeleteMessage } from "@/store/reducers"
 
-export const Message = ({ userAvatar, text, status, type }) => {
+export const Message = ({ messageId, userAvatar, text, status, type }) => {
+    const dispatch = useDispatch()
+    const ref = useRef(null)
     const [isShowActions, setIsShowActions] = useState(false)
     const checkMark = status === MESSAGE_STATUSES.SENT ? CheckMarkSendIcon : CheckMarkReadIcon
     const isIncoming = type === MESSAGE_TYPES.INCOMING
 
-    
-    const handleClick = () => {
-        
+    const handleClickActions = () => setIsShowActions(!isShowActions)
+    const handleClose = () => setIsShowActions(false)
+
+    const handleClickDelete = () => {
+        dispatch(setDeleteMessageId(messageId))
+        dispatch(setIsOpenConfirmDeleteMessage(true))
     }
 
+    const handleClickEdit = () => {
+        dispatch(setEditMessage({ id: messageId, text }))
+    }
+
+    useOnClickOutside(ref, handleClose)
+
     return (
-        <MessageContainer isIncoming={isIncoming}>
+        <MessageContainer ref={ref} isIncoming={isIncoming}>
             <MessageAvatar src={userAvatar} alt="User avatar" />
             <MessageBody isIncoming={isIncoming}>
                 <p>{text}</p>
-                {/* {
+                {
                     !isIncoming ? (
-                        <CheckMark src={checkMark} alt="Check mark" />
+                        <img src={checkMark} alt="Check mark" />
                     ) : null
-                } */}
+                }
             </MessageBody>
-            
-            <ButtonActions direction='row' handleClick={handleClick} />
+            {!isIncoming ? (
+                <>
+                    {isShowActions ? (
+                        <MessageOptions>
+                            <MessageActions>
+                                <MessageAction onClick={handleClickEdit}>
+                                    <MessageActionIcon src={PencilIcon} alt="Edit icon" />
+                                    <span>Изменить</span>
+                                </MessageAction>
+                                <MessageAction onClick={handleClickDelete}>
+                                    <MessageActionIcon src={DeletelIcon} alt="Delete icon" />
+                                    <span>Удалить</span>
+                                </MessageAction>
+                            </MessageActions>
+                            <ReadInfo>
+                                <img src={CheckMarkReadIcon} alt="Read icon" />
+                                <span>Сегодня в 16:09</span>
+                            </ReadInfo>
+                        </MessageOptions>
+                    ) : null}
+                    <ButtonActions direction='row' handleClick={handleClickActions} />
+                </>
+            ) : null}
         </MessageContainer>
     )
 }

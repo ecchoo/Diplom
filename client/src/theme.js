@@ -12,6 +12,11 @@ export const theme = {
             secondary: '#ffc773'
         },
 
+        message: {
+            incoming: '#ffffed',
+            outgoing: '#f4edff'
+        },
+
         white: '#ffffff',
         black: '#000000'
     },

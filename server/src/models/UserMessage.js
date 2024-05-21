@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         messageId: DataTypes.INTEGER,
         userId: DataTypes.INTEGER,
+        deletedAt: DataTypes.DATE
     }, {
         sequelize,
         modelName: 'UserMessage',

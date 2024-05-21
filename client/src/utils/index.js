@@ -1,5 +1,4 @@
 export * from './convertErrorsValidation'
 export * from './getAuthUser'
-export * from './getInterlocutor'
 export * from './strLimit'
 export * from './getTime'

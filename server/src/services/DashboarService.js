@@ -20,7 +20,7 @@ class DashboardService {
                 countLeassons,
                 courseTime,
                 enrolmentDate,
-            };
+            }
         }));
     }
 

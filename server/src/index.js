@@ -6,7 +6,9 @@ const cors = require('cors')
 const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')
+
 const chatService = require('./services/ChatService')
+const messageRepository = require('./repositories/MessageRepository')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -27,31 +29,52 @@ const io = new Server(server, {
     }
 })
 
-const usersInChat = {}
+const currentChatsUsers = {}
 
 io.on('connection', socket => {
-    
     socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
 
-        if (!usersInChat[chatId]) {
-            usersInChat[chatId] = []
+        if (chatId in currentChatsUsers && !currentChatsUsers[chatId].includes(userId)) {
+            currentChatsUsers[chatId].push(userId)
+        } else {
+            currentChatsUsers[chatId] = [userId]
         }
 
-        usersInChat[chatId].push(userId)
+        const countNewMessages = (await messageRepository.getNewMessages({ chatId, userId })).length
+        if (countNewMessages) {
+            await chatService.readNewMessages({ chatId, userId })
+            io.emit('messagesRead', { readerId: userId, readChatId: chatId })
+        }
 
-        console.log(usersInChat)
-
-        await chatService.readNewMessages(chatId, userId)
-        io.to(chatId).emit('messagesRead', { readerId: userId })
-
-        const chatMessages = await chatService.getChatMessages(userId, chatId)
-        socket.emit('chatMessages', { chatMessages })
+        const { messages, notifications } = await chatService.getChatMessagesAndNotification({ userId, chatId })
+        socket.emit('chatMessages', { messages, notifications })
     })
 
     socket.on('sendMessage', async ({ chatId, userId, text }) => {
-        const newMesssage = await chatService.sendMessage(userId, chatId, text, usersInChat[chatId])
-        io.to(chatId).emit('messageReceived', newMesssage)
+        const newMesssage = await chatService.sendMessage({
+            userId,
+            chatId,
+            text,
+            currentChatUsers: currentChatsUsers[chatId]
+        })
+
+        io.emit('messageReceived', newMesssage)
+    })
+
+    socket.on('updateMessage', async ({ chatId, messageId, text }) => {
+        await messageRepository.updateMessage({ messageId, text })
+        io.emit('messageUpdated', { chatId, messageId, text })
+    })
+
+    socket.on('deleteMessage', async ({ chatId, userId, messageId, isForAll }) => {
+        await chatService.deleteMessage({ messageId, isForAll })
+        const lastMessage = await chatService.getLastChatMessage({ userId, chatId })
+        io.emit('messageDeleted', { chatId, messageId, userId, isForAll, lastMessage })
+    })
+
+    socket.on('exit', async ({ chatId, userId }) => {
+        currentChatsUsers[chatId] = currentChatsUsers[chatId].filter(u => u !== userId)
     })
 
     io.on('disconnection', () => {

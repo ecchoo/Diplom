@@ -1,12 +1,12 @@
-const { Op } = require('sequelize')
-const { Chat, User, UserChat, Message, CourseChat } = require('../models')
+const { Op, Sequelize } = require('sequelize')
+const { Chat, User, UserChat, Message, CourseChat, ChatNotification } = require('../models')
+const { MESSAGE_TYPES } = require('../constants/messageTypes')
 
 class ChatRepository {
     async getUserChats(userId) {
         return await UserChat.findAll({
             where: {
                 userId,
-                '$chat.messages.id$': { [Op.ne]: null }
             },
             include: {
                 model: Chat,
@@ -20,11 +20,11 @@ class ChatRepository {
                         required: false
                     },
                     {
-                        model: Message,
-                        as: 'messages',
-                        attributes: [],
-                        required: false,
-                    },
+                        model: ChatNotification,
+                        as: 'notifications',
+                        order: [['createdAt', 'DESC']],
+                        limit: 1
+                    }
                 ],
                 attributes: ['id', 'name', 'type', 'logo'],
             },

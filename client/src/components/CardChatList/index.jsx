@@ -1,25 +1,52 @@
 import { Avatar } from "@/UI"
-import { LastMessageInfo, LastMessageText, Card, ChatPreview, NewMessagesCount, Time, ChatPreviewInfo, Title } from "./styled"
-import { getTime, strLimit } from "@/utils"
+import { LastMessageInfo, LastMessage, Card, ChatPreview, NewMessagesCount, Time, ChatPreviewInfo, Title, LastMessageInterlocutor, LastMessageText, ChatInfo, CheckMark } from "./styled"
+import { getTime } from "@/utils"
 import { useDispatch, useSelector } from "react-redux"
 import { setSelectedChat } from "@/store/reducers"
+import { CHAT_TYPES, MESSAGE_STATUSES, MESSAGE_TYPES } from "@/constants"
+import CheckMarkReadIcon from '@/assets/icons/markRead.svg'
+import CheckMarkSendIcon from '@/assets/icons/markSend.svg'
 
-export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, title }) => {
+export const CardChatList = ({ chatId }) => {
     const dispatch = useDispatch()
-    const { chats: { selectedChat: { chatId: selectedChatId } } } = useSelector(state => state)
+    const {
+        chats: {
+            selectedChat: {
+                chatId: selectedChatId
+            },
+            chatList
+        },
+        user: {
+            id: userId
+        }
+    } = useSelector(state => state)
 
-    const isSelectedChat = selectedChatId === chatId
-    const timeLastMessage = getTime(lastMessage.createdAt)
-    const lastMessageText = strLimit(lastMessage.text, 35)
+    const {
+        name,
+        type,
+        logo,
+        lastMessage,
+        lastNotification,
+        countNewMessages,
+        countUsers
+    } = chatList.find(c => c.id === chatId)
+
+    const checkMark = lastMessage?.status === MESSAGE_STATUSES.SENT
+        ? CheckMarkSendIcon
+        : CheckMarkReadIcon
+
+    const time = (lastMessage || lastNotification)
+        ? getTime((lastMessage || lastNotification).createdAt)
+        : null
+
 
     const handleClick = () => {
-        if (isSelectedChat) return
-        // const chat = chats.find(c => c.id === chatId)
-        // console.log(chat)
+        if (selectedChatId === chatId) return
+
         dispatch(setSelectedChat({
             id: chatId,
-            title: title,
-            subTitle: 'В сети',
+            title: name,
+            subTitle: type === CHAT_TYPES.DEFAULT ? 'В сети' : `${countUsers} участников`,
             logo: logo,
         }))
     }
@@ -29,12 +56,32 @@ export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, titl
             <ChatPreview>
                 <Avatar src={logo} alt="Chat logo" />
                 <ChatPreviewInfo>
-                    <Title>{title}</Title>
-                    <LastMessageText>{lastMessageText}</LastMessageText>
+                    <Title>{name}</Title>
+                    <LastMessage>
+                        {type === CHAT_TYPES.GROUP && lastMessage ? (
+                            <LastMessageInterlocutor>
+                                {lastMessage.user.name}:
+                            </LastMessageInterlocutor>
+                        ) : (
+                            null
+                        )}
+                        <LastMessageText>
+                            {lastMessage?.text || lastNotification?.text || 'Начните общение первым!'}
+                        </LastMessageText>
+                    </LastMessage>
                 </ChatPreviewInfo>
             </ChatPreview>
-            <LastMessageInfo>
-                <Time>{timeLastMessage}</Time>
+            <ChatInfo>
+                <LastMessageInfo>
+                    {
+                        lastMessage && userId === lastMessage.user.id ? (
+                            <CheckMark src={checkMark} alt="Check mark" />
+                        ) : (
+                            null
+                        )
+                    }
+                    <Time>{time}</Time>
+                </LastMessageInfo>
                 {
                     countNewMessages ? (
                         <NewMessagesCount>
@@ -44,7 +91,7 @@ export const CardChatList = ({ chatId, logo, lastMessage, countNewMessages, titl
                         null
                     )
                 }
-            </LastMessageInfo>
+            </ChatInfo>
         </Card>
     )
 }

@@ -5,7 +5,7 @@ export const Card = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: ${({ theme }) => theme.spacing(1, 2)};
-    /* background-color: ${({ isSelected, theme }) => isSelected?theme.colors.gray: theme.colors.white}; */
+    /* background-color: ${({ isSelected, theme }) => isSelected ? theme.colors.gray : theme.colors.white}; */
 
     &:hover{
         /* background-color: ${({ theme }) => theme.colors.gray}; */
@@ -27,16 +27,42 @@ export const Title = styled.span`
     color: ${({ theme }) => theme.colors.primary};
 `
 
-export const LastMessageText = styled.span`
+export const LastMessage = styled.div`
     font-size: 13px;
+    display: flex;
+    column-gap: ${({ theme }) => theme.spacing(0.5)}
+    
+`
+
+export const LastMessageInterlocutor = styled.span`
+    color: ${({ theme }) => theme.colors.accent};
+`
+
+export const LastMessageText = styled.span`
     color: ${({ theme }) => theme.colors.primary};
     opacity: 0.5;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+`
+
+export const ChatInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    align-self: flex-start;
 `
 
 export const LastMessageInfo = styled.div`
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    align-items: center;   
+    column-gap: ${({ theme }) => theme.spacing(0.5)}; 
+`
+
+export const CheckMark = styled.img`
+    width: 15px;
 `
 
 export const Time = styled.span`

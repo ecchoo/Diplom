@@ -1,18 +1,22 @@
 import { Avatar } from "@/UI"
-import { ChatActions, ChatContainer, ChatHeader, Input, MessageInput, Messages, SubTitle, TypeMessage, ChatInfo, UserInfo, Title, ButtonSendMessage } from "./styled"
+import { ChatActions, ChatContainer, ChatHeader, Input, MessageInput, Messages, SubTitle, TypeMessage, ChatInfo, UserInfo, Title, ButtonSendMessage, MessagesWrapper } from "./styled"
 import AsideImg from '/aside1.png'
 import { ButtonActions } from "../ButtonActions"
 import { Message } from "../Message"
 import PaperClip from '@/assets/icons/paperClip.svg'
 import SendMessage from '@/assets/icons/sendMessage2.svg'
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { MESSAGE_STATUSES, MESSAGE_TYPES } from "@/constants"
 import { setChatList } from "@/store/reducers"
 import { socket } from "@/socket"
+import { ChatNotification } from "../ChatNotification"
+import { FormMessage } from "../FormMessage"
+import { EditMessage } from "../EditMessage"
 
 export const Chat = () => {
     const dispatch = useDispatch()
+    const messagesRef = useRef(null)
 
     const {
         user: {
@@ -25,65 +29,81 @@ export const Chat = () => {
                 title,
                 subTitle
             },
-            chatList
-        }
+        },
+        editMessage: { isOpen: isOpenEditMessage }
     } = useSelector(state => state)
 
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState('')
 
     useEffect(() => {
+        messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+    }, [messages])
+
+    useEffect(() => {
         socket.emit('join', { userId, chatId })
 
-        socket.on("chatMessages", ({ chatMessages }) => {
-            setMessages(chatMessages)
+        socket.on("chatMessages", ({ messages, notifications }) => {
+            const messagesAndNotification = (messages.concat(notifications))
+                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+
+            setMessages(messagesAndNotification)
         })
 
         socket.on('messageReceived', (newMessage) => {
+            if (newMessage.chatId !== chatId) return
+
+            const isIncoming = newMessage.user.id !== userId
+
             setMessages(prevMessages => {
                 const updatedMessages = [
                     ...prevMessages,
                     {
                         ...newMessage,
-                        type: newMessage.user.id === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
+                        type: isIncoming ? MESSAGE_TYPES.INCOMING : MESSAGE_TYPES.OUTGOING,
+                        status: !isIncoming && newMessage.readers.length ? MESSAGE_STATUSES.READ : MESSAGE_STATUSES.SENT
                     }
                 ]
 
                 return updatedMessages
             })
+        })
 
-            if (newMessage.user.id !== userId) {
-                console.log('Сообщение мне')
-            }
+        socket.on('messagesRead', ({ readChatId }) => {
+            if (readChatId !== chatId) return
 
-            const updatedChatList = chatList.map(chat =>
-                chat.id === chatId ? {
-                    ...chat,
-                    lastMessage: {
-                        ...newMessage,
-                        type: newMessage.user.id === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
-                    }
-                } : chat
+            setMessages(prevMessages =>
+                prevMessages.map(message =>
+                    message.status === MESSAGE_STATUSES.SENT ? { ...message, status: MESSAGE_STATUSES.READ } : message
+                )
             )
-
-            dispatch(setChatList(updatedChatList))
         })
 
-        socket.on('messagesRead', ({ readerId }) => {
-            if (readerId === userId) {
-                const updatedChatList = chatList.map(chat =>
-                    chat.id === chatId ? { ...chat, countNewMessages: 0 } : chat
-                )
+        socket.on('messageDeleted', ({ chatId: chatIdDeletedMessage, messageId, userId: senderId, isForAll }) => {
+            const isUpdateMessages = chatId === chatIdDeletedMessage && (isForAll || senderId === userId)
 
-                dispatch(setChatList(updatedChatList))
-            } else {
-                setMessages(prevMessages =>
-                    prevMessages.map(message =>
-                        message.status === MESSAGE_STATUSES.SENT ? { ...message, status: MESSAGE_STATUSES.READ } : message
-                    )
-                )
+            if (isUpdateMessages) {
+                setMessages(prevMessages => prevMessages.filter(m => m.id !== messageId))
             }
         })
+
+        socket.on('messageUpdated', ({ chatId: chatIdUpdatedMessage, messageId, text }) => {
+            if (chatId !== chatIdUpdatedMessage) return
+
+            setMessages(prevMessages =>
+                prevMessages.map(message => {
+                    if (message.id === messageId) {
+                        return { ...message, text }
+                    }
+
+                    return message
+                })
+            )
+        })
+
+        return () => {
+            socket.emit('exit', { chatId, userId })
+        }
     }, [chatId])
 
 
@@ -114,28 +134,33 @@ export const Chat = () => {
                     <ButtonActions direction='column' />
                 </ChatActions>
             </ChatHeader>
-            <Messages className="messages">
-                {messages.length && messages.map((message) =>
-                    <Message
-                        key={message.id}
-                        userAvatar={message.user.photo}
-                        text={message.text}
-                        status={message.status}
-                        type={message.type}
-                    />
-                )}
-            </Messages>
-            <form onSubmit={handleSubmit} >
-                <MessageInput>
-                    <TypeMessage>
-                        <img src={PaperClip} alt="Paper clip" />
-                        <Input onChange={handleChange} value={newMessage} placeholder="Написать сообщение" />
-                    </TypeMessage>
-                    <ButtonSendMessage>
-                        <img src={SendMessage} alt="Send message" />
-                    </ButtonSendMessage>
-                </MessageInput>
-            </form>
+            <MessagesWrapper ref={messagesRef}>
+                <Messages className="messages">
+                    {messages.length ? messages.map((message) => {
+                        if (!message.type) {
+                            return <ChatNotification text={message.text} />
+                        }
+
+                        return <Message
+                            key={message.id}
+                            messageId={message.id}
+                            userAvatar={message.user.photo}
+                            text={message.text}
+                            status={message.status}
+                            type={message.type}
+                        />
+                    }) : null}
+                </Messages>
+            </MessagesWrapper>
+            {isOpenEditMessage ? (
+                <EditMessage />
+            ) : (
+                <FormMessage
+                    value={newMessage}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                />
+            )}
         </ChatContainer>
     )
 }

@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
                 through: 'UserMessage',
                 foreignKey: 'messageId',
                 otherKey: 'userId',
+                as: 'user'
             })
         }
     }

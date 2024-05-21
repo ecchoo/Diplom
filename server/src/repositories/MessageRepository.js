@@ -1,10 +1,10 @@
-const { Op, where } = require('sequelize')
+const { Op } = require('sequelize')
 const { MESSAGE_STATUSES } = require('../constants/messageStatuses')
 const { MESSAGE_TYPES } = require('../constants/messageTypes')
 const { Message, User, UserMessage } = require('../models')
 
 class MessageRepository {
-    async getChatMessages(userId, chatId) {
+    async getChatMessages({ userId, chatId }) {
         return await UserMessage.findAll({
             attributes: ['type', 'status', 'createdAt'],
             order: [['createdAt', 'ASC']],
@@ -18,28 +18,37 @@ class MessageRepository {
                     model: Message,
                     as: 'message',
                     where: { chatId },
-                    attributes: ['text'],
+                    attributes: ['id', 'text'],
                 },
             ],
-            where: { userId }
+            where: { userId, deletedAt: null }
         })
     }
 
-    async getLastChatMessage(chatId) {
+    async getUserMessagesByMessageId(messageId) {
+        return await UserMessage.findAll({ where: { messageId, deletedAt: null }, attributes: ['id', 'type', 'status'] })
+    }
+
+    async getLastChatMessage({ userId, chatId }) {
         return await UserMessage.findOne({
             attributes: ['type', 'status', 'createdAt'],
             order: [['createdAt', 'DESC']],
+            where: { type: MESSAGE_TYPES.OUTGOING, deletedAt: null },
             include: [
-                {
-                    model: User,
-                    as: 'user',
-                    attributes: ['id', 'name', 'role', 'photo'],
-                },
                 {
                     model: Message,
                     as: 'message',
                     where: { chatId },
-                    attributes: ['text'],
+                    attributes: ['id', 'text'],
+                    include: {
+                        model: User,
+                        attributes: ['id', 'name', 'photo'],
+                        as: 'user',
+                        through: {
+                            attributes: [],
+                            where: { type: MESSAGE_TYPES.OUTGOING }
+                        },
+                    }
                 },
             ],
         })
@@ -52,7 +61,7 @@ class MessageRepository {
         })
     }
 
-    async getNewMessages(chatId, userId) {
+    async getNewMessages({ chatId, userId }) {
         return await UserMessage.findAll({
             where: { status: MESSAGE_STATUSES.SENT, type: MESSAGE_TYPES.INCOMING, userId },
             include: {
@@ -71,12 +80,20 @@ class MessageRepository {
         return await Message.create({ text, chatId })
     }
 
+    async updateMessage({ messageId, text }) {
+        return await Message.update({ text }, { where: { id: messageId } })
+    }
+
     async createUserMessage({ messageId, userId, type, status }) {
         return await UserMessage.create({ messageId, userId, type, status })
     }
 
     async updateUserMessage({ id, messageId, userId, type, status }) {
         return await UserMessage.update({ messageId, userId, type, status }, { where: { id } })
+    }
+
+    async deleteUserMessage(id) {
+        return await UserMessage.update({ deletedAt: new Date() }, { where: { id } })
     }
 }
 

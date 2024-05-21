@@ -4,64 +4,91 @@ const userRepository = require('../repositories/UserRepository')
 const chatNotificationRepository = require('../repositories/ChatNotificationRepository')
 const { MESSAGE_STATUSES } = require('../constants/messageStatuses')
 const { MESSAGE_TYPES } = require('../constants/messageTypes')
+const { CHAT_TYPES } = require('../constants/chatTypes')
 
 class ChatService {
-    async getUserChatList(userId) {
+    async getUserChatList({ userId, search }) {
         const userChats = await chatRepository.getUserChats(userId)
-        // return userChats
-        return await Promise.all(userChats.map(async ({ chat }) => {
-            const { type, status, createdAt, user, message } = await messageRepository.getLastChatMessage(chat.id);
-            const countNewMessages = (await messageRepository.getNewMessages(chat.id, userId)).length
 
-            return {
-                ...chat.dataValues,
-                countNewMessages,
-                lastMessage: { text: message.text, type, status, createdAt, user }
+        const transformUserChats = await Promise.all(userChats.map(async ({ chat }) => {
+            const { notifications, chatUsers, ...chatInfo } = chat.toJSON()
+
+            chatInfo.countUsers = chatUsers.length
+            chatInfo.countNewMessages = (await messageRepository.getNewMessages({ chatId: chatInfo.id, userId })).length
+            chatInfo.lastNotification = notifications?.[0] || null
+            chatInfo.lastMessage = await this.getLastChatMessage({ userId, chatId: chatInfo.id })
+
+            if (chatInfo.type === CHAT_TYPES.DEFAULT) {
+                const { name, photo } = chatUsers.find(u => u.id !== userId)
+                Object.assign(chatInfo, { name, logo: photo })
             }
-        }));
+
+            return chatInfo
+        }))
+
+        if (search && search.length)
+            return transformUserChats.filter(c =>
+                c.name.toLowerCase().includes(search.toLowerCase())
+            )
+
+        return transformUserChats
     }
 
-    async getChatMessages(userId, chatId) {
-        const chatMessages = await messageRepository.getChatMessages(userId, chatId)
+    async getLastChatMessage({ userId, chatId }) {
+        const messages = await messageRepository.getChatMessages({ userId, chatId })
+        if (!messages.length) return null
 
-        return await Promise.all(chatMessages.map(async (chatMessage) => ({
-            ...chatMessage.dataValues,
-            text: chatMessage.message.text
-        })))
+        const { message: { id, text }, createdAt } = messages[messages.length - 1].toJSON()
+        const { userId: senderId, status, type } = (await messageRepository.getOutgoingMessageById(id)).toJSON()
+        const user = await userRepository.getById(senderId)
+
+        return { id, text, status, type, user, createdAt }
     }
 
-    async sendMessage(userId, chatId, text, usersInChat) {
-        const { id: newMessageId, createdAt } = await messageRepository.createMessage({ text, chatId })
+    async getChatMessagesAndNotification({ userId, chatId }) {
+        const chatMessages = await messageRepository.getChatMessages({ userId, chatId })
+        const chatNotifications = await chatNotificationRepository.getChatNotification(chatId)
+        const transformMessages = await Promise.all(chatMessages.map(async (chatMessage) => {
+            const { message: { text, id }, ...messageInfo } = chatMessage.toJSON()
+
+            return { id, text, ...messageInfo }
+        }))
+
+        return { messages: transformMessages, notifications: chatNotifications }
+    }
+
+    async sendMessage({ userId, chatId, text, currentChatUsers }) {
+        const { id: messageId, createdAt } = await messageRepository.createMessage({ text, chatId })
         const chatUsers = await userRepository.getChatUsers(chatId)
-        const user = await userRepository.getById(userId)
+        const { id, name, photo } = await userRepository.getById(userId)
+        const readers = []
 
-        await Promise.all(chatUsers.map(async (chatUser) => {
-            const type = chatUser.userId === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
+        await Promise.all(chatUsers.map(async ({ userId: chatUserId }) => {
+            const type = chatUserId === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
             let status = MESSAGE_STATUSES.SENT
 
-            // if(type === MESSAGE_TYPES.OUTGOING && usersInChat.length > 1) status = MESSAGE_STATUSES.READ
-            // if(type === MESSAGE_TYPES.INCOMING && usersInChat.includes(chatUser.userId)) status = MESSAGE_STATUSES.READ
-
-            const userMessage = {
-                messageId: newMessageId,
-                userId: chatUser.userId,
-                status,
-                type
+            if (chatUserId === userId && currentChatUsers.length > 1) {
+                status = MESSAGE_STATUSES.READ
+            } else if (chatUserId !== userId && currentChatUsers.includes(chatUserId)) {
+                status = MESSAGE_STATUSES.READ
+                readers.push(chatUserId)
             }
 
-            await messageRepository.createUserMessage(userMessage)
+            await messageRepository.createUserMessage({ messageId, userId: chatUserId, status, type })
         }))
 
         return {
-            user,
+            id: messageId,
+            user: { id, name, photo },
             text,
+            chatId,
             createdAt,
-            status: MESSAGE_STATUSES.SENT,
+            readers
         }
     }
 
-    async readNewMessages(chatId, userId) {
-        const newMessages = await messageRepository.getNewMessages(chatId, userId)
+    async readNewMessages({ chatId, userId }) {
+        const newMessages = await messageRepository.getNewMessages({ chatId, userId })
 
         await Promise.all(newMessages.map(async newMessage => {
             const outgoingMessage = await messageRepository.getOutgoingMessageById(newMessage.messageId)
@@ -75,8 +102,8 @@ class ChatService {
                     ...newMessage.dataValues,
                     status: MESSAGE_STATUSES.READ
                 })
-            ]);
-        }));
+            ])
+        }))
     }
 
     async createCourseChat({ name, type, logo, teachers, courseId }) {
@@ -92,6 +119,19 @@ class ChatService {
         }))
 
         return chat
+    }
+
+    async deleteMessage({ messageId, isForAll }) {
+        const { id } = await messageRepository.getOutgoingMessageById(messageId)
+        await messageRepository.deleteUserMessage(id)
+
+        if (isForAll) {
+            const userMessages = await messageRepository.getUserMessagesByMessageId(messageId)
+
+            for (const { id } of userMessages) {
+                await messageRepository.deleteUserMessage(id)
+            }
+        }
     }
 
     async addUserInChat({ userId, chatId }) {
