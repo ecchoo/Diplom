@@ -27,6 +27,10 @@ class UserRepository {
         })
     }
 
+    async updateUser({ id, name, email, password, role, photo, verified }) {
+        return User.update({ name, email, password, role, photo, verified }, { where: { id } })
+    }
+
     async verify(userId) {
         return await User.update({ verified: true }, { where: { id: userId } })
     }

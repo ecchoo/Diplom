@@ -8,5 +8,6 @@ const authRouter = express.Router()
 authRouter.post('/register', registerValidation(), authController.register)
 authRouter.post('/login', loginValidation(), authController.login)
 authRouter.post('/verify-email', authController.verifyEmail)
+authRouter.post('/reset-password', authController.resetPassword)
 
 module.exports = authRouter

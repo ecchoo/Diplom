@@ -16,12 +16,9 @@ class AuthController {
             }
 
             const { name, password, email } = req.body
-            const user = await authService.registerUser({ name, password, email })
+            const user = await authService.register({ name, password, email })
 
-            const payload = {
-                id: user.id
-            }
-
+            const payload = { id: user.id }
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
 
             mailService.sendMessage({
@@ -31,7 +28,7 @@ class AuthController {
                 text: `http://localhost:5173/verify-email?token=${token}`
             })
 
-            res.status(StatusCodes.CREATED).json({
+            return res.status(StatusCodes.CREATED).json({
                 id: user.id,
                 email: user.email,
                 name: user.name,
@@ -51,7 +48,7 @@ class AuthController {
             }
 
             const { password, email } = req.body
-            const user = await authService.loginUser({ password, email })
+            const user = await authService.login({ password, email })
 
             if (!user) {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'Invalid data' })
@@ -86,7 +83,7 @@ class AuthController {
             }
 
             if (userEmail === email) {
-                await userRepository.verify(id)
+                await authService.verify(id)
                 return res.status(StatusCodes.OK).json({ message: 'Email успешно верифицирован' })
             }
 
@@ -95,6 +92,30 @@ class AuthController {
         } catch (err) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
         }
+    }
+
+    async resetPassword(req, res) {
+        const { body: { email } } = req
+
+        const user = await userRepository.getByEmail(email)
+
+        if (!user) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: 'Пользователя с такой почтой не найдено'
+            })
+        }
+
+        if (!user.verified) {
+            return res.status(StatusCodes.FORBIDDEN).json({
+                message: 'Аккаунт не был верифицирован, поэтому его нельзя восстановить'
+            })
+        }
+
+        await authService.resetPassword({ userId: user.id, email: user.email })
+
+        return res.status(StatusCodes.OK).json({
+            message: 'Письмо с новым паролем было отправлено на вашу почту'
+        })
     }
 }
 

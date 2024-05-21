@@ -29,16 +29,7 @@ export const verifyEmail = async ({ token, email }) => {
 
     return res
 }
-// export const login = async (mail, password) => {
-//     const response = await $host.post(UserAPI.LOGIN, {
-//         mail,
-//         password,
-//     });
-//     if (response.data.token) {
-//         const newToken = response.data.token;
-//         localStorage.setItem("token", newToken);
-//         return jwtDecode(newToken);
-//     } else {
-//         throw new Error(response.data.error);
-//     }
-// };
+
+export const resetPassword = async (email) => {
+    return await $host.post(AUTH_USER_ENDPOINTS.RESET_PASSWORD, { email })
+}

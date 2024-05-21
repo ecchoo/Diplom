@@ -2,10 +2,12 @@ import { useState } from "react"
 import { Input } from "../Input"
 import { login } from "@/api"
 import { useDispatch } from "react-redux"
-import { setIsOpenAuthModal, setUser } from "@/store/reducers"
+import { setActiveFormAuthModal, setIsOpenAuthModal, setUser } from "@/store/reducers"
 import { convertErrorsValidation } from "@/utils"
 import { StatusCodes } from 'http-status-codes'
 import { ButtonSubmitForm, FormAuth } from "@/UI"
+import { ButtonResetPassword, Buttons } from "./styled"
+import { AUTH_FORMS } from "@/constants"
 
 export const FormLogin = () => {
     const dispatch = useDispatch()
@@ -22,6 +24,10 @@ export const FormLogin = () => {
             ...loginData,
             [e.target.name]: e.target.value
         })
+    }
+
+    const handleClickResetPassword = () => {
+        dispatch(setActiveFormAuthModal(AUTH_FORMS.RESET_PASSWORD))
     }
 
     const handleSubmit = async (e) => {
@@ -57,7 +63,12 @@ export const FormLogin = () => {
                 onChange={handleChangeInput}
                 errorValidation={errorsValidation?.password}
             />
-            <ButtonSubmitForm>Войти</ButtonSubmitForm>
+            <Buttons>
+                <ButtonSubmitForm>Войти</ButtonSubmitForm>
+                <ButtonResetPassword onClick={handleClickResetPassword}>
+                    Забыли пароль?
+                </ButtonResetPassword>
+            </Buttons>
         </FormAuth>
     )
 }
