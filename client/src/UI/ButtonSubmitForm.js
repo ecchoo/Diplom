@@ -5,7 +5,7 @@ export const ButtonSubmitForm = styled.button`
     justify-content: center;
     align-items: center;
     padding: ${({ theme }) => theme.spacing(0.5, 0)};
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 300;
     color: ${({ theme }) => theme.colors.white};
     background-color: ${({ theme }) => theme.colors.primary};

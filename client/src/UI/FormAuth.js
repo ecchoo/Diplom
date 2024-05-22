@@ -6,4 +6,5 @@ export const FormAuth = styled.form`
     align-items: center;
     padding-top: ${({ theme }) => theme.spacing(2)};
     row-gap: ${({ theme }) => theme.spacing(3)};
+    overflow: hidden;
 `

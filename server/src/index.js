@@ -2,7 +2,6 @@ const express = require("express");
 const http = require('http')
 const { Server } = require('socket.io')
 const cors = require('cors')
-
 const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')

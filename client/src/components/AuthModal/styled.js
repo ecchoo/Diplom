@@ -5,7 +5,7 @@ export const DialogAuth = styled(Dialog)`
     & [role="dialog"] {
         max-width: ${({ theme }) => theme.spacing(40)};
         width: 100%;
-        padding: ${({ theme }) => theme.spacing(2, 2.5, 4, 2.5)};
+        padding: ${({ theme }) => theme.spacing(2, 2.5, 2, 2.5)};
         display: flex;
         flex-direction: column;
         /* row-gap: ${({ theme }) => theme.spacing(2)}; */

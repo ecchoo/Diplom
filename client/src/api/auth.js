@@ -20,16 +20,20 @@ export const register = async ({ name, email, password, passwordConfirm }) => {
     return data
 }
 
-// export const login = async (mail, password) => {
-//     const response = await $host.post(UserAPI.LOGIN, {
-//         mail,
-//         password,
-//     });
-//     if (response.data.token) {
-//         const newToken = response.data.token;
-//         localStorage.setItem("token", newToken);
-//         return jwtDecode(newToken);
-//     } else {
-//         throw new Error(response.data.error);
-//     }
-// };
+
+export const verifyEmail = async ({ token, email }) => {
+    const res = await $host.post(AUTH_USER_ENDPOINTS.VERIFY_EMAIL, {
+        token,
+        email
+    })
+
+    return res
+}
+
+export const resetPassword = async (email) => {
+    return await $host.post(AUTH_USER_ENDPOINTS.RESET_PASSWORD, { email })
+}
+
+export const authWithGoogle = async (credential) => {
+    return await $host.post(AUTH_USER_ENDPOINTS.GOOGLE, { credential })
+}
