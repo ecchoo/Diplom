@@ -35,8 +35,8 @@ class UserRepository {
         return await User.update({ verified: true }, { where: { id: userId } })
     }
 
-    async create({ name, email, password, role }) {
-        return await User.create({ name, email, password, role })
+    async create({ name, email, password, role, verified, photo }) {
+        return await User.create({ name, email, password, role, verified, photo })
     }
 
     async createTeacherCourse({ teacherId, courseId, isAuthor }) {

@@ -33,3 +33,7 @@ export const verifyEmail = async ({ token, email }) => {
 export const resetPassword = async (email) => {
     return await $host.post(AUTH_USER_ENDPOINTS.RESET_PASSWORD, { email })
 }
+
+export const authWithGoogle = async (credential) => {
+    return await $host.post(AUTH_USER_ENDPOINTS.GOOGLE, { credential })
+}

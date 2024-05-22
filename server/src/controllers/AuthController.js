@@ -95,27 +95,52 @@ class AuthController {
     }
 
     async resetPassword(req, res) {
-        const { body: { email } } = req
+        try {
+            const { body: { email } } = req
 
-        const user = await userRepository.getByEmail(email)
+            const user = await userRepository.getByEmail(email)
 
-        if (!user) {
-            return res.status(StatusCodes.NOT_FOUND).json({
-                message: 'Пользователя с такой почтой не найдено'
+            if (!user) {
+                return res.status(StatusCodes.NOT_FOUND).json({
+                    message: 'Пользователя с такой почтой не найдено'
+                })
+            }
+
+            if (!user.verified) {
+                return res.status(StatusCodes.FORBIDDEN).json({
+                    message: 'Аккаунт не был верифицирован, поэтому его нельзя восстановить'
+                })
+            }
+
+            await authService.resetPassword({ userId: user.id, email: user.email })
+
+            return res.status(StatusCodes.OK).json({
+                message: 'Письмо с новым паролем было отправлено на вашу почту'
             })
+        } catch (err) {
+            console.log(err)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
         }
+    }
 
-        if (!user.verified) {
-            return res.status(StatusCodes.FORBIDDEN).json({
-                message: 'Аккаунт не был верифицирован, поэтому его нельзя восстановить'
+    async authWithGoogle(req, res) {
+        try {
+            const { body: { credential } } = req
+            const { email, name: googleName, picture } = jwt.decode(credential)
+
+            const { id, name, role, photo } = await authService.authWithGoogle({
+                name: googleName,
+                photo: picture,
+                email
             })
+
+            const token = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+
+            return res.status(StatusCodes.OK).json({ id, email, role, name, photo, token })
+        } catch (err) {
+            console.log(err)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
         }
-
-        await authService.resetPassword({ userId: user.id, email: user.email })
-
-        return res.status(StatusCodes.OK).json({
-            message: 'Письмо с новым паролем было отправлено на вашу почту'
-        })
     }
 }
 

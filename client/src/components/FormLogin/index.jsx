@@ -8,6 +8,9 @@ import { StatusCodes } from 'http-status-codes'
 import { ButtonSubmitForm, FormAuth } from "@/UI"
 import { ButtonResetPassword, Buttons } from "./styled"
 import { AUTH_FORMS } from "@/constants"
+import { GoogleLogin } from "@react-oauth/google"
+import { jwtDecode } from "jwt-decode"
+import { GoogleAuth } from "../GoogleAuth"
 
 export const FormLogin = () => {
     const dispatch = useDispatch()
@@ -69,6 +72,7 @@ export const FormLogin = () => {
                     Забыли пароль?
                 </ButtonResetPassword>
             </Buttons>
+            <GoogleAuth />
         </FormAuth>
     )
 }

@@ -6,6 +6,8 @@ import { useState } from "react"
 import { setIsOpenAuthModal, setUser } from "@/store/reducers"
 import { convertErrorsValidation } from "@/utils"
 import { StatusCodes } from "http-status-codes"
+import { GoogleLogin } from "@react-oauth/google"
+import { GoogleAuth } from "../GoogleAuth"
 
 export const FormRegister = () => {
     const dispatch = useDispatch()
@@ -77,6 +79,7 @@ export const FormRegister = () => {
                 errorValidation={errorsValidation?.passwordConfirm}
             />
             <ButtonSubmitForm>Зарегистрироваться</ButtonSubmitForm>
+            <GoogleAuth />
         </FormAuth>
     )
 }

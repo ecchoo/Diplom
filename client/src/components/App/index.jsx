@@ -8,19 +8,24 @@ import { PersistGate } from "redux-persist/integration/react"
 import { store, persistor } from "@/store"
 import { CourseModal } from "../CourseModal"
 import { ConfirmDeleteMessage } from "../ConfirmDeleteMessage"
+import { GoogleOAuthProvider } from "@react-oauth/google"
 
 export const App = () => {
+    const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID
+
     return (
         <Provider store={store}>
             <PersistGate persistor={persistor}>
                 <BrowserRouter>
                     <ThemeProvider theme={theme}>
-                        <AuthModal />
-                        <CourseModal />
-                        <ConfirmDeleteMessage />
+                        <GoogleOAuthProvider clientId={clientId}>
+                            <AuthModal />
+                            <CourseModal />
+                            <ConfirmDeleteMessage />
 
-                        <AppRouter>
-                        </AppRouter>
+                            <AppRouter>
+                            </AppRouter>
+                        </GoogleOAuthProvider>
                     </ThemeProvider>
                 </BrowserRouter>
             </PersistGate>

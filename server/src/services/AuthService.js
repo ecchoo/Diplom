@@ -5,14 +5,16 @@ const generatePassword = require('../utils/generatePassword')
 const mailService = require('./MailService')
 
 class AuthService {
-    async register({ name, email, password }) {
+    async register({ name, email, password, verified, photo }) {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         return await userRepository.create({
             name: name,
             password: hashedPassword,
-            email: email,
-            role: ROLES.STUDENT
+            role: ROLES.STUDENT,
+            email,
+            verified,
+            photo
         })
     }
 
@@ -48,6 +50,25 @@ class AuthService {
             subject: 'Новый пароль',
             text: newPassword
         })
+    }
+
+    async checkUserExistenceByEmail(email) {
+        const user = await userRepository.getByEmail(email)
+        return Boolean(user)
+    }
+
+    async authWithGoogle({ name, email, photo }) {
+        const isExistUser = await this.checkUserExistenceByEmail(email)
+
+        return isExistUser
+            ? await userRepository.getByEmail(email)
+            : await this.register({
+                name,
+                photo,
+                email,
+                password: 'password',
+                verified: true,
+            })
     }
 }
 
