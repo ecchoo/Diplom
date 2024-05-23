@@ -1,6 +1,6 @@
 import { enrollCourse, getCourseById } from "@/api"
 import { Header } from "@/components/Header"
-import { Badges, ButtonEnroll, Container, CourseDescription, CourseDetails, CourseDetailsTitle, CourseInfo, CourseOverview, CourseTitle, ListDetails, ListDetailsItem, SectionTitle, Teachers } from "./styled"
+import { Badges, ButtonEnroll, Container, CourseDescription, CourseDetails, CourseDetailsTitle, CourseInfo, CourseOverview, CourseTitle, ListDetails, ListDetailsItem, ReviewSlider, SectionTitle, Teachers } from "./styled"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Modules } from "./styled"
@@ -8,8 +8,11 @@ import { CardModule } from "@/components/CardModule"
 import { CardTeacher } from "@/components/CardTeacher"
 import { Badge } from "@/UI"
 import { toast } from "react-toastify"
-import { useSelector } from "react-redux"
 import { useAuth } from "@/hooks"
+import { CardReview } from "@/components/CardReview"
+import 'swiper/css';
+import { SwiperSlide } from "swiper/react"
+
 
 export const Course = () => {
     const { id: selectedCourseId } = useParams()
@@ -75,8 +78,8 @@ export const Course = () => {
                                     <span>Часов обучения</span>
                                 </ListDetailsItem>
                                 <ListDetailsItem>
-                                    <Badge className="badge">{selectedCourse?.teachers.length}</Badge>
-                                    <span>Преподавателей</span>
+                                    <Badge className="badge">{selectedCourse?.reviews.length}</Badge>
+                                    <span>Отзывов</span>
                                 </ListDetailsItem>
                             </ListDetails>
                             <ButtonEnroll onClick={handleClickEnroll}>Записаться</ButtonEnroll>
@@ -90,6 +93,7 @@ export const Course = () => {
                     <Teachers>
                         {selectedCourse?.teachers.map(teacher =>
                             <CardTeacher
+                                key={teacher.id}
                                 direction='row'
                                 name={teacher?.name}
                                 bio={teacher?.bio}
@@ -99,6 +103,27 @@ export const Course = () => {
                             />
                         )}
                     </Teachers>
+                </Container>
+            </section>
+            <section>
+                <Container>
+                    <SectionTitle>Отзывы курса</SectionTitle>
+                    <ReviewSlider
+                        spaceBetween={50}
+                        slidesPerView={3.2}
+                    >
+                        {selectedCourse?.reviews.map(({ id, text, user: { name, photo } }) =>
+                            <SwiperSlide key={id}>
+                                <CardReview
+                                    key={id}
+                                    userName={name}
+                                    userPhoto={photo}
+                                    courseName={selectedCourse?.name}
+                                    text={text}
+                                />
+                            </SwiperSlide>
+                        )}
+                    </ReviewSlider>
                 </Container>
             </section>
             <section>

@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     class Course extends Model {
         static associate(models) {
             Course.hasMany(models.Module, { foreignKey: 'courseId', as: 'modules' })
+            Course.hasMany(models.Review, { foreignKey: 'courseId', as: 'reviews' })
             Course.belongsToMany(models.User, {
                 through: 'UserCourse',
                 foreignKey: 'courseId',

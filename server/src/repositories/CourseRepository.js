@@ -1,4 +1,4 @@
-const { Course, Module, Partition, Leasson, User, Teacher, UserCourse } = require('../models')
+const { Course, Module, Partition, Leasson, User, Teacher, UserCourse, Review } = require('../models')
 const { ROLES } = require('../constants/roles')
 const { filter: filterParams } = require('../config/params')
 const { Op, where } = require('sequelize')
@@ -65,6 +65,16 @@ class CourseRepository {
                     through: {
                         attributes: ['isAuthor'],
                     },
+                },
+                {
+                    model: Review,
+                    as: 'reviews',
+                    attributes: ['id', 'text', 'createdAt'],
+                    include: {
+                        model: User,
+                        as: 'user',
+                        attributes: ['id', 'name', 'photo']
+                    }
                 }
             ]
         })
@@ -83,18 +93,34 @@ class CourseRepository {
                 model: Course,
                 as: 'course',
                 attributes: ['id', 'name', 'logo'],
-                include: {
-                    model: Module,
-                    as: 'modules',
-                    include: {
-                        model: Partition,
-                        as: 'partitions',
+                include: [
+                    {
+                        model: Module,
+                        as: 'modules',
                         include: {
-                            model: Leasson,
-                            as: 'leassons'
+                            model: Partition,
+                            as: 'partitions',
+                            include: {
+                                model: Leasson,
+                                as: 'leassons'
+                            }
                         }
+                    },
+                    {
+                        model: Teacher,
+                        include: {
+                            model: User,
+                            as: 'user',
+                            attributes: ['name', 'photo']
+                        },
+                        attributes: ['id', 'userId'],
+                        as: 'teachers',
+                        through: {
+                            attributes: ['isAuthor'],
+                            where: { isAuthor: true }
+                        },
                     }
-                },
+                ],
             },
             attributes: ['progress', 'createdAt'],
             where,

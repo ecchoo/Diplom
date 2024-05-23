@@ -1,11 +1,9 @@
 import styled from "styled-components";
+import { Swiper } from 'swiper/react';
+
 
 export const Container = styled.div`
     padding: ${({ theme }) => theme.spacing(4, 7)};
-    display: flex;
-    flex-direction: column;
-    /* align-items: center; */
-    width: 100%;
 `
 
 export const SectionTitle = styled.h1`
@@ -126,4 +124,8 @@ export const Teachers = styled.div`
         align-self: flex-end;
         flex-direction: row-reverse;
     }
+`
+
+export const ReviewSlider = styled(Swiper)`
+    padding: ${({ theme }) => theme.spacing(4, 0)};
 `
