@@ -7,6 +7,7 @@ import { Modules } from "./styled"
 import { CardModule } from "@/components/CardModule"
 import { CardTeacher } from "@/components/CardTeacher"
 import { Badge } from "@/UI"
+import { toast } from "react-toastify"
 
 export const Course = () => {
     const { id: selectedCourseId } = useParams()
@@ -25,8 +26,13 @@ export const Course = () => {
     const hours = (selectedCourse?.courseTime / 60).toFixed(1)
 
     const handleClickEnroll = async () => {
-        const res = await enrollCourse({ courseId: selectedCourse?.id })
-        console.log(res)
+        try {
+            await enrollCourse({ courseId: selectedCourse?.id })
+            toast(`Вы успешно записали на курс ${selectedCourse?.name}`)
+        } catch (err) {
+            console.log(err)
+            toast('Не удаось записаться на курс, попробуйте позже')
+        }
     }
 
     return (

@@ -8,6 +8,7 @@ import { convertErrorsValidation } from "@/utils"
 import { StatusCodes } from "http-status-codes"
 import { GoogleLogin } from "@react-oauth/google"
 import { GoogleAuth } from "../GoogleAuth"
+import { toast } from "react-toastify"
 
 export const FormRegister = () => {
     const dispatch = useDispatch()
@@ -35,6 +36,7 @@ export const FormRegister = () => {
             const user = await register(registerData)
             dispatch(setUser(user))
             dispatch(setIsOpenAuthModal(false))
+            toast('Вы успешно зарегистрировались, теперь подтвердите свою почту, письмо уже доставленно')
         } catch (err) {
             if (err.response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
                 const convertedErrors = convertErrorsValidation(err.response.data.errors)

@@ -9,6 +9,8 @@ import { store, persistor } from "@/store"
 import { CourseModal } from "../CourseModal"
 import { ConfirmDeleteMessage } from "../ConfirmDeleteMessage"
 import { GoogleOAuthProvider } from "@react-oauth/google"
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const App = () => {
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID
@@ -22,6 +24,8 @@ export const App = () => {
                             <AuthModal />
                             <CourseModal />
                             <ConfirmDeleteMessage />
+
+                            <ToastContainer />
 
                             <AppRouter>
                             </AppRouter>
