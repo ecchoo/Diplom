@@ -35,7 +35,7 @@ class ChatService {
     }
 
     async getLastChatMessage({ userId, chatId }) {
-        const messages = await messageRepository.getChatMessages({ userId, chatId })
+        const messages = await messageRepository.getChatMessagesByUser({ userId, chatId })
         if (!messages.length) return null
 
         const { message: { id, text }, createdAt } = messages[messages.length - 1].toJSON()
@@ -46,22 +46,23 @@ class ChatService {
     }
 
     async getChatMessagesAndNotification({ userId, chatId }) {
-        const chatMessages = await messageRepository.getChatMessages({ userId, chatId })
+        const chatMessages = await messageRepository.getChatMessagesByUser({ userId, chatId })
         const chatNotifications = await chatNotificationRepository.getChatNotification(chatId)
-        const transformMessages = await Promise.all(chatMessages.map(async (chatMessage) => {
-            const { message: { text, id }, ...messageInfo } = chatMessage.toJSON()
 
-            return { id, text, ...messageInfo }
+        const transformMessages = await Promise.all(chatMessages.map(async (chatMessage) => {
+            const { message: { id, text, user: [{ UserMessage, ...userInfo }] }, ...messageInfo } = chatMessage.toJSON()
+
+            return { id, text, ...messageInfo, user: userInfo }
         }))
 
         return { messages: transformMessages, notifications: chatNotifications }
     }
 
     async sendMessage({ userId, chatId, text, currentChatUsers }) {
-        const { id: messageId, createdAt } = await messageRepository.createMessage({ text, chatId })
-        const chatUsers = await userRepository.getChatUsers(chatId)
-        const { id, name, photo } = await userRepository.getById(userId)
         const readers = []
+        const chatUsers = await userRepository.getChatUsers(chatId)
+
+        const { id: messageId, createdAt } = await messageRepository.createMessage({ text, chatId })
 
         await Promise.all(chatUsers.map(async ({ userId: chatUserId }) => {
             const type = chatUserId === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
@@ -76,6 +77,8 @@ class ChatService {
 
             await messageRepository.createUserMessage({ messageId, userId: chatUserId, status, type })
         }))
+
+        const { id, name, photo } = await userRepository.getById(userId)
 
         return {
             id: messageId,
@@ -142,6 +145,26 @@ class ChatService {
             text: `${name} присоединился к чату`,
             chatId: chatId
         })
+
+        const chatMessages = await messageRepository.getChatMessages(chatId)
+
+        for (const { id: messageId } of chatMessages) {
+            await messageRepository.createUserMessage({
+                messageId,
+                userId,
+                type: MESSAGE_TYPES.INCOMING,
+                status: MESSAGE_STATUSES.READ
+            })
+
+            const outgoingMessage = await messageRepository.getOutgoingMessageById(messageId)
+
+            if (outgoingMessage.status === MESSAGE_STATUSES.SENT) {
+                await messageRepository.updateUserMessage({
+                    ...outgoingMessage.dataValues,
+                    status: MESSAGE_STATUSES.READ
+                })
+            }
+        }
     }
 }
 

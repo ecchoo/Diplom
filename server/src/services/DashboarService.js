@@ -6,16 +6,18 @@ class DashboardService {
     async getUserCourses(userId, params) {
         const userCourses = await courseRepository.getUserCourses(userId, params);
         // return userCourses
+
         return await Promise.all(userCourses.map(async ({ course, progress, createdAt: enrolmentDate }) => {
-            const { id, name, logo, modules } = course
-            const { teacher: author } = await userRepository.getCourseAuthor(course.id)
+            const { id, name, logo, modules, teachers } = course
+            const { user: { name: userName, photo }, TeacherCourse, ...authorInfo } = teachers[0].toJSON()
+
             const { countLeassons, courseTime } = await courseService.getCountLeassonsAndCourseTime(modules)
 
             return {
                 id,
                 name,
                 logo,
-                author,
+                author: { name: userName, photo, ...authorInfo },
                 progress,
                 countLeassons,
                 courseTime,

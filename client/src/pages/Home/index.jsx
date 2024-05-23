@@ -13,7 +13,6 @@ import BackEnd from '/directions/back-end.jpg'
 import QaManual from '/directions/qa-manual.jpg'
 import { Text } from "@/UI/Text"
 import { Image } from "@/components/Image"
-import { SliderReviews } from "@/components/SliderReviews"
 import { ButtonArrow } from "@/components/ButtonArrow"
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
@@ -99,12 +98,12 @@ export const Home = () => {
                     </AboutContent>
                 </Container>
             </Section>
-            <Section>
+            {/* <Section>
                 <Container>
                     <Title>Отзывы наших студентов</Title>
                     <SliderReviews></SliderReviews>
                 </Container>
-            </Section>
+            </Section> */}
             <Footer />
         </>
     )
