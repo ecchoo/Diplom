@@ -33,11 +33,11 @@ export const Course = () => {
     const handleClickEnroll = async () => {
         try {
             if (!isAuth) {
-                toast('Для записи на курс необходимо авторизоваться')
+                return toast('Для записи на курс необходимо авторизоваться')
             }
 
             if (!verified) {
-                toast('Для записи на курс необходимо подтвердить почту')
+                return toast('Для записи на курс необходимо подтвердить почту')
             }
 
             await enrollCourse({ courseId: selectedCourse?.id })

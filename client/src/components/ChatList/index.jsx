@@ -77,7 +77,7 @@ export const ChatList = () => {
 
         socket.on('messageDeleted', ({ chatId, userId: senderId, messageId, isForAll, lastMessage }) => {
             const updatedChatList = chatList.map(chat => {
-                if ((chat.lastMessage.id === messageId && (isForAll || userId === senderId))) {
+                if ((chat?.lastMessage?.id === messageId && (isForAll || userId === senderId))) {
                     return { ...chat, lastMessage }
                 }
 
@@ -89,7 +89,7 @@ export const ChatList = () => {
 
         socket.on('messageUpdated', ({ messageId, text }) => {
             const updatedChatList = chatList.map(chat => {
-                if (chat.lastMessage.id === messageId) {
+                if (chat?.lastMessage?.id === messageId) {
                     return { ...chat, lastMessage: { ...chat.lastMessage, text } }
                 }
 

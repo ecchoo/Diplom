@@ -1,5 +1,5 @@
 import { Badge } from "@/UI"
-import { Badges, Card, TeacherBio, TeacherInfo, TeacherName, TeacherPhoto } from "./styled"
+import { Badges, Card, CardContainer, TeacherBio, TeacherInfo, TeacherName, TeacherPhoto } from "./styled"
 
 export const CardTeacher = ({ direction, name, photo, isAuthor, bio, yearsExperience }) => {
     return (

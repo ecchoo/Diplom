@@ -8,7 +8,7 @@ import SendMessage from '@/assets/icons/sendMessage2.svg'
 import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { MESSAGE_STATUSES, MESSAGE_TYPES } from "@/constants"
-import { setChatList } from "@/store/reducers"
+import { setChatList, setSelectedChat } from "@/store/reducers"
 import { socket } from "@/socket"
 import { ChatNotification } from "../ChatNotification"
 import { FormMessage } from "../FormMessage"
@@ -33,6 +33,7 @@ export const Chat = () => {
         editMessage: { isOpen: isOpenEditMessage }
     } = useSelector(state => state)
 
+
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState('')
 
@@ -43,33 +44,27 @@ export const Chat = () => {
     useEffect(() => {
         socket.emit('join', { userId, chatId })
 
-        socket.on("chatMessages", ({ messages, notifications }) => {
-            const messagesAndNotification = (messages.concat(notifications))
-                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-
+        const handleChatMessages = ({ messages, notifications }) => {
+            const messagesAndNotification = (messages.concat(notifications)).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
             setMessages(messagesAndNotification)
-        })
+        }
 
-        socket.on('messageReceived', (newMessage) => {
+        const handleMessageReceived = (newMessage) => {
+            console.log('New message received:', newMessage)
             if (newMessage.chatId !== chatId) return
 
             const isIncoming = newMessage.user.id !== userId
+            setMessages(prevMessages => [
+                ...prevMessages,
+                {
+                    ...newMessage,
+                    type: isIncoming ? MESSAGE_TYPES.INCOMING : MESSAGE_TYPES.OUTGOING,
+                    status: !isIncoming && newMessage.readers.length ? MESSAGE_STATUSES.READ : MESSAGE_STATUSES.SENT
+                }
+            ])
+        }
 
-            setMessages(prevMessages => {
-                const updatedMessages = [
-                    ...prevMessages,
-                    {
-                        ...newMessage,
-                        type: isIncoming ? MESSAGE_TYPES.INCOMING : MESSAGE_TYPES.OUTGOING,
-                        status: !isIncoming && newMessage.readers.length ? MESSAGE_STATUSES.READ : MESSAGE_STATUSES.SENT
-                    }
-                ]
-
-                return updatedMessages
-            })
-        })
-
-        socket.on('messagesRead', ({ readChatId }) => {
+        const handleMessagesRead = ({ readChatId }) => {
             if (readChatId !== chatId) return
 
             setMessages(prevMessages =>
@@ -77,32 +72,40 @@ export const Chat = () => {
                     message.status === MESSAGE_STATUSES.SENT ? { ...message, status: MESSAGE_STATUSES.READ } : message
                 )
             )
-        })
+        }
 
-        socket.on('messageDeleted', ({ chatId: chatIdDeletedMessage, messageId, userId: senderId, isForAll }) => {
+        const handleMessageDeleted = ({ chatId: chatIdDeletedMessage, messageId, userId: senderId, isForAll }) => {
             const isUpdateMessages = chatId === chatIdDeletedMessage && (isForAll || senderId === userId)
-
             if (isUpdateMessages) {
                 setMessages(prevMessages => prevMessages.filter(m => m.id !== messageId))
             }
-        })
+        }
 
-        socket.on('messageUpdated', ({ chatId: chatIdUpdatedMessage, messageId, text }) => {
+        const handleMessageUpdated = ({ chatId: chatIdUpdatedMessage, messageId, text }) => {
             if (chatId !== chatIdUpdatedMessage) return
-
             setMessages(prevMessages =>
                 prevMessages.map(message => {
                     if (message.id === messageId) {
                         return { ...message, text }
                     }
-
                     return message
                 })
             )
-        })
+        }
+
+        socket.on("chatMessages", handleChatMessages)
+        socket.on('messageReceived', handleMessageReceived)
+        socket.on('messagesRead', handleMessagesRead)
+        socket.on('messageDeleted', handleMessageDeleted)
+        socket.on('messageUpdated', handleMessageUpdated)
 
         return () => {
             socket.emit('exit', { chatId, userId })
+            socket.off('chatMessages', handleChatMessages)
+            socket.off('messageReceived', handleMessageReceived)
+            socket.off('messagesRead', handleMessagesRead)
+            socket.off('messageDeleted', handleMessageDeleted)
+            socket.off('messageUpdated', handleMessageUpdated)
         }
     }, [chatId])
 

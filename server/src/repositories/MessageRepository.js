@@ -4,21 +4,28 @@ const { MESSAGE_TYPES } = require('../constants/messageTypes')
 const { Message, User, UserMessage } = require('../models')
 
 class MessageRepository {
-    async getChatMessages({ userId, chatId }) {
+    async getChatMessages(chatId) {
+        return await Message.findAll({ where: { chatId } })
+    }
+
+    async getChatMessagesByUser({ userId, chatId }) {
         return await UserMessage.findAll({
             attributes: ['type', 'status', 'createdAt'],
             order: [['createdAt', 'ASC']],
             include: [
                 {
-                    model: User,
-                    as: 'user',
-                    attributes: ['id', 'name', 'role', 'photo'],
-                },
-                {
                     model: Message,
                     as: 'message',
                     where: { chatId },
                     attributes: ['id', 'text'],
+                    include: {
+                        model: User,
+                        attributes: ['id', 'name', 'role', 'photo'],
+                        as: 'user',
+                        through: {
+                            where: { type: MESSAGE_TYPES.OUTGOING }
+                        }
+                    }
                 },
             ],
             where: { userId, deletedAt: null }

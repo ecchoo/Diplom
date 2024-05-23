@@ -33,7 +33,7 @@ const currentChatsUsers = {}
 io.on('connection', socket => {
     socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
-
+        console.log(currentChatsUsers)
         if (chatId in currentChatsUsers && !currentChatsUsers[chatId].includes(userId)) {
             currentChatsUsers[chatId].push(userId)
         } else {
@@ -51,12 +51,15 @@ io.on('connection', socket => {
     })
 
     socket.on('sendMessage', async ({ chatId, userId, text }) => {
+        console.log(chatId)
         const newMesssage = await chatService.sendMessage({
             userId,
             chatId,
             text,
             currentChatUsers: currentChatsUsers[chatId]
         })
+
+        // socket.to(chatId).emit('messageReceived', newMesssage)
 
         io.emit('messageReceived', newMesssage)
     })
@@ -73,6 +76,7 @@ io.on('connection', socket => {
     })
 
     socket.on('exit', async ({ chatId, userId }) => {
+        console.log('exit', currentChatsUsers)
         currentChatsUsers[chatId] = currentChatsUsers[chatId].filter(u => u !== userId)
     })
 

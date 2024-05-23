@@ -11,6 +11,10 @@ export const Card = styled.div`
     padding: ${({ theme }) => theme.spacing(3)};
 `
 
+export const CardContainer  = styled.div`
+
+`
+
 export const TeacherPhoto = styled.img`
     width: 25%;
     border-radius: 50%;
