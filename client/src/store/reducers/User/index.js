@@ -26,6 +26,9 @@ const userSlice = createSlice({
             state.name = action.payload.name
             state.email = action.payload.email
         },
+        setVerified(state, action) {
+            state.verified = action.payload
+        },
         logoutUser(state) {
             state.id = 0
             state.name = null
@@ -38,6 +41,6 @@ const userSlice = createSlice({
     }
 });
 
-export const { setUser, setPersonalDataUser, logoutUser } = userSlice.actions;
+export const { setUser, setPersonalDataUser, logoutUser, setVerified } = userSlice.actions;
 
 export default userSlice.reducer;
