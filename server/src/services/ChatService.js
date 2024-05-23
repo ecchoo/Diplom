@@ -114,8 +114,8 @@ class ChatService {
             text: 'Чат создан',
             chatId: chat.id
         })
-        await Promise.all(teachers.map(async ({ id }) => {
-            await this.addUserInChat({ userId: id, chatId: chat.id })
+        await Promise.all(teachers.map(async ({ userId }) => {
+            await this.addUserInChat({ userId, chatId: chat.id })
         }))
 
         return chat

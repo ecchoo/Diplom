@@ -4,7 +4,7 @@ export const theme = {
         secondary: '#f4ff73',
         accent: '#c19cf6',
         background: '#f2f2f2',
-
+        orange: '#ffc773',
         gray: '#d6d6d3',
 
         progressBar: {

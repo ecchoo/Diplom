@@ -15,18 +15,6 @@ class UserRepository {
         })
     }
 
-    async getCourseAuthor(courseId) {
-        return await TeacherCourse.findOne({
-            where: { isAuthor: true, courseId },
-            attributes: [],
-            include: {
-                model: User,
-                as: 'teacher',
-                attributes: ['name', 'photo']
-            }
-        })
-    }
-
     async updateUser({ id, name, email, password, role, photo, verified }) {
         return User.update({ name, email, password, role, photo, verified }, { where: { id } })
     }

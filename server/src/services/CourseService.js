@@ -10,19 +10,33 @@ class CourseService {
     async getCourseList() {
         const courseList = await courseRepository.list()
 
-        return await Promise.all(courseList.map(async ({ id, name, logo, modules }) => {
-            const { teacher: author } = await userRepository.getCourseAuthor(id)
+        return await Promise.all(courseList.map(async ({ id, name, logo, modules, teachers }) => {
             const { countLeassons, courseTime } = await this.getCountLeassonsAndCourseTime(modules)
+            const { user: { name: userName, photo }, TeacherCourse, ...authorInfo } = teachers[0].toJSON()
 
             return {
                 id,
                 name,
                 logo,
-                author,
+                author: { name: userName, photo, ...authorInfo },
                 countLeassons,
                 courseTime,
-            };
+            }
         }))
+    }
+
+    async getCourseById(courseId) {
+        const { teachers, ...courseInfo } = (await courseRepository.getById(courseId)).toJSON()
+
+        const { countLeassons, courseTime } = await this.getCountLeassonsAndCourseTime(courseInfo.modules)
+
+        const transformTeachers = await Promise.all(teachers.map((teacher) => {
+            const { user, TeacherCourse, ...teacherInfo } = teacher
+
+            return { ...user, ...TeacherCourse, ...teacherInfo }
+        }))
+
+        return { ...courseInfo, countLeassons, courseTime, teachers: transformTeachers }
     }
 
     async getCountLeassonsAndCourseTime(courseModules) {
@@ -40,14 +54,14 @@ class CourseService {
 
     async createCourse({ name, description, logo, modules, teachers }) {
         const { id: courseId } = await courseRepository.createCourse({ name, description, logo })
-        
+
         await teacherService.createCourseTeachers({ teachers, courseId })
         await moduleService.createCourseModules({ modules, courseId })
 
         await chatService.createCourseChat({
-            name, 
-            logo, 
-            courseId, 
+            name,
+            logo,
+            courseId,
             teachers,
             type: CHAT_TYPES.GROUP,
         })

@@ -9,12 +9,6 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'courseId',
                 as: 'courseUsers'
             })
-            User.belongsToMany(models.Course, {
-                through: 'TeacherCourse',
-                foreignKey: 'teacherId',
-                otherKey: 'courseId',
-                as: 'courseTeachers'
-            })
             User.belongsToMany(models.Chat, {
                 through: 'UserChat',
                 foreignKey: 'userId',

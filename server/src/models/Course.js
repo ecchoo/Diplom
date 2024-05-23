@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'userId',
                 as: 'courseUsers'
             })
-            Course.belongsToMany(models.User, {
+            Course.belongsToMany(models.Teacher, {
                 through: 'TeacherCourse',
                 foreignKey: 'courseId',
                 otherKey: 'teacherId',
-                as: 'courseTeachers'
+                as: 'teachers'
             })
         }
     }
