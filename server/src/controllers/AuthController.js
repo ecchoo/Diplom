@@ -16,10 +16,9 @@ class AuthController {
             }
 
             const { name, password, email } = req.body
-            const user = await authService.register({ name, password, email })
+            const { id, role, verified, photo } = await authService.register({ name, password, email })
 
-            const payload = { id: user.id }
-            const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
+            const token = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
             mailService.sendMessage({
                 from: 'kosmat3936@gmail.com',
@@ -28,13 +27,7 @@ class AuthController {
                 text: `http://localhost:5173/verify-email?token=${token}`
             })
 
-            return res.status(StatusCodes.CREATED).json({
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                role: user.role,
-                token,
-            })
+            return res.status(StatusCodes.CREATED).json({ id, email, name, role, verified, photo, token })
         } catch (err) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
         }
@@ -64,6 +57,8 @@ class AuthController {
                 email: user.email,
                 name: user.name,
                 role: user.role,
+                verified: user.verified,
+                photo: user.photo,
                 token
             })
         } catch (err) {
@@ -128,7 +123,7 @@ class AuthController {
             const { body: { credential } } = req
             const { email, name: googleName, picture } = jwt.decode(credential)
 
-            const { id, name, role, photo } = await authService.authWithGoogle({
+            const { id, name, role, photo, verified } = await authService.authWithGoogle({
                 name: googleName,
                 photo: picture,
                 email
@@ -136,7 +131,7 @@ class AuthController {
 
             const token = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
-            return res.status(StatusCodes.OK).json({ id, email, role, name, photo, token })
+            return res.status(StatusCodes.OK).json({ id, email, role, name, photo, token, verified })
         } catch (err) {
             console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })

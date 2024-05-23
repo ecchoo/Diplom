@@ -6,9 +6,12 @@ import { useDispatch, useSelector } from "react-redux"
 import { setIsOpenCourseModal, setSelectedCourseId } from "@/store/reducers"
 import { COURSES } from "@/constants"
 import { enrollCourse } from "@/api"
+import { toast } from "react-toastify"
+import { useAuth } from "@/hooks"
 
 export const CardCourse = ({ courseId, name, logo, author, countLeassons, courseTime }) => {
     const dispatch = useDispatch()
+    const { isAuth, verified } = useAuth()
 
     const hours = (courseTime / 60).toFixed(1)
 
@@ -18,8 +21,21 @@ export const CardCourse = ({ courseId, name, logo, author, countLeassons, course
     }
 
     const handleClickEnroll = async () => {
-        const res = await enrollCourse({ courseId })
-        console.log(res)
+        try {
+            if (!isAuth) {
+                return toast('Для записи на курс необходимо авторизоваться')
+            }
+
+            if (!verified) {
+                return toast('Для записи на курс необходимо подтвердить почту')
+            }
+
+            await enrollCourse({ courseId })
+            toast(`Вы успешно записали на курс ${name}`)
+        } catch (err) {
+            console.log(err)
+            toast('Не удалось записаться на курс, попробуйте позже')
+        }
     }
 
     return (

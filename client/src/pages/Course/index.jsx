@@ -8,10 +8,12 @@ import { CardModule } from "@/components/CardModule"
 import { CardTeacher } from "@/components/CardTeacher"
 import { Badge } from "@/UI"
 import { toast } from "react-toastify"
+import { useSelector } from "react-redux"
+import { useAuth } from "@/hooks"
 
 export const Course = () => {
     const { id: selectedCourseId } = useParams()
-
+    const { isAuth, verified } = useAuth()
     const [selectedCourse, setSelectedCourse] = useState(null)
 
     useEffect(() => {
@@ -27,11 +29,19 @@ export const Course = () => {
 
     const handleClickEnroll = async () => {
         try {
+            if (!isAuth) {
+                toast('Для записи на курс необходимо авторизоваться')
+            }
+
+            if (!verified) {
+                toast('Для записи на курс необходимо подтвердить почту')
+            }
+
             await enrollCourse({ courseId: selectedCourse?.id })
             toast(`Вы успешно записали на курс ${selectedCourse?.name}`)
         } catch (err) {
             console.log(err)
-            toast('Не удаось записаться на курс, попробуйте позже')
+            toast('Не удалось записаться на курс, попробуйте позже')
         }
     }
 
