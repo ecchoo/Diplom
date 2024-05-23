@@ -1,7 +1,7 @@
-const { Course, Module, Partition, Leasson, User, TeacherCourse, UserCourse } = require('../models')
+const { Course, Module, Partition, Leasson, User, Teacher, UserCourse } = require('../models')
 const { ROLES } = require('../constants/roles')
 const { filter: filterParams } = require('../config/params')
-const { Op } = require('sequelize')
+const { Op, where } = require('sequelize')
 
 class CourseRepository {
     async list() {
@@ -17,9 +17,23 @@ class CourseRepository {
                             model: Leasson,
                             as: 'leassons'
 
-                        } // мб как-то можно isAuthor вытянуть
+                        }
                     }
                 },
+                {
+                    model: Teacher,
+                    include: {
+                        model: User,
+                        as: 'user',
+                        attributes: ['name', 'photo']
+                    },
+                    attributes: ['id', 'userId'],
+                    as: 'teachers',
+                    through: {
+                        attributes: ['isAuthor'],
+                        where: { isAuthor: true }
+                    },
+                }
             ]
         })
     }
@@ -40,9 +54,17 @@ class CourseRepository {
                     }
                 },
                 {
-                    model: User,
-                    as: 'courseTeachers',
-                    attributes: ['id', 'name', 'photo']
+                    model: Teacher,
+                    include: {
+                        model: User,
+                        as: 'user',
+                        attributes: ['name', 'photo']
+                    },
+                    attributes: ['id', 'userId', 'bio', 'yearsExperience'],
+                    as: 'teachers',
+                    through: {
+                        attributes: ['isAuthor'],
+                    },
                 }
             ]
         })

@@ -1,10 +1,11 @@
-import { StyledImage } from "./styled"
+import { Img, StyledImage } from "./styled"
 
 export const Image = ({ src, alt }) => {
     return (
         <StyledImage>
             <div></div>
-            <img src={src} alt={alt} />
+            {/* <img className="img"  /> */}
+            <Img src={src} alt={alt} />
         </StyledImage>
     )
 }

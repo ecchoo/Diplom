@@ -3,10 +3,12 @@ import styled from 'styled-components'
 export const StyledImage = styled.div`
     position: relative;
     transition: all .3s ease-in-out;
+    border-radius: ${({ theme }) => theme.spacing(2)};
 
-    & img {
+
+    /* & img {
         border-radius: ${({ theme }) => theme.spacing(2)};
-    }
+    } */
 
     & div {
         width: 100%;
@@ -26,4 +28,8 @@ export const StyledImage = styled.div`
             transform: rotate(7deg);
         }
     }
+`
+
+export const Img = styled.img`
+    border-radius: ${({ theme }) => theme.spacing(2)};
 `

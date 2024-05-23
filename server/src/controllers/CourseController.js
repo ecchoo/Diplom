@@ -17,10 +17,11 @@ class CourseController {
     async index(req, res) {
         try {
             const { id: courseId } = req.params
-            const course = await courseRepository.getById(courseId)
+            const course = await courseService.getCourseById(courseId)
 
             return res.status(StatusCodes.OK).json({ course })
         } catch (err) {
+            console.log(err)
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
         }
     }

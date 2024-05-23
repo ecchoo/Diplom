@@ -43,10 +43,10 @@ export const CourseModal = () => {
                             <CourseLogo src={selectedCourse.logo} alt="Course logo" />
                         </Row>
                         <ListTeachers>
-                            {selectedCourse.courseTeachers.map(teacher =>
+                            {selectedCourse.teachers.map(teacher =>
                                 <ListTeachersItem>
                                     <Avatar src={teacher.photo} alt="Teacher avatar" />
-                                    <h1>{`${teacher.name}${teacher.TeacherCourse.isAuthor ? '(автор)' : ''}`}</h1>
+                                    <h1>{`${teacher.name}${teacher.isAuthor ? '(автор)' : ''}`}</h1>
                                 </ListTeachersItem>
                             )}
                         </ListTeachers>
