@@ -5,9 +5,16 @@ const cors = require('cors')
 const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')
+const moderatorRouter = require('./routes/moderatorRoute')
 
 const chatService = require('./services/ChatService')
 const messageRepository = require('./repositories/MessageRepository')
+
+const BadWordsNext = require('bad-words-next')
+const ru = require('bad-words-next/data/ru.json');
+const { createBlockedMessage } = require("./utils/createBlockedMessage");
+const moderatorService = require("./services/ModeratorService");
+const userRepository = require("./repositories/UserRepository");
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -18,6 +25,8 @@ app.use(cors({ origin: '*' }))
 app.use('/api/courses', coursesRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/dashboard', dashboardRouter)
+app.use('/api/moderator', moderatorRouter)
+
 
 const server = http.createServer(app)
 
@@ -28,12 +37,13 @@ const io = new Server(server, {
     }
 })
 
+const badwords = new BadWordsNext({ data: ru })
 const currentChatsUsers = {}
 
 io.on('connection', socket => {
     socket.on('join', async ({ userId, chatId }) => {
         socket.join(chatId)
-        console.log(currentChatsUsers)
+        // console.log(currentChatsUsers)
         if (chatId in currentChatsUsers && !currentChatsUsers[chatId].includes(userId)) {
             currentChatsUsers[chatId].push(userId)
         } else {
@@ -51,7 +61,7 @@ io.on('connection', socket => {
     })
 
     socket.on('sendMessage', async ({ chatId, userId, text }) => {
-        console.log(chatId)
+        // console.log(chatId)
         const newMesssage = await chatService.sendMessage({
             userId,
             chatId,
@@ -59,7 +69,11 @@ io.on('connection', socket => {
             currentChatUsers: currentChatsUsers[chatId]
         })
 
-        // socket.to(chatId).emit('messageReceived', newMesssage)
+        if (badwords.check(newMesssage.text)) {
+            // создать чаты модеров, при создании любого чата определять брать модера(ов) у которого меньше чатов, та же логика при отправке сообщения модеру 
+            const newModeratorMessage = await moderatorService.createModerationMessage({ messageId: newMesssage.id, moderatorId: 47 })
+            io.emit('messageContainsBadWords', newModeratorMessage)
+        }
 
         io.emit('messageReceived', newMesssage)
     })
@@ -75,8 +89,50 @@ io.on('connection', socket => {
         io.emit('messageDeleted', { chatId, messageId, userId, isForAll, lastMessage })
     })
 
+    socket.on('lockUser', async ({ moderatorId, messageId, userId, accompanyingText, reason, duration }) => {
+        const { chatId } = await messageRepository.getMessageById(messageId)
+        const { name: nameLockedChat } = await chatService.getUserChatById({ userId, chatId })
+
+        const lockedUser = await moderatorService.lockUser({ moderatorId, userId, chatId, messageId, reason, duration })
+
+        const chatWithModerator = await chatService.getChatBetweenUsers({ firstUserId: moderatorId, secondUserId: userId })
+        if (chatWithModerator) {
+            const message = await chatService.sendMessage({
+                userId: moderatorId,
+                chatId: chatWithModerator.id,
+                text: createBlockedMessage({ chatName: nameLockedChat, duration, reason, accompanyingText }),
+                currentChatUsers: currentChatsUsers[chatWithModerator.id]
+            })
+
+            io.emit('messageReceived', message)
+            io.emit('userLocked', lockedUser)
+            return
+        }
+
+        const { id: newChatId } = (await chatService.createChatBetweenUsers({
+            firstUserId: moderatorId,
+            secondUserId: userId
+        })).toJSON()
+
+        await chatService.sendMessage({
+            userId: moderatorId,
+            chatId: newChatId,
+            text: createBlockedMessage({ chatName: nameLockedChat, duration, reason, accompanyingText }),
+            currentChatUsers: []
+        })
+
+        const chat = await chatService.getUserChatById({ userId, chatId: newChatId })
+        io.emit('newChat', chat)
+        io.emit('userLocked', lockedUser)
+    })
+
+    socket.on('unlockUser', async (lockedUserId) => {
+        await userRepository.deleteLockedUser(lockedUserId)
+        socket.emit('userUnlocked', lockedUserId)
+    })
+
     socket.on('exit', async ({ chatId, userId }) => {
-        console.log('exit', currentChatsUsers)
+        // console.log('exit', currentChatsUsers)
         currentChatsUsers[chatId] = currentChatsUsers[chatId].filter(u => u !== userId)
     })
 

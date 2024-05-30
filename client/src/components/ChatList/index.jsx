@@ -98,6 +98,39 @@ export const ChatList = () => {
 
             dispatch(setChatList(updatedChatList))
         })
+
+        socket.on('newChat', newChat => {
+            const isCurrentUserChat = newChat.chatUsers.some(u => u.id === userId)
+            if (!isCurrentUserChat) return
+
+            dispatch(setChatList([...chatList, newChat]))
+        })
+
+        socket.on('userLocked', lockedUser => {
+            if (lockedUser.userId !== userId) return
+
+            const updatedChatList = chatList.map(chat => {
+                if (chat.id === lockedUser.chatId) {
+                    return { ...chat, blocked: lockedUser }
+                }
+
+                return chat
+            })
+
+            dispatch(setChatList(updatedChatList))
+        })
+
+        socket.on('userUnlocked', lockedUserId => {
+            const updatedChatList = chatList.map(chat => {
+                if (chat?.blocked?.id === lockedUserId) {
+                    return { ...chat, blocked: null }
+                }
+
+                return chat
+            })
+
+            dispatch(setChatList(updatedChatList))
+        })
     })
 
     return (
@@ -107,9 +140,20 @@ export const ChatList = () => {
                 <ChatSearchIcon src={SearchIcon} alt="Search icon" />
             </ChatSearch>
             <List>
-                {chatList.length ? (
-                    chatList.map(({ id }) =>
-                        <CardChatList key={id} chatId={id} />
+                {chatList && chatList.length ? (
+                    chatList.map((chat) =>
+                        <CardChatList
+                            key={chat.id}
+                            chatId={chat.id}
+                            name={chat.name}
+                            type={chat.type}
+                            logo={chat.logo}
+                            lastMessage={chat.lastMessage}
+                            lastNotification={chat.lastNotification}
+                            countNewMessages={chat.countNewMessages}
+                            chatUsers={chat.chatUsers}
+                            blocked={chat.blocked}
+                        />
                     )
                 ) : (
                     null

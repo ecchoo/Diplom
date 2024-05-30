@@ -13,8 +13,13 @@ import { socket } from "@/socket"
 import { ChatNotification } from "../ChatNotification"
 import { FormMessage } from "../FormMessage"
 import { EditMessage } from "../EditMessage"
+import BadWordsNext from "bad-words-next"
+import ru from 'bad-words-next/data/ru.json'
+import { toast } from "react-toastify"
 
 export const Chat = () => {
+    const badwords = new BadWordsNext({ data: ru })
+
     const dispatch = useDispatch()
     const messagesRef = useRef(null)
 
@@ -50,7 +55,6 @@ export const Chat = () => {
         }
 
         const handleMessageReceived = (newMessage) => {
-            console.log('New message received:', newMessage)
             if (newMessage.chatId !== chatId) return
 
             const isIncoming = newMessage.user.id !== userId
@@ -93,11 +97,18 @@ export const Chat = () => {
             )
         }
 
+        const handleUserLocked = (lockedUser) => {
+            if (chatId === lockedUser.chatId) {
+                dispatch(setSelectedChat({ id: 0 }))
+            }
+        }
+
         socket.on("chatMessages", handleChatMessages)
         socket.on('messageReceived', handleMessageReceived)
         socket.on('messagesRead', handleMessagesRead)
         socket.on('messageDeleted', handleMessageDeleted)
         socket.on('messageUpdated', handleMessageUpdated)
+        socket.on('userLocked', handleUserLocked)
 
         return () => {
             socket.emit('exit', { chatId, userId })
@@ -106,13 +117,13 @@ export const Chat = () => {
             socket.off('messagesRead', handleMessagesRead)
             socket.off('messageDeleted', handleMessageDeleted)
             socket.off('messageUpdated', handleMessageUpdated)
+            socket.off('userLocked', handleUserLocked)
         }
     }, [chatId])
 
 
     const handleSubmit = (e) => {
         e.preventDefault()
-
         if (!newMessage.length) return
 
         setNewMessage('')

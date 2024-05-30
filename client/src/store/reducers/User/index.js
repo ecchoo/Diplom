@@ -7,7 +7,7 @@ const initialState = {
     email: null,
     role: null,
     verified: false,
-    photo: null
+    photo: null,
 };
 
 const userSlice = createSlice({
@@ -21,6 +21,7 @@ const userSlice = createSlice({
             state.token = action.payload.token
             state.verified = action.payload.verified
             state.photo = action.payload.photo
+            state.role = action.payload.role
         },
         setPersonalDataUser(state, action) {
             state.name = action.payload.name

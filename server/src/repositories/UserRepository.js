@@ -1,4 +1,4 @@
-const { User, UserChat, TeacherCourse } = require('../models')
+const { User, UserChat, TeacherCourse, LockedUser } = require('../models')
 
 class UserRepository {
     async getByEmail(email) {
@@ -25,6 +25,14 @@ class UserRepository {
 
     async create({ name, email, password, role, verified, photo }) {
         return await User.create({ name, email, password, role, verified, photo })
+    }
+
+    async createLockedUser({ chatId, userId, moderatorId, reason, duration }) {
+        return await LockedUser.create({ chatId, userId, moderatorId, reason, duration })
+    }
+
+    async deleteLockedUser(id) {
+        return await LockedUser.update({ deletedAt: new Date() }, { where: { id } })
     }
 
     async createTeacherCourse({ teacherId, courseId, isAuthor }) {

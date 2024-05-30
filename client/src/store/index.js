@@ -3,12 +3,14 @@ import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, R
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 
 import userReducer from './reducers/User'
-import authModalReducer from './reducers/AuthModal'
-import courseModalReducer from './reducers/CourseModal'
+import modalAuthReducer from './reducers/ModalAuth'
+import modalCourseReducer from './reducers/ModalCourse'
 import chatsReducer from './reducers/Chats'
 import dashboardReducer from './reducers/Dashboard'
-import confirmDeleteMessageReducer from './reducers/ConfirmDeleteMessage'
+import modalConfirmDeleteMessageReducer from './reducers/ModalConfirmDeleteMessage'
 import editMessageReducer from './reducers/EditMessage'
+import modalLockUserReducer from './reducers/ModalLockUser'
+import moderatorReducer from './reducers/Moderator'
 
 const persistConfig = {
     key: 'root',
@@ -18,12 +20,14 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     user: userReducer,
-    authModal: authModalReducer,
-    courseModal: courseModalReducer,
+    modalAuth: modalAuthReducer,
+    modalCourse: modalCourseReducer,
     chats: chatsReducer,
     dashboard: dashboardReducer,
-    confirmDeleteMessage: confirmDeleteMessageReducer,
-    editMessage: editMessageReducer
+    modalConfirmDeleteMessage: modalConfirmDeleteMessageReducer,
+    editMessage: editMessageReducer,
+    modalLockUser: modalLockUserReducer,
+    moderator: moderatorReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

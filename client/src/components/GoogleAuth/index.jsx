@@ -1,5 +1,5 @@
 import { authWithGoogle } from "@/api"
-import { setIsOpenAuthModal, setUser } from "@/store/reducers"
+import { setIsOpenModalAuth, setUser } from "@/store/reducers"
 import { GoogleLogin } from "@react-oauth/google"
 import { useDispatch } from "react-redux"
 
@@ -10,7 +10,7 @@ export const GoogleAuth = () => {
         try {
             const { data } = await authWithGoogle(credential)
             dispatch(setUser(data))
-            dispatch(setIsOpenAuthModal(false))
+            dispatch(setIsOpenModalAuth(false))
         } catch (err) {
             console.log(err)
         }

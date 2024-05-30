@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'userId',
                 as: 'user'
             })
+            Message.belongsTo(models.Chat, { foreignKey: 'chatId', as: 'chat' })
         }
     }
 

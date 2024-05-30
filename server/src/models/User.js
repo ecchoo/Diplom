@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'messageId',
                 as: 'userMessages'
             })
+            User.hasOne(models.LockedUser, { foreignKey: 'userId', as: 'locked' })
         }
     }
 

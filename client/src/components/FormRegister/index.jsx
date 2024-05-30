@@ -1,12 +1,11 @@
 import { ButtonSubmitForm, FormAuth } from "@/UI"
-import { register, verifyEmail } from "@/api"
+import { register } from "@/api"
 import { Input } from "../Input"
 import { useDispatch } from "react-redux"
 import { useState } from "react"
-import { setIsOpenAuthModal, setUser } from "@/store/reducers"
+import { setIsOpenModalAuth, setUser } from "@/store/reducers"
 import { convertErrorsValidation } from "@/utils"
 import { StatusCodes } from "http-status-codes"
-import { GoogleLogin } from "@react-oauth/google"
 import { GoogleAuth } from "../GoogleAuth"
 import { toast } from "react-toastify"
 
@@ -35,7 +34,7 @@ export const FormRegister = () => {
         try {
             const user = await register(registerData)
             dispatch(setUser(user))
-            dispatch(setIsOpenAuthModal(false))
+            dispatch(setIsOpenModalAuth(false))
             toast('Вы успешно зарегистрировались, теперь подтвердите свою почту, письмо уже доставленно')
         } catch (err) {
             if (err.response.status === StatusCodes.UNPROCESSABLE_ENTITY) {

@@ -2,14 +2,12 @@ import { useState } from "react"
 import { Input } from "../Input"
 import { login } from "@/api"
 import { useDispatch } from "react-redux"
-import { setActiveFormAuthModal, setIsOpenAuthModal, setUser } from "@/store/reducers"
+import { setActiveFormModalAuth, setIsOpenModalAuth, setUser } from "@/store/reducers"
 import { convertErrorsValidation } from "@/utils"
 import { StatusCodes } from 'http-status-codes'
 import { ButtonSubmitForm, FormAuth } from "@/UI"
 import { ButtonResetPassword, Buttons } from "./styled"
 import { AUTH_FORMS } from "@/constants"
-import { GoogleLogin } from "@react-oauth/google"
-import { jwtDecode } from "jwt-decode"
 import { GoogleAuth } from "../GoogleAuth"
 
 export const FormLogin = () => {
@@ -30,7 +28,7 @@ export const FormLogin = () => {
     }
 
     const handleClickResetPassword = () => {
-        dispatch(setActiveFormAuthModal(AUTH_FORMS.RESET_PASSWORD))
+        dispatch(setActiveFormModalAuth(AUTH_FORMS.RESET_PASSWORD))
     }
 
     const handleSubmit = async (e) => {
@@ -38,8 +36,9 @@ export const FormLogin = () => {
 
         try {
             const user = await login(loginData)
+            console.log(user)
             dispatch(setUser(user))
-            dispatch(setIsOpenAuthModal(false))
+            dispatch(setIsOpenModalAuth(false))
         } catch (err) {
             if (err.response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
                 const convertedErrors = convertErrorsValidation(err.response.data.errors)

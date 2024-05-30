@@ -2,8 +2,8 @@ import { AuthorAvatar, AuthorInfo, AuthorName, ButtonDetail, ButtonEnroll, Card,
 import ClockIcon from '@/assets/icons/clock.svg'
 import BookIcon from '@/assets/icons/book.svg'
 import QuickViewIcon from '@/assets/icons/quickView.svg'
-import { useDispatch, useSelector } from "react-redux"
-import { setIsOpenCourseModal, setSelectedCourseId } from "@/store/reducers"
+import { useDispatch } from "react-redux"
+import { setIsOpenModalCourse, setSelectedCourseId } from "@/store/reducers"
 import { COURSES } from "@/constants"
 import { enrollCourse } from "@/api"
 import { toast } from "react-toastify"
@@ -16,7 +16,7 @@ export const CardCourse = ({ courseId, name, logo, author, countLeassons, course
     const hours = (courseTime / 60).toFixed(1)
 
     const handleClickQuickView = () => {
-        dispatch(setIsOpenCourseModal(true))
+        dispatch(setIsOpenModalCourse(true))
         dispatch(setSelectedCourseId(courseId))
     }
 

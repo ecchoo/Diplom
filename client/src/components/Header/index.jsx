@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux"
 import { Logo } from "../Logo"
-import { setActiveFormAuthModal, setIsOpenAuthModal } from "@/store/reducers"
+import { setActiveFormModalAuth, setIsOpenModalAuth } from "@/store/reducers"
 import { AUTH_FORMS, COURSES, DASHBOARD } from "@/constants"
 import { useAuth } from "@/hooks"
 import ProfileIcon from '@/assets/icons/profile.svg'
@@ -12,13 +12,13 @@ export const Header = () => {
     const { isAuth } = useAuth()
 
     const handleClickLogin = () => {
-        dispatch(setIsOpenAuthModal(true))
-        dispatch(setActiveFormAuthModal(AUTH_FORMS.LOGIN))
+        dispatch(setIsOpenModalAuth(true))
+        dispatch(setActiveFormModalAuth(AUTH_FORMS.LOGIN))
     }
 
     const handleClickRegister = () => {
-        dispatch(setIsOpenAuthModal(true))
-        dispatch(setActiveFormAuthModal(AUTH_FORMS.REGISTER))
+        dispatch(setIsOpenModalAuth(true))
+        dispatch(setActiveFormModalAuth(AUTH_FORMS.REGISTER))
     }
 
     return (

@@ -6,9 +6,9 @@ import CheckMarkSendIcon from '@/assets/icons/markSend.svg'
 import PencilIcon from '@/assets/icons/pencil.png'
 import DeletelIcon from '@/assets/icons/delete.png'
 import { useRef, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { useOnClickOutside } from "@/hooks"
-import { setDeleteMessageId, setEditMessage, setIsOpenConfirmDeleteMessage } from "@/store/reducers"
+import { setDeleteMessageId, setEditMessage, setIsOpenModalConfirmDeleteMessage } from "@/store/reducers"
 
 export const Message = ({ messageId, userAvatar, text, status, type }) => {
     const dispatch = useDispatch()
@@ -22,7 +22,7 @@ export const Message = ({ messageId, userAvatar, text, status, type }) => {
 
     const handleClickDelete = () => {
         dispatch(setDeleteMessageId(messageId))
-        dispatch(setIsOpenConfirmDeleteMessage(true))
+        dispatch(setIsOpenModalConfirmDeleteMessage(true))
     }
 
     const handleClickEdit = () => {

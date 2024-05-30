@@ -1,36 +1,26 @@
 import { Logo } from "../Logo"
 import AvatarPhoto from '/avatar.jpg'
 
-import { AsideAvatar, AsideContainer, AsideFooter, AsideFooterCaption, AsideFooterImage, AsideFooterImages, AsideHeader, ButtonPlus, Lines, NavList, NavListItem, UserName, UserProfile } from "./styled"
-import { BookSvg } from "../svg/BookSvg"
-import { HomeSvg } from "../svg/HomeSvg"
-import { ChatSvg } from "../svg/ChatSvg"
-import { ProfileSvg } from "../svg/ProfileSvg"
+import { AsideAvatar, AsideContainer, AsideFooter, AsideFooterCaption, AsideFooterImage, AsideFooterImages, AsideHeader, ButtonPlus, Lines, UserName, UserProfile } from "./styled"
 import Plus from '@/assets/icons/plus.svg'
 
 import AsideImg from '/aside1.png'
 import AsideImg2 from '/blatnoy.png'
-import { useDispatch, useSelector } from "react-redux"
-import { setActiveDashboardSection } from "@/store/reducers"
-import { DASHBOARD_SECTIONS } from "@/constants"
+import { useSelector } from "react-redux"
+import { ROLES } from "@/constants"
+import { NavListStudent } from "../NavListStudent"
+import { NavListModerator } from "../NavListModerator"
+import { NavListAside } from "../NavListAside"
 
 export const Aside = () => {
-    const dispatch = useDispatch()
-    const {
-        dashboard: { activeSection },
-        user: { name }
-    } = useSelector(state => state)
-
-    const handleClickNavItem = (section) => {
-        dispatch(setActiveDashboardSection(section))
-    }
+    const { user: { name, role, photo } } = useSelector(state => state)
 
     return (
         <AsideContainer>
             <AsideHeader>
                 <Logo />
                 <UserProfile>
-                    <AsideAvatar src={AvatarPhoto} alt="Avatar" />
+                    <AsideAvatar src={photo} alt="Avatar" />
                     <Lines>
                         <div></div>
                         <div></div>
@@ -40,38 +30,11 @@ export const Aside = () => {
                     <UserName>{name}</UserName>
                 </UserProfile>
             </AsideHeader>
-            <nav>
-                <NavList>
-                    <NavListItem
-                        onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.ACTIVITY)}
-                        isActive={activeSection === DASHBOARD_SECTIONS.ACTIVITY}
-                    >
-                        <HomeSvg />
-                        <span>Активность</span>
-                    </NavListItem>
-                    <NavListItem
-                        onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.COURSES)}
-                        isActive={activeSection === DASHBOARD_SECTIONS.COURSES}
-                    >
-                        <BookSvg />
-                        <span>Курсы</span>
-                    </NavListItem>
-                    <NavListItem
-                        onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.CHATS)}
-                        isActive={activeSection === DASHBOARD_SECTIONS.CHATS}
-                    >
-                        <ChatSvg />
-                        <span>Чаты</span>
-                    </NavListItem>
-                    <NavListItem
-                        onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.PROFILE)}
-                        isActive={activeSection === DASHBOARD_SECTIONS.PROFILE}
-                    >
-                        <ProfileSvg />
-                        <span>Профиль</span>
-                    </NavListItem>
-                </NavList>
-            </nav>
+            {/* <nav>
+                {role === ROLES.STUDENT && <NavListStudent />}
+                {role === ROLES.MODERATOR && <NavListModerator />}
+            </nav> */}
+            <NavListAside />
             <AsideFooter>
                 <AsideFooterImages>
                     <AsideFooterImage src={AsideImg} alt='asideimg' />

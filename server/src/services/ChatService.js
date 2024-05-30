@@ -9,17 +9,18 @@ const { CHAT_TYPES } = require('../constants/chatTypes')
 class ChatService {
     async getUserChatList({ userId, search }) {
         const userChats = await chatRepository.getUserChats(userId)
+        // return userChats
 
         const transformUserChats = await Promise.all(userChats.map(async ({ chat }) => {
-            const { notifications, chatUsers, ...chatInfo } = chat.toJSON()
+            const { notifications, lockedUsers, ...chatInfo } = chat.toJSON()
 
-            chatInfo.countUsers = chatUsers.length
             chatInfo.countNewMessages = (await messageRepository.getNewMessages({ chatId: chatInfo.id, userId })).length
             chatInfo.lastNotification = notifications?.[0] || null
             chatInfo.lastMessage = await this.getLastChatMessage({ userId, chatId: chatInfo.id })
+            chatInfo.blocked = lockedUsers?.[0] || null
 
             if (chatInfo.type === CHAT_TYPES.DEFAULT) {
-                const { name, photo } = chatUsers.find(u => u.id !== userId)
+                const { name, photo } = chatInfo.chatUsers.find(u => u.id !== userId)
                 Object.assign(chatInfo, { name, logo: photo })
             }
 
@@ -32,6 +33,21 @@ class ChatService {
             )
 
         return transformUserChats
+    }
+
+    async getUserChatById({ userId, chatId }) {
+        const { chat: { notifications, ...chatInfo } } = (await chatRepository.getUserChatById({ userId, chatId })).toJSON()
+
+        chatInfo.countNewMessages = (await messageRepository.getNewMessages({ chatId: chatInfo.id, userId })).length
+        chatInfo.lastNotification = notifications?.[0] || null
+        chatInfo.lastMessage = await this.getLastChatMessage({ userId, chatId: chatInfo.id })
+
+        if (chatInfo.type === CHAT_TYPES.DEFAULT) {
+            const { name, photo } = chatInfo.chatUsers.find(u => u.id !== userId)
+            Object.assign(chatInfo, { name, logo: photo })
+        }
+
+        return chatInfo
     }
 
     async getLastChatMessage({ userId, chatId }) {
@@ -68,9 +84,9 @@ class ChatService {
             const type = chatUserId === userId ? MESSAGE_TYPES.OUTGOING : MESSAGE_TYPES.INCOMING
             let status = MESSAGE_STATUSES.SENT
 
-            if (chatUserId === userId && currentChatUsers.length > 1) {
+            if (chatUserId === userId && currentChatUsers && currentChatUsers.length > 1) {
                 status = MESSAGE_STATUSES.READ
-            } else if (chatUserId !== userId && currentChatUsers.includes(chatUserId)) {
+            } else if (chatUserId !== userId && currentChatUsers && currentChatUsers.includes(chatUserId)) {
                 status = MESSAGE_STATUSES.READ
                 readers.push(chatUserId)
             }
@@ -124,6 +140,17 @@ class ChatService {
         return chat
     }
 
+    async createChatBetweenUsers({ firstUserId, secondUserId }) {
+        const chat = await chatRepository.createChat({ type: CHAT_TYPES.DEFAULT })
+
+        await Promise.all([
+            await this.addUserInChat({ userId: firstUserId, chatId: chat.id }),
+            await this.addUserInChat({ userId: secondUserId, chatId: chat.id })
+        ])
+
+        return chat
+    }
+
     async deleteMessage({ messageId, isForAll }) {
         const { id } = await messageRepository.getOutgoingMessageById(messageId)
         await messageRepository.deleteUserMessage(id)
@@ -144,11 +171,13 @@ class ChatService {
         await chatNotificationRepository.create({
             text: `${name} присоединился к чату`,
             chatId: chatId
-        })
+        }) //
 
         const chatMessages = await messageRepository.getChatMessages(chatId)
 
-        for (const { id: messageId } of chatMessages) {
+        for (const chatMessage of chatMessages) {
+            const { id: messageId } = chatMessage
+
             await messageRepository.createUserMessage({
                 messageId,
                 userId,
@@ -165,6 +194,23 @@ class ChatService {
                 })
             }
         }
+    }
+
+    async getChatBetweenUsers({ firstUserId, secondUserId }) {
+        const firstChatList = await chatRepository.getUserChats(firstUserId)
+        // const secondChatList = await chatRepository.getUserChats(secondUserId)
+
+        for (const chatListItem of firstChatList) {
+            const { chat } = chatListItem.toJSON()
+
+            const secondUserExists = chat.chatUsers.some(u => u.id === secondUserId)
+
+            if (chat.type === CHAT_TYPES.DEFAULT && secondUserExists) {
+                return chat
+            }
+        }
+
+        return null
     }
 }
 

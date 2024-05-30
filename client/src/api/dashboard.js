@@ -1,4 +1,4 @@
-import { DASHBOARD_ENDPOINTS } from "@/constants/dashboardEndPoints"
+import { DASHBOARD_ENDPOINTS } from "@/constants"
 import { $authHost } from "./config"
 
 export const getChatList = async (params) => {

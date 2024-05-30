@@ -24,6 +24,8 @@
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.3",
     "axios": "^1.6.8",
+    "bad-words-next": "^2.3.1",
+    "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "emoji-picker-react": "^4.9.2",
     "eslint": "^8.45.0",

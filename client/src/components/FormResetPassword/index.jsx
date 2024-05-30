@@ -3,7 +3,7 @@ import { Input } from "../Input"
 import { ButtonSubmitForm, FormAuth } from "@/UI"
 import { resetPassword } from "@/api"
 import { useDispatch } from "react-redux"
-import { setActiveFormAuthModal } from "@/store/reducers"
+import { setActiveFormModalAuth } from "@/store/reducers"
 import { AUTH_FORMS } from "@/constants"
 
 export const FormResetPassword = () => {
@@ -18,7 +18,7 @@ export const FormResetPassword = () => {
         try {
             const res = await resetPassword(email)
             console.log(res)
-            dispatch(setActiveFormAuthModal(AUTH_FORMS.LOGIN))
+            dispatch(setActiveFormModalAuth(AUTH_FORMS.LOGIN))
         } catch (err) {
             console.log(err)
         }

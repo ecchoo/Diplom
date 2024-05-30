@@ -1,11 +1,4 @@
-import styled, { createGlobalStyle } from "styled-components";
-
-// const GlobalStyle = createGlobalStyle`
-//     body {
-//         overflow-y: hidden;
-//         padding: 100px;
-//     }
-// `
+import styled from "styled-components";
 
 export const DashboardContainer = styled.div`
     display: flex;
@@ -19,4 +12,3 @@ export const Content = styled.div`
     row-gap: ${({ theme }) => theme.spacing(4)};
     width: 100%;
 `
-
