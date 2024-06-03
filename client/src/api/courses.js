@@ -18,3 +18,14 @@ export const enrollCourse = async ({ courseId }) => {
 
     return data
 }
+
+export const createCourse = async ({ name, description, logo, teachers, authors, modules }) => {
+    return await $authHost.post(COURSES_ENDPOINTS.CREATE, {
+        name,
+        logo,
+        teachers,
+        authors,
+        modules,
+        description
+    })
+}

@@ -1,7 +1,8 @@
 export const COURSES_ENDPOINTS = {
     LIST: '/courses/list',
     BY_ID: '/courses/',
-    ENROLL: '/courses/enroll'
+    ENROLL: '/courses/enroll',
+    CREATE: '/courses/create'
 }
 
 export const DASHBOARD_ENDPOINTS = {
@@ -20,3 +21,9 @@ export const AUTH_USER_ENDPOINTS = {
 export const MODERATOR_ENDPOINTS = {
     MODERATION_MESSAGES: '/moderator/moderation-messages'
 }
+
+export const TEACHER_ENDPOINTS = {
+    LIST: 'teachers/list'
+}
+
+export const UPLOAD_FILE_ENDPOINT = '/upload'

@@ -1,6 +1,5 @@
 const courseRepository = require("../repositories/CourseRepository")
 const chatRepository = require("../repositories/ChatRepository")
-const userRepository = require('../repositories/UserRepository')
 const chatService = require("../services/ChatService")
 const moduleService = require('./ModuleService')
 const teacherService = require('./TeacherService')
