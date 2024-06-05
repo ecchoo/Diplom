@@ -1,22 +1,29 @@
-import { Button, IconButton, Typography } from "@mui/material"
+import { Button, Typography } from "@mui/material"
 import { Actions, ButtonAdd, ButtonDelete, ButtonNavigate, ButtonSave, Input, Management, ModuleAdditionHeader, ModuleAdditionWrapper, Navigation } from "./styled"
 import { Add, NavigateNext, NavigateBefore } from "@mui/icons-material"
 import { useDispatch, useSelector } from "react-redux"
-import { setModules } from "@/store/reducers"
-import { useState } from "react"
+import { deleteModule, setIsOpenModalAuth, setModules } from "@/store/reducers"
+import { useEffect, useState } from "react"
+import { createModule, deleteModule as deleteModuleApi, updateModule } from "@/api"
+import { convertErrorsValidation } from "@/utils"
+import { StatusCodes } from "http-status-codes"
 
 export const FormModules = () => {
-    const initialModule = { name: '', description: '', partitions: [] }
+    const initialModule = { id: 0, name: '', description: '', partitions: [] }
 
     const dispatch = useDispatch()
-    const { courseCreateUpdate: { course: { modules } } } = useSelector(state => state)
+    const { courseCreateUpdate: { course: { id: courseId, modules } } } = useSelector(state => state)
 
     const [module, setModule] = useState(initialModule)
     const [currentModuleIndex, setCurrentModuleIndex] = useState(0)
+    const [initialLoad, setInitialLoad] = useState(true)
+    const [errorsValidation, setErrorsValidation] = useState({})
 
     const isNext = currentModuleIndex + 1 < modules.length
     const isPrev = currentModuleIndex - 1 >= 0
     const isDelete = currentModuleIndex !== modules.length
+
+    const isDisabledForm = !courseId
 
     const handleChange = (e) => {
         const { target: { name, value } } = e
@@ -28,42 +35,81 @@ export const FormModules = () => {
         setModule(initialModule)
     }
 
-    const handleSave = () => {
-        const isAddModule = currentModuleIndex === modules.length
+    const handleSave = async () => {
+        try {
+            if (isDisabledForm) return
 
-        const updatedModules = isAddModule
-            ? [...modules, module]
-            : modules.map((courseModule, index) =>
-                index === currentModuleIndex ? { ...courseModule, ...module } : courseModule
-            )
+            const isAddModule = currentModuleIndex === modules.length
+            let updatedModules = []
 
-        dispatch(setModules(updatedModules))
+            if (isAddModule) {
+                const { data: { newModule } } = await createModule({ ...module, courseId })
+
+                updatedModules = [...modules, newModule]
+                setModule(newModule)
+            } else {
+                await updateModule(module)
+
+                updatedModules = modules.map(courseModule => {
+                    if (courseModule.id === module.id) {
+                        return module
+                    }
+
+                    return courseModule
+                })
+            }
+            
+            setErrorsValidation({})
+            dispatch(setModules(updatedModules))
+        } catch (err) {
+            console.error(err)
+            if (err?.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+                const convertedErrors = convertErrorsValidation(err.response.data.errors)
+                setErrorsValidation(convertedErrors)
+            }
+        }
     }
 
     const handleNavigate = (value) => {
         setCurrentModuleIndex((prevIndex) => {
             const newIndex = prevIndex + value
-            setModule({ ...modules[newIndex] })
+            setModule(modules[newIndex])
             return newIndex
         })
     }
 
-    const handleDelete = () => {
-        if (!isDelete) return
+    const handleDelete = async () => {
+        try {
+            if (!isDelete) return
 
-        const updatedModules = modules.filter((_, index) => currentModuleIndex !== index)
-        dispatch(setModules(updatedModules))
+            await deleteModuleApi(module.id)
+            dispatch(deleteModule(module.id))
 
-        if (updatedModules.length === 0 || currentModuleIndex >= updatedModules.length) {
-            setCurrentModuleIndex(updatedModules.length)
-            setModule(initialModule)
-        } else {
-            setModule({ ...updatedModules[currentModuleIndex] })
+            const currentCountModules = modules.length - 1
+            const isLastModuleDeleted = !currentCountModules
+                || currentModuleIndex >= currentCountModules
+
+            if (isLastModuleDeleted) {
+                setCurrentModuleIndex(currentCountModules)
+                setModule(initialModule)
+            } else {
+                setModule(modules[currentModuleIndex + 1])
+            }
+        } catch (err) {
+            console.error(err)
         }
     }
 
     const handleNext = () => isNext && handleNavigate(1)
     const handlePrev = () => isPrev && handleNavigate(-1)
+
+    useEffect(() => {
+        if (initialLoad && modules.length > 0) {
+            setModule(modules[0])
+            setCurrentModuleIndex(0)
+            setInitialLoad(false)
+        }
+    }, [modules])
 
     return (
         <ModuleAdditionWrapper>
@@ -82,6 +128,9 @@ export const FormModules = () => {
                 name='name'
                 label="Название модуля"
                 variant="outlined"
+                disabled={isDisabledForm}
+                error={errorsValidation?.name}
+                helperText={errorsValidation?.name}
             />
             <Input
                 onChange={handleChange}
@@ -90,7 +139,11 @@ export const FormModules = () => {
                 name='description'
                 multiline rows={6}
                 label="Описание модуля"
-                variant="outlined" />
+                variant="outlined"
+                disabled={isDisabledForm}
+                error={errorsValidation?.description}
+                helperText={errorsValidation?.description}
+            />
             <Actions>
                 <Navigation>
                     <ButtonNavigate type="button" disabled={!isPrev} onClick={handlePrev}>
@@ -104,7 +157,7 @@ export const FormModules = () => {
                     <ButtonDelete onClick={handleDelete} disabled={!isDelete} type="button">
                         Удалить
                     </ButtonDelete>
-                    <ButtonSave type="button" onClick={handleSave}>
+                    <ButtonSave type="button" disabled={isDisabledForm} onClick={handleSave}>
                         Сохранить
                     </ButtonSave>
                 </Management>

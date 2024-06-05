@@ -7,6 +7,10 @@ const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')
 const moderatorRouter = require('./routes/moderatorRoute')
 const teacherRouter = require('./routes/teacherRouter')
+const modulesRouter = require('./routes/modulesRoutes')
+const partitionsRouter = require('./routes/partitionsRoutes')
+const leassonsRouter = require('./routes/leassonsRoutes')
+
 
 const chatService = require('./services/ChatService')
 const messageRepository = require('./repositories/MessageRepository')
@@ -32,6 +36,9 @@ app.use('/api/auth', authRouter)
 app.use('/api/dashboard', dashboardRouter)
 app.use('/api/moderator', moderatorRouter)
 app.use('/api/teachers', teacherRouter)
+app.use('/api/modules', modulesRouter)
+app.use('/api/partitions', partitionsRouter)
+app.use('/api/leassons', leassonsRouter)
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

@@ -1,6 +1,4 @@
-const userRepository = require('../repositories/UserRepository')
 const teacherRepository = require('../repositories/TeacherRepository')
-
 
 class TeacherService {
     async list() {
@@ -15,7 +13,13 @@ class TeacherService {
 
     async createCourseTeachers({ teachers, courseId }) {
         await Promise.all(teachers.map(async ({ id: teacherId, isAuthor }) => {
-            await userRepository.createTeacherCourse({ courseId, teacherId, isAuthor: true })
+            await teacherRepository.createTeacherCourse({ courseId, teacherId, isAuthor: true })
+        }))
+    }
+
+    async deleteCourseTeachers(courseTeachers) {
+        await Promise.all(courseTeachers.map(async (courseTeacher) => {
+            await teacherRepository.deleteTeacherCourse(courseTeacher.id)
         }))
     }
 }

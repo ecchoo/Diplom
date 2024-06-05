@@ -6,7 +6,11 @@ class LeassonRepository {
     }
 
     async update({ id, name, partitionId, time, content }) {
-        return await Leasson.update({ name, partitionId, time }, { where: { id } })
+        return await Leasson.update({ name, partitionId, time, content }, { where: { id } })
+    }
+
+    async delete(id) {
+        return await Leasson.destroy({ where: { id } })
     }
 }
 

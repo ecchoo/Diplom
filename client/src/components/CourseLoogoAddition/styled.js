@@ -1,8 +1,14 @@
+import { FormControl } from "@mui/material";
 import styled from "styled-components";
 
-export const DropZoneContainer = styled.div`
+export const DropZoneContainer = styled(FormControl)`
+    display: flex;
+    flex-direction: column;
+`
+
+export const DropZone = styled.div`
     cursor: pointer;
-    border: 2px dashed #ccc;
+    border: 2px dashed ${({ error }) => error ? 'red' : "#ccc"};
     display: flex;
     flex-direction: column;
     align-items: center;

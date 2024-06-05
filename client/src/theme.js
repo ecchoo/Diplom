@@ -18,7 +18,9 @@ export const theme = {
         },
 
         white: '#ffffff',
-        black: '#000000'
+        black: '#000000',
+        error: '#d32f2f',
+        border: '#ccc'
     },
 
     spacing: (...sizes) => {

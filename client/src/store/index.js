@@ -12,7 +12,7 @@ import editMessageReducer from './reducers/EditMessage'
 import modalLockUserReducer from './reducers/ModalLockUser'
 import moderatorReducer from './reducers/Moderator'
 import courseCreateUpdateReducer from './reducers/CourseCreateUpdate'
-
+import teacherReducer from './reducers/Teacher'
 
 const persistConfig = {
     key: 'root',
@@ -30,7 +30,8 @@ const rootReducer = combineReducers({
     editMessage: editMessageReducer,
     modalLockUser: modalLockUserReducer,
     moderator: moderatorReducer,
-    courseCreateUpdate: courseCreateUpdateReducer
+    courseCreateUpdate: courseCreateUpdateReducer,
+    teacher: teacherReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

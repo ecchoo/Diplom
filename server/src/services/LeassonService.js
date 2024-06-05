@@ -1,10 +1,16 @@
 const leassonRepository = require('../repositories/LeassonRepository')
 
 class LeassonService {
-    async createPartitionLeassons({ leassons, partitionId }) {
-        await Promise.all(leassons.map(async ({ name, time, content }) => {
-            await leassonRepository.create({ name, partitionId, time, content })
-        }));
+    async createLeassons({ leassons, partitionId }) {
+        await Promise.all(leassons.map(async (leasson) => {
+            await leassonRepository.create({ partitionId, ...leasson })
+        }))
+    }
+
+    async updateLeassons(leassons) {
+        await Promise.all(leassons.map(async (leasson) => {
+            await leassonRepository.update(leasson)
+        }))
     }
 }
 

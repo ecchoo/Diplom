@@ -9,7 +9,7 @@ export const Container = styled.div`
 `;
 
 export const AppBar = styled(MUIAppBar)`
-    position: relative;
+    position: relative !important;
 `
 
 export const Toolbar = styled(MUIToolBar)`

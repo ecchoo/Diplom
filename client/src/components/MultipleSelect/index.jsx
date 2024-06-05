@@ -4,7 +4,8 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Chip from '@mui/material/Chip'
 import { MultSelect, MultipleSelectContainer } from './styled'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { FormHelperText } from '@mui/material'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -17,8 +18,8 @@ const MenuProps = {
     },
 }
 
-export const MultipleSelect = ({ options, placeholder, onChange }) => {
-    const [selectedValues, setSelectedValues] = useState([])
+export const MultipleSelect = ({ options, placeholder, onChange, error, helperText, initialValues = [] }) => {
+    const [selectedValues, setSelectedValues] = useState(initialValues)
 
     const handleChange = (e) => {
         const { target: { value } } = e
@@ -26,8 +27,12 @@ export const MultipleSelect = ({ options, placeholder, onChange }) => {
         onChange(value)
     }
 
+    useEffect(() => {
+        setSelectedValues(initialValues)
+    }, [initialValues])
+
     return (
-        <MultipleSelectContainer>
+        <MultipleSelectContainer error={error}>
             <InputLabel id="demo-multiple-chip-label">{placeholder}</InputLabel>
             <MultSelect
                 className='MultipleSelect'
@@ -55,6 +60,7 @@ export const MultipleSelect = ({ options, placeholder, onChange }) => {
                     </MenuItem>
                 ))}
             </MultSelect>
+            <FormHelperText>{helperText}</FormHelperText>
         </MultipleSelectContainer>
     )
 }

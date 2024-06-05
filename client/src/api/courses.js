@@ -8,9 +8,7 @@ export const getCourseList = async () => {
 }
 
 export const getCourseById = async (id) => {
-    const { data } = await $host.get(`${COURSES_ENDPOINTS.BY_ID}${id}`)
-
-    return data
+    return await $host.get(`${COURSES_ENDPOINTS.BY_ID}${id}`)
 }
 
 export const enrollCourse = async ({ courseId }) => {
@@ -19,13 +17,23 @@ export const enrollCourse = async ({ courseId }) => {
     return data
 }
 
-export const createCourse = async ({ name, description, logo, teachers, authors, modules }) => {
+export const createCourse = async ({ name, description, logo, teachers, authors }) => {
     return await $authHost.post(COURSES_ENDPOINTS.CREATE, {
         name,
         logo,
         teachers,
         authors,
-        modules,
+        description
+    })
+}
+
+export const updateCourse = async ({ id, name, description, logo, teachers, authors }) => {
+    return await $authHost.put(COURSES_ENDPOINTS.UPDATE, {
+        id,
+        name,
+        logo,
+        teachers,
+        authors,
         description
     })
 }

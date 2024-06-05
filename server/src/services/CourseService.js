@@ -4,6 +4,7 @@ const chatService = require("../services/ChatService")
 const moduleService = require('./ModuleService')
 const teacherService = require('./TeacherService')
 const { CHAT_TYPES } = require("../constants/chatTypes")
+const teacherRepository = require("../repositories/TeacherRepository")
 
 class CourseService {
     async getCourseList() {
@@ -51,43 +52,29 @@ class CourseService {
         return { countLeassons, courseTime }
     }
 
-    async createCourse({ name, description, logo, modules, teachers }) {
-        const { id: courseId } = await courseRepository.createCourse({ name, description, logo })
+    async createCourse({ name, description, logo, teachers }) {
+        const newCourse = await courseRepository.createCourse({ name, description, logo })
 
-        await teacherService.createCourseTeachers({ teachers, courseId })
-        await moduleService.createCourseModules({ modules, courseId })
+        await teacherService.createCourseTeachers({ teachers, courseId: newCourse.id })
 
         await chatService.createCourseChat({
             name,
             logo,
-            courseId,
             teachers,
             type: CHAT_TYPES.GROUP,
         })
 
-        return courseId
+        return newCourse
     }
 
-    async updateCourse({ id, name, description, modules, teachers }) { //
-        // await courseRepository.update({ id, name, description })
-
-        // await Promise.all(teachers.map(async ({ id, courseId, teacherId }) => {
-        //     await userCourseRepository.update({ id, courseId, userId: teacherId })
-        // }))
-
-        // await Promise.all(modules.map(async ({ id, name, description, courseId, partitions }) => {
-        //     await moduleRepository.update({ id, name, description, courseId })
-
-        //     await Promise.all(partitions.map(async ({ id, name, description, moduleId, leassons }) => {
-        //         await partitionRepository.update({ id, name, description, moduleId })
-
-        //         await Promise.all(leassons.map(async ({ id, name, partitionId }) => {
-        //             await leassonRepository.update({ id, name, partitionId })
-        //         }));
-        //     }));
-        // }));
-
-        return true
+    async updateCourse({ id, name, description, logo, teachers }) {
+        const oldTeachers = await teacherRepository.getTeachersByCourseId(id)
+        
+        return await Promise.all([
+            await teacherService.deleteCourseTeachers(oldTeachers),
+            await teacherService.createCourseTeachers({ teachers, courseId: id }),
+            await courseRepository.update({ id, name, description, logo })
+        ])
     }
 
     async enrollCourse({ userId, courseId }) {

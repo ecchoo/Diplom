@@ -16,7 +16,7 @@ export const ModalCourse = () => {
 
     useEffect(() => {
         const fetchCourse = async () => {
-            const { course } = await getCourseById(selectedCourseId)
+            const { data: { course } } = await getCourseById(selectedCourseId)
             setSelectedCourse(course)
         }
 

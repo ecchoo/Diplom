@@ -1,4 +1,4 @@
-import { TextField, Select as MUISelect } from "@mui/material";
+import { TextField, Select as MUISelect, FormControl } from "@mui/material";
 import styled from "styled-components";
 
 export const LeassonAdditionWrapper = styled.div`
@@ -102,17 +102,17 @@ export const ButtonNavigate = styled(StyledRoundButton)`
     }
 `
 
-export const QuillWrapper = styled.div`
+export const QuillWrapper = styled(FormControl)`
     border-radius: ${({ theme }) => theme.spacing(1)};
 
     & .ql-toolbar {
-        border-bottom: 1px solid #ccc;
+        border: 1px solid ${({ theme: { colors: { border, error: errorColor } }, error }) => error ? errorColor : border};
         border-radius: ${({ theme }) => theme.spacing(1, 1, 0, 0)};
         background-color: ${({ theme }) => theme.colors.white};
     }
 
     & .ql-container {
-        border: 1px solid #ccc;
+        border: 1px solid ${({ theme: { colors: { border, error: errorColor } }, error }) => error ? errorColor : border};
         border-top: none;
         border-radius: ${({ theme }) => theme.spacing(0, 0, 1, 1)};
         background-color: #fff;

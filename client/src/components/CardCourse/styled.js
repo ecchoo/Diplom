@@ -77,7 +77,7 @@ export const CardBody = styled.div`
 export const TitleCourse = styled.h1`
     font-size: 20px;
     font-weight: 500;
-    color: ${({ theme }) => theme.colors.primary}
+    color: ${({ theme }) => theme.colors.primary};
 `
 
 export const AuthorInfo = styled.div`

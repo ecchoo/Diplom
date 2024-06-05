@@ -1,4 +1,4 @@
-const { Course, Module, Partition, Leasson, User, Teacher, UserCourse, Review } = require('../models')
+const { Course, Module, Partition, Leasson, User, Teacher, UserCourse, Review, TeacherCourse } = require('../models')
 const { ROLES } = require('../constants/roles')
 const { filter: filterParams } = require('../config/params')
 const { Op, where } = require('sequelize')
@@ -80,7 +80,11 @@ class CourseRepository {
         })
     }
 
-    async getUserCourses(userId, params) {
+    async getByName(name) {
+        return await Course.findOne({ where: { name } })
+    }
+
+    async getUserCourseList({ userId, params }) {
         const where = { userId }
 
         if ('filter' in params) {
@@ -127,12 +131,45 @@ class CourseRepository {
         })
     }
 
+    async getTeacherCourseList({ teacherId }) {
+        console.log(teacherId)
+        return await TeacherCourse.findAll({
+            where: { teacherId },
+            attributes: [],
+            include: [
+                {
+                    model: Course,
+                    as: 'course',
+                    attributes: ['id', 'name', 'logo'],
+                    include: [
+                        {
+                            model: Module,
+                            as: 'modules',
+                            required: false,
+                            include: {
+                                model: Partition,
+                                as: 'partitions',
+                                required: false,
+                                include: {
+                                    model: Leasson,
+                                    as: 'leassons',
+                                    required: false,
+                                }
+                            }
+                        },
+                    ],
+                },
+            ]
+        });
+    }
+
+
     async createCourse({ name, description, logo }) {
         return await Course.create({ name, description, logo })
     }
 
-    async update({ id, name, description }) {
-        return await Course.update({ name, description }, { where: { id } })
+    async update({ id, name, description, logo }) {
+        return await Course.update({ name, description, logo }, { where: { id } })
     }
 
     async delete(courseId) {

@@ -35,9 +35,7 @@ class UserRepository {
         return await LockedUser.update({ deletedAt: new Date() }, { where: { id } })
     }
 
-    async createTeacherCourse({ teacherId, courseId, isAuthor }) {
-        return await TeacherCourse.create({ teacherId, courseId, isAuthor })
-    }
+    
 }
 
 module.exports = new UserRepository()
