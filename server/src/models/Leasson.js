@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     Leasson.init({
         name: DataTypes.STRING,
         time: DataTypes.INTEGER,
+        content: DataTypes.TEXT,
         partitionId: DataTypes.INTEGER
     }, {
         sequelize,

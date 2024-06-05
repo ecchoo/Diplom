@@ -11,6 +11,8 @@ import modalConfirmDeleteMessageReducer from './reducers/ModalConfirmDeleteMessa
 import editMessageReducer from './reducers/EditMessage'
 import modalLockUserReducer from './reducers/ModalLockUser'
 import moderatorReducer from './reducers/Moderator'
+import courseCreateUpdateReducer from './reducers/CourseCreateUpdate'
+import teacherReducer from './reducers/Teacher'
 
 const persistConfig = {
     key: 'root',
@@ -27,7 +29,9 @@ const rootReducer = combineReducers({
     modalConfirmDeleteMessage: modalConfirmDeleteMessageReducer,
     editMessage: editMessageReducer,
     modalLockUser: modalLockUserReducer,
-    moderator: moderatorReducer
+    moderator: moderatorReducer,
+    courseCreateUpdate: courseCreateUpdateReducer,
+    teacher: teacherReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

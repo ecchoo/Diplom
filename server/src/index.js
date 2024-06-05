@@ -6,6 +6,11 @@ const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')
 const moderatorRouter = require('./routes/moderatorRoute')
+const teacherRouter = require('./routes/teacherRouter')
+const modulesRouter = require('./routes/modulesRoutes')
+const partitionsRouter = require('./routes/partitionsRoutes')
+const leassonsRouter = require('./routes/leassonsRoutes')
+
 
 const chatService = require('./services/ChatService')
 const messageRepository = require('./repositories/MessageRepository')
@@ -16,16 +21,49 @@ const { createBlockedMessage } = require("./utils/createBlockedMessage");
 const moderatorService = require("./services/ModeratorService");
 const userRepository = require("./repositories/UserRepository");
 
+const multer = require('multer');
+const path = require('path');
+const { UPLOAD_PATHS } = require("./constants/uploadFilleType");
+
 const app = express()
 const port = process.env.PORT || 3000
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(cors({ origin: '*' }))
 
 app.use('/api/courses', coursesRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/dashboard', dashboardRouter)
 app.use('/api/moderator', moderatorRouter)
+app.use('/api/teachers', teacherRouter)
+app.use('/api/modules', modulesRouter)
+app.use('/api/partitions', partitionsRouter)
+app.use('/api/leassons', leassonsRouter)
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const { folder } = UPLOAD_PATHS.find(p => p.type === req.query.type)
+        const uploadPath = folder ? `src/uploads/${folder}` : 'src/uploads/'
+
+        cb(null, uploadPath)
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`)
+    },
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/api/upload', upload.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+
+    const relativeFilePath = req.file.path.slice(4).replace(/\\/g, '/');
+    res.status(200).send({ filePath: `http://localhost:3000/${relativeFilePath}` });
+})
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 
 const server = http.createServer(app)

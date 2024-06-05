@@ -125,14 +125,14 @@ class ChatService {
         }))
     }
 
-    async createCourseChat({ name, type, logo, teachers, courseId }) {
+    async createCourseChat({ name, type, logo, teachers }) {
         const chat = await chatRepository.createChat({ name, type, logo })
 
-        await chatRepository.createCourseChat({ courseId, chatId: chat.id })
         await chatNotificationRepository.create({
             text: 'Чат создан',
             chatId: chat.id
         })
+        
         await Promise.all(teachers.map(async ({ userId }) => {
             await this.addUserInChat({ userId, chatId: chat.id })
         }))

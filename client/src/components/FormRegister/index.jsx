@@ -37,7 +37,7 @@ export const FormRegister = () => {
             dispatch(setIsOpenModalAuth(false))
             toast('Вы успешно зарегистрировались, теперь подтвердите свою почту, письмо уже доставленно')
         } catch (err) {
-            if (err.response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+            if (err?.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
                 const convertedErrors = convertErrorsValidation(err.response.data.errors)
                 setErrorsValidation(convertedErrors)
             }

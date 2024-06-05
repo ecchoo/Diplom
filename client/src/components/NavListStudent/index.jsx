@@ -28,8 +28,8 @@ export const NavListStudent = () => {
                 <span>Активность</span>
             </NavListItem>
             <NavListItem
-                onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.COURSES)}
-                isActive={activeSection === DASHBOARD_SECTIONS.COURSES}
+                onClick={handleClickNavItem.bind(null, DASHBOARD_SECTIONS.STUDENT_COURSES)}
+                isActive={activeSection === DASHBOARD_SECTIONS.STUDENT_COURSES}
             >
                 <BookSvg />
                 <span>Курсы</span>

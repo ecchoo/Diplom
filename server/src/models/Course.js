@@ -28,7 +28,10 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Course',
         timestamps: true,
-        tableName: 'courses'
+        tableName: 'courses',
+        hooks: {
+            
+        }
     });
 
     return Course; 

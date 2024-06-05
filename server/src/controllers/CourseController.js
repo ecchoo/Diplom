@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const courseRepository = require("../repositories/CourseRepository");
 const courseService = require("../services/CourseService");
+const { validationResult } = require('express-validator')
 
 class CourseController {
     async list(req, res) {
@@ -28,10 +29,15 @@ class CourseController {
 
     async create(req, res) {
         try {
-            const { name, description, logo, modules, teachers } = req.body
-            const newCourse = await courseService.createCourse({ name, description, logo, modules, teachers })
+            const errorsValidation = validationResult(req)
+            if (!errorsValidation.isEmpty()) {
+                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
+            }
 
-            return res.status(StatusCodes.CREATED).json({ course: newCourse })
+            const { name, description, logo, teachers } = req.body
+            const newCourse = await courseService.createCourse({ name, description, logo, teachers })
+
+            return res.status(StatusCodes.CREATED).json({ newCourse })
         } catch (err) {
             console.log(err)
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
@@ -40,10 +46,15 @@ class CourseController {
 
     async update(req, res) {
         try {
-            const { id, name, description, modules, teachers } = req.body
-            const updatedCourse = await courseService.updateCourse({ id, name, description, modules, teachers })
+            const errorsValidation = validationResult(req)
+            if (!errorsValidation.isEmpty()) {
+                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
+            }
 
-            return res.status(StatusCodes.OK).json({ course: updatedCourse })
+            const { id, name, description, logo, teachers } = req.body
+            const updatedCourse = await courseService.updateCourse({ id, name, description, logo, teachers })
+
+            return res.status(StatusCodes.OK).json(updatedCourse)
         } catch (err) {
             console.log(err)
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
@@ -64,6 +75,7 @@ class CourseController {
     async enroll(req, res) {
         try {
             const { userId, body: { courseId } } = req
+            console.log(userId, courseId)
             const result = await courseService.enrollCourse({ userId, courseId })
 
             return res.status(StatusCodes.OK).json({ result })

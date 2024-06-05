@@ -1,10 +1,10 @@
 const courseRepository = require('../repositories/CourseRepository')
-const userRepository = require('../repositories/UserRepository')
+const teacherRepository = require('../repositories/TeacherRepository')
 const courseService = require('../services/CourseService')
 
 class DashboardService {
-    async getUserCourses(userId, params) {
-        const userCourses = await courseRepository.getUserCourses(userId, params);
+    async getUserCourseList({ userId, params }) {
+        const userCourses = await courseRepository.getUserCourseList({ userId, params });
         // return userCourses
 
         return await Promise.all(userCourses.map(async ({ course, progress, createdAt: enrolmentDate }) => {
@@ -26,6 +26,12 @@ class DashboardService {
         }));
     }
 
+    async getTeacherCourseList({ userId }) {
+        const { id: teacherId } = await teacherRepository.getTeacherByUserId(userId)
+        const courseList = await courseRepository.getTeacherCourseList({ teacherId })
+
+        return await Promise.all(courseList.map(({ course }) => course))
+    }
 }
 
 module.exports = new DashboardService()

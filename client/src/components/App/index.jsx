@@ -12,6 +12,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ModalLockUser } from "../ModalLockUser"
+import { DialogCourseCreateUpdate } from "../DialogCourseCreateUpdate"
 
 export const App = () => {
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID
@@ -26,6 +27,8 @@ export const App = () => {
                             <ModalCourse />
                             <ModalConfirmDeleteMessage />
                             <ModalLockUser />
+
+                            <DialogCourseCreateUpdate />
 
                             <ToastContainer />
 
