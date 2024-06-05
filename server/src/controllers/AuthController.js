@@ -5,6 +5,7 @@ const { validationResult } = require("express-validator")
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 const userRepository = require('../repositories/UserRepository')
+const URLS = require('../constants/urls')
 dotenv.config()
 
 class AuthController {
@@ -24,7 +25,7 @@ class AuthController {
                 from: 'kosmat3936@gmail.com',
                 to: email,
                 subject: 'Верификация почты',
-                text: `http://localhost:5173/verify-email?token=${token}`
+                text: `${URLS.VERIFY_EMAIL}?token=${token}`
             })
 
             return res.status(StatusCodes.CREATED).json({ id, email, name, role, verified, photo, token })
@@ -132,6 +133,20 @@ class AuthController {
             const token = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
             return res.status(StatusCodes.OK).json({ id, email, role, name, photo, token, verified })
+        } catch (err) {
+            console.log(err)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
+        }
+    }
+
+    async authWithGitHub(req, res) {
+        try {
+            const { body: { code } } = req
+
+            const { id, name, role, photo, verified } = await authService.authWithGitHub(code)
+            const token = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+
+            return res.status(StatusCodes.OK).json({ id, role, name, photo, token, verified })
         } catch (err) {
             console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })

@@ -9,6 +9,8 @@ import { ButtonSubmitForm, FormAuth } from "@/UI"
 import { ButtonResetPassword, Buttons } from "./styled"
 import { AUTH_FORMS } from "@/constants"
 import { GoogleAuth } from "../GoogleAuth"
+import { AuthSocial } from "@/UI/AuthSocial"
+import { GitHubAuth } from "../GitHubAuth"
 
 export const FormLogin = () => {
     const dispatch = useDispatch()
@@ -71,7 +73,10 @@ export const FormLogin = () => {
                     Забыли пароль?
                 </ButtonResetPassword>
             </Buttons>
-            <GoogleAuth />
+            <AuthSocial>
+                <GoogleAuth />
+                <GitHubAuth />
+            </AuthSocial>
         </FormAuth>
     )
 }

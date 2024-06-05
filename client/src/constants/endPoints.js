@@ -35,7 +35,8 @@ export const AUTH_USER_ENDPOINTS = {
     REGISTER: '/auth/register',
     VERIFY_EMAIL: '/auth/verify-email',
     RESET_PASSWORD: '/auth/reset-password',
-    GOOGLE: '/auth/google'
+    GOOGLE: '/auth/google',
+    GITHUB: '/auth/github'
 }
 
 export const MODERATOR_ENDPOINTS = {

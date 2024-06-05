@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt')
 const { ROLES } = require('../constants/roles')
 const generatePassword = require('../utils/generatePassword')
 const mailService = require('./MailService')
+const axios = require('axios')
+const { URLS } = require('../constants/urls')
+
 
 class AuthService {
     async register({ name, email, password, verified, photo }) {
@@ -69,6 +72,45 @@ class AuthService {
                 password: 'password',
                 verified: true,
             })
+    }
+
+    async authWithGitHub(code) {
+        const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+        const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+
+
+        const { data: { access_token } } = await axios.post(URLS.GITHUB_ACCESS_TOKEN, null, {
+            headers: {
+                'Accept': 'application/json'
+            },
+            params: {
+                client_id: GITHUB_CLIENT_ID,
+                client_secret: GITHUB_CLIENT_SECRET,
+                code: code,
+            }
+        });
+
+        const { data: { login, avatar_url } } = await axios.get(URLS.GITHUB_USER, {
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        const existsUser = await userRepository.getByName(login)
+
+        if (existsUser && !existsUser.email) {
+            return existsUser
+        }
+        //
+        if (!existsUser) {
+            return await this.register({
+                name: login,
+                photo: avatar_url,
+                password: 'password',
+                verified: true,
+            })
+        }
     }
 }
 

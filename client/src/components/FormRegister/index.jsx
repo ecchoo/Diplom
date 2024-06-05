@@ -8,6 +8,8 @@ import { convertErrorsValidation } from "@/utils"
 import { StatusCodes } from "http-status-codes"
 import { GoogleAuth } from "../GoogleAuth"
 import { toast } from "react-toastify"
+import { GitHubAuth } from "../GitHubAuth"
+import { AuthSocial } from "@/UI/AuthSocial"
 
 export const FormRegister = () => {
     const dispatch = useDispatch()
@@ -74,13 +76,16 @@ export const FormRegister = () => {
             <Input
                 type='password'
                 name='passwordConfirm'
-                placeholder='Пароль'
+                placeholder='Повторите пароль'
                 value={registerData.passwordConfirm}
                 onChange={handleChangeInput}
                 errorValidation={errorsValidation?.passwordConfirm}
             />
             <ButtonSubmitForm>Зарегистрироваться</ButtonSubmitForm>
-            <GoogleAuth />
+            <AuthSocial>
+                <GoogleAuth />
+                <GitHubAuth />
+            </AuthSocial>
         </FormAuth>
     )
 }

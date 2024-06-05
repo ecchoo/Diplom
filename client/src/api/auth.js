@@ -37,3 +37,7 @@ export const resetPassword = async (email) => {
 export const authWithGoogle = async (credential) => {
     return await $host.post(AUTH_USER_ENDPOINTS.GOOGLE, { credential })
 }
+
+export const authWithGitHub = async (code) => {
+    return await $host.post(AUTH_USER_ENDPOINTS.GITHUB, { code })
+}
