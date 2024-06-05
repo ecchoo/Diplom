@@ -69,7 +69,7 @@ class CourseService {
 
     async updateCourse({ id, name, description, logo, teachers }) {
         const oldTeachers = await teacherRepository.getTeachersByCourseId(id)
-        
+
         return await Promise.all([
             await teacherService.deleteCourseTeachers(oldTeachers),
             await teacherService.createCourseTeachers({ teachers, courseId: id }),
@@ -78,10 +78,11 @@ class CourseService {
     }
 
     async enrollCourse({ userId, courseId }) {
-        const { chatId } = await chatRepository.getCourseChat(courseId)
+        const { name } = await courseRepository.getById(courseId)
+        const { id } = await chatRepository.getCourseChat(name)
 
         await courseRepository.createUserCourse({ userId, courseId })
-        await chatService.addUserInChat({ userId, chatId })
+        await chatService.addUserInChat({ userId, chatId: id })
 
         return true
     }

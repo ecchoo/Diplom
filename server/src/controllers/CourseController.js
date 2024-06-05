@@ -50,7 +50,7 @@ class CourseController {
             if (!errorsValidation.isEmpty()) {
                 return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
             }
-            
+
             const { id, name, description, logo, teachers } = req.body
             const updatedCourse = await courseService.updateCourse({ id, name, description, logo, teachers })
 
@@ -75,6 +75,7 @@ class CourseController {
     async enroll(req, res) {
         try {
             const { userId, body: { courseId } } = req
+            console.log(userId, courseId)
             const result = await courseService.enrollCourse({ userId, courseId })
 
             return res.status(StatusCodes.OK).json({ result })

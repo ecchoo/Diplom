@@ -157,6 +157,14 @@ class CourseRepository {
                                 }
                             }
                         },
+                        {
+                            model: User,
+                            as: 'courseUsers',
+                            attributes: ['id', 'name', 'photo'],
+                            through: {
+                                attributes: []
+                            }
+                        }
                     ],
                 },
             ]

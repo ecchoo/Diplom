@@ -78,13 +78,12 @@ export const TitleCourse = styled.h1`
 
 export const CourseInfo = styled.div`
     display: flex;
-    column-gap: ${({ theme }) => theme.spacing(2)};
+    column-gap: ${({ theme }) => theme.spacing(1)};
+`
 
-    & div {
-        display: flex;
-        align-items: center;
-        column-gap: ${({ theme }) => theme.spacing(0.5)};
-    }
+export const CountStudentIcon = styled.img`
+    width: ${({ theme }) => theme.spacing(2)};
+    opacity: .7;
 `
 
 export const CardFooter = styled.div`

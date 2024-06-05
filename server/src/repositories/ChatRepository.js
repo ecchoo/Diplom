@@ -68,8 +68,8 @@ class ChatRepository {
         })
     }
 
-    async getCourseChat(courseId) {
-        return await CourseChat.findOne({ where: { courseId } })
+    async getCourseChat(courseName) {
+        return await Chat.findOne({ where: { name: courseName } })
     }
 
     async createChat({ name, type, logo }) {

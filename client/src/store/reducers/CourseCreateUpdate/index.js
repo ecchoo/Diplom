@@ -1,8 +1,9 @@
+import { COURSE_CREATE_UPDATE_TYPES } from "@/constants";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     isOpen: false,
-    // editCourseId: 0,
+    type: COURSE_CREATE_UPDATE_TYPES.CREATE,
     course: {
         id: 0,
         name: '',
@@ -23,9 +24,9 @@ const courseCreateUpdateSlice = createSlice({
         setIsOpenCourseCreateUpdate(state, action) {
             state.isOpen = action.payload
         },
-        // setEditCourseId(state, action) {
-        //     state.editCourseId = action.payload
-        // },
+        setTypeCourseCreateUpdate(state, action) {
+            state.type = action.payload
+        },
         setCourse(state, action) {
             state.course.id = action.payload.id
             state.course.name = action.payload.name
@@ -102,7 +103,8 @@ export const {
     setCourseAuthors,
     deleteModule,
     deletePartition,
-    deleteLeasson
+    deleteLeasson,
+    setTypeCourseCreateUpdate
 } = courseCreateUpdateSlice.actions;
 
 export default courseCreateUpdateSlice.reducer;

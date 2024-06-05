@@ -12,6 +12,6 @@ courseRouter.get('/:id', courseController.index)
 courseRouter.post('/create', checkRoleMiddleware([ROLES.TEACHER, ROLES.ADMIN]), createUpdate(), courseController.create)
 courseRouter.put('/update', checkRoleMiddleware([ROLES.TEACHER, ROLES.ADMIN]), createUpdate(), courseController.update)
 courseRouter.delete('/delete', checkRoleMiddleware([ROLES.TEACHER, ROLES.ADMIN]), courseController.delete)
-courseRouter.post('/enroll', checkRoleMiddleware([ROLES.STUDENT]), courseController.enroll)
+courseRouter.post('/enroll', authenticateUser, checkRoleMiddleware([ROLES.STUDENT]), courseController.enroll)
 
 module.exports = courseRouter
