@@ -6,8 +6,9 @@ import styled from "styled-components";
 export const CardWrapper = styled.div`
     position: relative;
     transition: all .3s ease-in-out;
+    height: max-content;
 
-    & .bgCard {
+    & .bgCard { 
         width: 100%;
         height: 100%;
         position: absolute;
@@ -29,7 +30,7 @@ export const CardWrapper = styled.div`
 
 export const Card = styled.div`
     display: flex;
-    max-width: 340px;
+    max-width: 345px;
     flex-direction: column;
     row-gap: ${({ theme }) => theme.spacing(2)};
     padding: ${({ theme }) => theme.spacing(2)};
@@ -55,6 +56,7 @@ export const CardHeader = styled.div`
 export const CourseLogo = styled.img`
     width: ${({ theme }) => theme.spacing(6)};
     height: ${({ theme }) => theme.spacing(6)};
+    border-radius: 50%;
 `
 export const ButtonActionsCourse = styled.button`
     display: flex;

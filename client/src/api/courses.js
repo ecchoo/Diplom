@@ -1,8 +1,8 @@
 import { COURSES_ENDPOINTS } from "@/constants"
 import { $authHost, $host } from "./config"
 
-export const getCourseList = async () => {
-    const { data } = await $host.get(COURSES_ENDPOINTS.LIST)
+export const getCourseList = async (params) => {
+    const { data } = await $host.get(COURSES_ENDPOINTS.LIST, { params })
 
     return data
 }
@@ -17,23 +17,27 @@ export const enrollCourse = async ({ courseId }) => {
     return data
 }
 
-export const createCourse = async ({ name, description, logo, teachers, authors }) => {
+export const createCourse = async ({ name, description, logo, difficultyLevel, fieldStudy, teachers, authors }) => {
     return await $authHost.post(COURSES_ENDPOINTS.CREATE, {
         name,
         logo,
         teachers,
         authors,
-        description
+        description,
+        difficultyLevel,
+        fieldStudy
     })
 }
 
-export const updateCourse = async ({ id, name, description, logo, teachers, authors }) => {
+export const updateCourse = async ({ id, name, description, logo, difficultyLevel, fieldStudy, teachers, authors }) => {
     return await $authHost.put(COURSES_ENDPOINTS.UPDATE, {
         id,
         name,
         logo,
         teachers,
         authors,
-        description
+        description,
+        difficultyLevel,
+        fieldStudy
     })
 }

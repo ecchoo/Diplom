@@ -4,8 +4,25 @@ const { filter: filterParams } = require('../config/params')
 const { Op, where } = require('sequelize')
 
 class CourseRepository {
-    async list() {
+    async list({ search, filters }) {
+        const where = {}
+
+        if (search) {
+            where.name = {
+                [Op.iLike]: `%${search}%`
+            };
+        }
+
+        if (filters) {
+            for (const [key, value] of Object.entries(filters)) {
+                const { column, option, value: filterValue } = filterParams.courses[key][value]
+                console.log({ column, option, value: filterValue })
+                where[column] = { [option]: filterValue }
+            }
+        }
+
         return await Course.findAll({
+            where,
             include: [
                 {
                     model: Module,
@@ -88,7 +105,7 @@ class CourseRepository {
         const where = { userId }
 
         if ('filter' in params) {
-            const { column, option, value } = filterParams.courses[params.filter]
+            const { column, option, value } = filterParams.userCourses[params.filter]
             where[column] = { [option]: value }
         }
 
@@ -172,12 +189,12 @@ class CourseRepository {
     }
 
 
-    async createCourse({ name, description, logo }) {
-        return await Course.create({ name, description, logo })
+    async createCourse({ name, description, logo, difficultyLevel, fieldStudy }) {
+        return await Course.create({ name, description, logo, difficultyLevel, fieldStudy })
     }
 
-    async update({ id, name, description, logo }) {
-        return await Course.update({ name, description, logo }, { where: { id } })
+    async update({ id, name, description, logo, difficultyLevel, fieldStudy }) {
+        return await Course.update({ name, description, logo, difficultyLevel, fieldStudy }, { where: { id } })
     }
 
     async delete(courseId) {

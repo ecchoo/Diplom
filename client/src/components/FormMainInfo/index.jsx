@@ -1,15 +1,16 @@
 import { Form, FormRow, TextField } from "@/UI"
-import { Typography } from "@mui/material"
+import { FormControl, FormHelperText, InputLabel, MenuItem, Typography } from "@mui/material"
 import { MultipleSelect } from "../MultipleSelect"
 import { useDispatch, useSelector } from "react-redux"
 import { setCourse, setCourseAuthors, setCourseTeachers } from "@/store/reducers"
 import { useEffect, useState } from "react"
 import { getTeacherList } from "@/api/teachers"
 import { CourseLoogoAddition } from "../CourseLoogoAddition"
-import { ButtonSave } from "./styled"
+import { ButtonSave, Select } from "./styled"
 import { createCourse, updateCourse } from "@/api"
 import { StatusCodes } from "http-status-codes"
 import { convertErrorsValidation } from "@/utils"
+import { DIFFICULTY_LEVELS, FIELDS_STUDY } from "@/constants"
 
 export const FormMainInfo = () => {
     const dispatch = useDispatch()
@@ -48,7 +49,6 @@ export const FormMainInfo = () => {
             }
         }
     };
-
 
     useEffect(() => {
         const fetchTeachers = async () => {
@@ -91,6 +91,40 @@ export const FormMainInfo = () => {
                         />
                     ) : null
                 }
+            </FormRow>
+            <FormRow>
+                <FormControl error={errorsValidation?.difficultyLevel}>
+                    <InputLabel id="difficultyLevel-label">Уровень сложности</InputLabel>
+                    <Select
+                        labelId="difficultyLevel-label"
+                        id="difficultyLevel"
+                        value={course.difficultyLevel}
+                        name="difficultyLevel"
+                        label="Уровень сложности"
+                        onChange={handleChange}
+                    >
+                        {DIFFICULTY_LEVELS.map(({ text, value }) =>
+                            <MenuItem key={value} value={value}>{text}</MenuItem>
+                        )}
+                    </Select>
+                    <FormHelperText>{errorsValidation?.difficultyLevel}</FormHelperText>
+                </FormControl>
+                <FormControl error={errorsValidation?.fieldStudy}>
+                    <InputLabel id="fieldStudy-label">Область изучения</InputLabel>
+                    <Select
+                        labelId="fieldStudy-label"
+                        id="fieldStudy"
+                        value={course.fieldStudy}
+                        name="fieldStudy"
+                        label="Область изучения"
+                        onChange={handleChange}
+                    >
+                        {FIELDS_STUDY.map(({ text, value }) =>
+                            <MenuItem key={value} value={value} >{text}</MenuItem>
+                        )}
+                    </Select>
+                    <FormHelperText>{errorsValidation?.fieldStudy}</FormHelperText>
+                </FormControl>
             </FormRow>
             <FormRow>
                 <TextField

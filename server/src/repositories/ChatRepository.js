@@ -3,7 +3,15 @@ const { Chat, User, UserChat, Message, CourseChat, ChatNotification, LockedUser 
 const { MESSAGE_TYPES } = require('../constants/messageTypes')
 
 class ChatRepository {
-    async getUserChats(userId) {
+    async getUserChats({ userId, search }) {
+        const where = {}
+
+        if (search) {
+            where.name = {
+                [Op.iLike]: `%${search}%`
+            };
+        }
+
         return await UserChat.findAll({
             where: {
                 userId,
@@ -11,6 +19,7 @@ class ChatRepository {
             include: {
                 model: Chat,
                 as: 'chat',
+                where,
                 include: [
                     {
                         model: User,

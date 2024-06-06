@@ -2,7 +2,7 @@ const { User, UserChat, TeacherCourse, LockedUser } = require('../models')
 
 class UserRepository {
     async getByEmail(email) {
-        return await User.findOne({ where: { email }, attributes: ['id', 'email', 'verified', 'name', 'role', 'photo'] })
+        return await User.findOne({ where: { email }, attributes: ['id', 'email', 'verified', 'name', 'role', 'photo', 'password'] })
     }
 
     async getById(id) {

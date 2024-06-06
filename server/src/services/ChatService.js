@@ -8,7 +8,7 @@ const { CHAT_TYPES } = require('../constants/chatTypes')
 
 class ChatService {
     async getUserChatList({ userId, search }) {
-        const userChats = await chatRepository.getUserChats(userId)
+        const userChats = await chatRepository.getUserChats({ userId, search })
         // return userChats
 
         const transformUserChats = await Promise.all(userChats.map(async ({ chat }) => {
@@ -27,10 +27,10 @@ class ChatService {
             return chatInfo
         }))
 
-        if (search && search.length)
-            return transformUserChats.filter(c =>
-                c.name.toLowerCase().includes(search.toLowerCase())
-            )
+        // if (search && search.length)
+        //     return transformUserChats.filter(c =>
+        //         c.name.toLowerCase().includes(search.toLowerCase())
+        //     )
 
         return transformUserChats
     }
@@ -132,7 +132,7 @@ class ChatService {
             text: 'Чат создан',
             chatId: chat.id
         })
-        
+
         await Promise.all(teachers.map(async ({ userId }) => {
             await this.addUserInChat({ userId, chatId: chat.id })
         }))

@@ -6,7 +6,8 @@ const { validationResult } = require('express-validator')
 class CourseController {
     async list(req, res) {
         try {
-            const courseList = await courseService.getCourseList()
+            const { query: { search, filters } } = req
+            const courseList = await courseService.getCourseList({ search, filters })
 
             return res.status(StatusCodes.OK).json({ courses: courseList })
         } catch (err) {
@@ -34,8 +35,16 @@ class CourseController {
                 return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
             }
 
-            const { name, description, logo, teachers } = req.body
-            const newCourse = await courseService.createCourse({ name, description, logo, teachers })
+            const { name, description, logo, difficultyLevel, fieldStudy, teachers } = req.body
+
+            const newCourse = await courseService.createCourse({
+                name,
+                description,
+                logo,
+                difficultyLevel,
+                fieldStudy,
+                teachers
+            })
 
             return res.status(StatusCodes.CREATED).json({ newCourse })
         } catch (err) {
@@ -51,8 +60,16 @@ class CourseController {
                 return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
             }
 
-            const { id, name, description, logo, teachers } = req.body
-            const updatedCourse = await courseService.updateCourse({ id, name, description, logo, teachers })
+            const { id, name, description, logo, difficultyLevel, fieldStudy, teachers } = req.body
+            const updatedCourse = await courseService.updateCourse({
+                id,
+                name,
+                description,
+                logo,
+                difficultyLevel,
+                fieldStudy,
+                teachers
+            })
 
             return res.status(StatusCodes.OK).json(updatedCourse)
         } catch (err) {

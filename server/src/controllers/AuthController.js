@@ -63,6 +63,7 @@ class AuthController {
                 token
             })
         } catch (err) {
+            console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
         }
     }

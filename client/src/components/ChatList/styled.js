@@ -16,7 +16,7 @@ export const ChatSearch = styled.div`
     justify-content: space-between;
     align-items: center;
     border-radius: ${({ theme }) => theme.spacing(1)};
-    background-color: ${({ theme }) => theme.colors.background}
+    background-color: ${({ theme }) => theme.colors.background};
 `
 
 export const ChatSearchInput = styled.input`

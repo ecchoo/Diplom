@@ -4,12 +4,12 @@ import BookIcon from '@/assets/icons/book.svg'
 import QuickViewIcon from '@/assets/icons/quickView.svg'
 import { useDispatch } from "react-redux"
 import { setIsOpenModalCourse, setSelectedCourseId } from "@/store/reducers"
-import { COURSES } from "@/constants"
+import { COURSES, DIFFICULTY_LEVELS } from "@/constants"
 import { enrollCourse } from "@/api"
 import { toast } from "react-toastify"
 import { useAuth } from "@/hooks"
 
-export const CardCourse = ({ courseId, name, logo, author, countLeassons, courseTime }) => {
+export const CardCourse = ({ courseId, name, logo, author, countLeassons, courseTime, difficultyLevel }) => {
     const dispatch = useDispatch()
     const { isAuth, verified } = useAuth()
 
@@ -19,6 +19,8 @@ export const CardCourse = ({ courseId, name, logo, author, countLeassons, course
         dispatch(setIsOpenModalCourse(true))
         dispatch(setSelectedCourseId(courseId))
     }
+
+    const { text: difficultyLevelText } = DIFFICULTY_LEVELS.find(l => l.value === difficultyLevel)
 
     const handleClickEnroll = async () => {
         try {
@@ -49,7 +51,7 @@ export const CardCourse = ({ courseId, name, logo, author, countLeassons, course
                     </button>
                 </CardHeader>
                 <CardBody>
-                    <TitleCourse>{name}</TitleCourse>
+                    <TitleCourse>{name} - {difficultyLevelText}</TitleCourse>
                     <AuthorInfo>
                         <AuthorAvatar src={author.photo} alt="Author photo" />
                         <AuthorName>от {author.name}</AuthorName>

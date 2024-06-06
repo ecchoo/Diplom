@@ -29,7 +29,6 @@ class AuthService {
         }
 
         const isCorrectPassword = await bcrypt.compare(password, user.password)
-
         if (isCorrectPassword) {
             return user
         }

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Select as MUISelect } from "@mui/material";
 
 export const ButtonSave = styled.button`
     display: flex;
@@ -10,3 +11,11 @@ export const ButtonSave = styled.button`
     color: ${({ theme }) => theme.colors.white};
     background-color: ${({ theme }) => theme.colors.accent};
 `
+
+export const Select = styled(MUISelect)`
+    border-radius: 10px !important;
+
+    &::focus-visible *{
+        outline: none !important;
+    }
+`;

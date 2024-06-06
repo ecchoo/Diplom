@@ -24,17 +24,19 @@ module.exports = (sequelize, DataTypes) => {
         name: DataTypes.STRING,
         description: DataTypes.STRING,
         logo: DataTypes.STRING,
+        difficultyLevel: DataTypes.STRING,
+        fieldStudy: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Course',
         timestamps: true,
         tableName: 'courses',
         hooks: {
-            
+
         }
     });
 
-    return Course; 
+    return Course;
 };
 
 

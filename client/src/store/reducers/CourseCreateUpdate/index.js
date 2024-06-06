@@ -9,6 +9,8 @@ const initialState = {
         name: '',
         description: '',
         logo: '',
+        difficultyLevel: null,
+        fieldStudy: null,
         teachers: [],
         authors: [],
         modules: [],
@@ -36,6 +38,8 @@ const courseCreateUpdateSlice = createSlice({
             state.course.modules = action.payload.modules
             state.course.partitions = action.payload.partitions
             state.course.leassons = action.payload.leassons
+            state.course.difficultyLevel = action.payload.difficultyLevel
+            state.course.fieldStudy = action.payload.fieldStudy
         },
         setCourseTeachers(state, action) {
             state.course.teachers = action.payload
@@ -61,6 +65,8 @@ const courseCreateUpdateSlice = createSlice({
             state.course.modules = []
             state.course.partitions = []
             state.course.leassons = []
+            state.course.difficultyLevel = null
+            state.course.fieldStudy = null
         },
 
         deleteModule(state, action) {

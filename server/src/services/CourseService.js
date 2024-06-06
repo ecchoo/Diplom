@@ -7,10 +7,10 @@ const { CHAT_TYPES } = require("../constants/chatTypes")
 const teacherRepository = require("../repositories/TeacherRepository")
 
 class CourseService {
-    async getCourseList() {
-        const courseList = await courseRepository.list()
+    async getCourseList({ search, filters }) {
+        const courseList = await courseRepository.list({ search, filters })
 
-        return await Promise.all(courseList.map(async ({ id, name, logo, modules, teachers }) => {
+        return await Promise.all(courseList.map(async ({ id, name, logo, difficultyLevel, modules, teachers }) => {
             const { countLeassons, courseTime } = await this.getCountLeassonsAndCourseTime(modules)
             const { user: { name: userName, photo }, TeacherCourse, ...authorInfo } = teachers[0].toJSON()
 
@@ -18,6 +18,7 @@ class CourseService {
                 id,
                 name,
                 logo,
+                difficultyLevel,
                 author: { name: userName, photo, ...authorInfo },
                 countLeassons,
                 courseTime,
@@ -52,8 +53,8 @@ class CourseService {
         return { countLeassons, courseTime }
     }
 
-    async createCourse({ name, description, logo, teachers }) {
-        const newCourse = await courseRepository.createCourse({ name, description, logo })
+    async createCourse({ name, description, logo, difficultyLevel, fieldStudy, teachers }) {
+        const newCourse = await courseRepository.createCourse({ name, description, logo, difficultyLevel, fieldStudy })
 
         await teacherService.createCourseTeachers({ teachers, courseId: newCourse.id })
 
@@ -67,13 +68,13 @@ class CourseService {
         return newCourse
     }
 
-    async updateCourse({ id, name, description, logo, teachers }) {
+    async updateCourse({ id, name, description, logo, difficultyLevel, fieldStudy, teachers }) {
         const oldTeachers = await teacherRepository.getTeachersByCourseId(id)
 
         return await Promise.all([
             await teacherService.deleteCourseTeachers(oldTeachers),
             await teacherService.createCourseTeachers({ teachers, courseId: id }),
-            await courseRepository.update({ id, name, description, logo })
+            await courseRepository.update({ id, name, description, logo, difficultyLevel, fieldStudy })
         ])
     }
 
