@@ -9,8 +9,12 @@ import { useRef, useState } from "react"
 import { useDispatch } from "react-redux"
 import { useOnClickOutside } from "@/hooks"
 import { setDeleteMessageId, setEditMessage, setIsOpenModalConfirmDeleteMessage } from "@/store/reducers"
+import BadWordsNext from 'bad-words-next'
+import ru from 'bad-words-next/data/ru.json'
 
 export const Message = ({ messageId, userAvatar, text, status, type }) => {
+    const badwords = new BadWordsNext({ data: ru })
+
     const dispatch = useDispatch()
     const ref = useRef(null)
     const [isShowActions, setIsShowActions] = useState(false)
@@ -35,7 +39,7 @@ export const Message = ({ messageId, userAvatar, text, status, type }) => {
         <MessageContainer ref={ref} isIncoming={isIncoming}>
             <MessageAvatar src={userAvatar} alt="User avatar" />
             <MessageBody isIncoming={isIncoming}>
-                <p>{text}</p>
+                <p>{badwords.filter(text)}</p>
                 {
                     !isIncoming ? (
                         <img src={checkMark} alt="Check mark" />

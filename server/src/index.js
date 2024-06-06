@@ -128,40 +128,44 @@ io.on('connection', socket => {
     })
 
     socket.on('lockUser', async ({ moderatorId, messageId, userId, accompanyingText, reason, duration }) => {
-        const { chatId } = await messageRepository.getMessageById(messageId)
-        const { name: nameLockedChat } = await chatService.getUserChatById({ userId, chatId })
+        try {
+            const { chatId } = await messageRepository.getMessageById(messageId)
+            const { name: nameLockedChat } = await chatService.getUserChatById({ userId, chatId })
+            
+            const lockedUser = await moderatorService.lockUser({ moderatorId, userId, chatId, messageId, reason, duration })
+            
+            const chatWithModerator = await chatService.getChatBetweenUsers({ firstUserId: moderatorId, secondUserId: userId })
+            if (chatWithModerator) {
+                const message = await chatService.sendMessage({
+                    userId: moderatorId,
+                    chatId: chatWithModerator.id,
+                    text: createBlockedMessage({ chatName: nameLockedChat, duration, reason, accompanyingText }),
+                    currentChatUsers: currentChatsUsers[chatWithModerator.id]
+                })
 
-        const lockedUser = await moderatorService.lockUser({ moderatorId, userId, chatId, messageId, reason, duration })
+                io.emit('messageReceived', message)
+                io.emit('userLocked', lockedUser)
+                return
+            }
 
-        const chatWithModerator = await chatService.getChatBetweenUsers({ firstUserId: moderatorId, secondUserId: userId })
-        if (chatWithModerator) {
-            const message = await chatService.sendMessage({
+            const { id: newChatId } = (await chatService.createChatBetweenUsers({
+                firstUserId: moderatorId,
+                secondUserId: userId
+            })).toJSON()
+
+            await chatService.sendMessage({
                 userId: moderatorId,
-                chatId: chatWithModerator.id,
+                chatId: newChatId,
                 text: createBlockedMessage({ chatName: nameLockedChat, duration, reason, accompanyingText }),
-                currentChatUsers: currentChatsUsers[chatWithModerator.id]
+                currentChatUsers: []
             })
 
-            io.emit('messageReceived', message)
+            const chat = await chatService.getUserChatById({ userId, chatId: newChatId })
+            io.emit('newChat', chat)
             io.emit('userLocked', lockedUser)
-            return
+        } catch (err) {
+            console.log(err)
         }
-
-        const { id: newChatId } = (await chatService.createChatBetweenUsers({
-            firstUserId: moderatorId,
-            secondUserId: userId
-        })).toJSON()
-
-        await chatService.sendMessage({
-            userId: moderatorId,
-            chatId: newChatId,
-            text: createBlockedMessage({ chatName: nameLockedChat, duration, reason, accompanyingText }),
-            currentChatUsers: []
-        })
-
-        const chat = await chatService.getUserChatById({ userId, chatId: newChatId })
-        io.emit('newChat', chat)
-        io.emit('userLocked', lockedUser)
     })
 
     socket.on('unlockUser', async (lockedUserId) => {

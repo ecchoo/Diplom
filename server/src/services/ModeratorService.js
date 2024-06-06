@@ -34,6 +34,10 @@ class ModeratorService {
         await messageRepository.deleteModerationMessageByMessageId(messageId)
         return await userRepository.createLockedUser({ chatId, userId, moderatorId, reason, duration })
     }
+
+    // async addModeratorInChat(chatId) {
+    //     const moderators = await userRepository.getModerators()
+    // }
 }
 
 module.exports = new ModeratorService()

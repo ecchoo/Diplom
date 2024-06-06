@@ -3,15 +3,7 @@ const { Chat, User, UserChat, Message, CourseChat, ChatNotification, LockedUser 
 const { MESSAGE_TYPES } = require('../constants/messageTypes')
 
 class ChatRepository {
-    async getUserChats({ userId, search }) {
-        const where = {}
-
-        if (search) {
-            where.name = {
-                [Op.iLike]: `%${search}%`
-            };
-        }
-
+    async getUserChats(userId) {
         return await UserChat.findAll({
             where: {
                 userId,

@@ -1,4 +1,5 @@
-const { User, UserChat, TeacherCourse, LockedUser } = require('../models')
+const { ROLES } = require('../constants/roles')
+const { User, UserChat, Chat, LockedUser } = require('../models')
 
 class UserRepository {
     async getByEmail(email) {
@@ -16,6 +17,16 @@ class UserRepository {
     async getChatUsers(chatId) {
         return await UserChat.findAll({
             where: { chatId },
+        })
+    }
+
+    async getModerators() {
+        return await User.findAll({
+            where: { role: ROLES.MODERATOR },
+            include: {
+                model: Chat,
+                as: 'userChats'
+            }
         })
     }
 

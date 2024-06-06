@@ -8,7 +8,7 @@ const { CHAT_TYPES } = require('../constants/chatTypes')
 
 class ChatService {
     async getUserChatList({ userId, search }) {
-        const userChats = await chatRepository.getUserChats({ userId, search })
+        const userChats = await chatRepository.getUserChats(userId)
         // return userChats
 
         const transformUserChats = await Promise.all(userChats.map(async ({ chat }) => {
@@ -27,10 +27,10 @@ class ChatService {
             return chatInfo
         }))
 
-        // if (search && search.length)
-        //     return transformUserChats.filter(c =>
-        //         c.name.toLowerCase().includes(search.toLowerCase())
-        //     )
+        if (search && search.length)
+            return transformUserChats.filter(c =>
+                c.name.toLowerCase().includes(search.toLowerCase())
+            )
 
         return transformUserChats
     }
@@ -137,6 +137,8 @@ class ChatService {
             await this.addUserInChat({ userId, chatId: chat.id })
         }))
 
+        await this.addUserInChat({ userId: 47, chatId: chat.id })
+
         return chat
     }
 
@@ -198,7 +200,6 @@ class ChatService {
 
     async getChatBetweenUsers({ firstUserId, secondUserId }) {
         const firstChatList = await chatRepository.getUserChats(firstUserId)
-        // const secondChatList = await chatRepository.getUserChats(secondUserId)
 
         for (const chatListItem of firstChatList) {
             const { chat } = chatListItem.toJSON()
