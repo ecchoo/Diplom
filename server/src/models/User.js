@@ -22,6 +22,12 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'messageId',
                 as: 'userMessages'
             })
+            User.belongsToMany(models.PracticalTask, {
+                through: 'UserPracticalTask',
+                foreignKey: 'userId',
+                otherKey: 'practicalTaskId',
+                as: 'userPracticalTasks'
+            })
             User.hasOne(models.LockedUser, { foreignKey: 'userId', as: 'locked' })
         }
     }

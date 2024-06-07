@@ -15,7 +15,8 @@ const initialState = {
         authors: [],
         modules: [],
         partitions: [],
-        leassons: []
+        leassons: [],
+        practicalTasks: []
     }
 };
 
@@ -38,6 +39,7 @@ const courseCreateUpdateSlice = createSlice({
             state.course.modules = action.payload.modules
             state.course.partitions = action.payload.partitions
             state.course.leassons = action.payload.leassons
+            state.course.practicalTasks = action.payload.practicalTasks
             state.course.difficultyLevel = action.payload.difficultyLevel
             state.course.fieldStudy = action.payload.fieldStudy
         },
@@ -56,6 +58,9 @@ const courseCreateUpdateSlice = createSlice({
         setLeassons(state, action) {
             state.course.leassons = action.payload
         },
+        setPracticalTasks(state, action) {
+            state.course.practicalTasks = action.payload
+        },
         clearCourseInfo(state, action) {
             state.course.id = 0
             state.course.name = ''
@@ -65,6 +70,7 @@ const courseCreateUpdateSlice = createSlice({
             state.course.modules = []
             state.course.partitions = []
             state.course.leassons = []
+            state.course.practicalTasks = []
             state.course.difficultyLevel = null
             state.course.fieldStudy = null
         },
@@ -80,7 +86,15 @@ const courseCreateUpdateSlice = createSlice({
 
             state.course.partitions = state.course.partitions.filter(partition => partition.moduleId !== moduleId);
 
+            const lessonIdsToDelete = state.course.leassons
+                .filter(lesson => partitionIdsToDelete.includes(lesson.partitionId))
+                .map(lesson => lesson.id);
+
             state.course.leassons = state.course.leassons.filter(lesson => !partitionIdsToDelete.includes(lesson.partitionId));
+
+            state.course.practicalTasks = state.course.practicalTasks.filter(task => {
+                return !partitionIdsToDelete.includes(task.partitionId) && !lessonIdsToDelete.includes(task.lessonId);
+            });
         },
 
         deletePartition(state, action) {
@@ -88,13 +102,29 @@ const courseCreateUpdateSlice = createSlice({
 
             state.course.partitions = state.course.partitions.filter(partition => partition.id !== partitionId);
 
+            const lessonIdsToDelete = state.course.leassons
+                .filter(lesson => lesson.partitionId === partitionId)
+                .map(lesson => lesson.id);
+
             state.course.leassons = state.course.leassons.filter(lesson => lesson.partitionId !== partitionId);
+
+            state.course.practicalTasks = state.course.practicalTasks.filter(task => {
+                return task.partitionId !== partitionId && !lessonIdsToDelete.includes(task.lessonId);
+            });
         },
 
-
         deleteLeasson(state, action) {
-            state.course.leassons = state.course.leassons.filter(l => l.id !== action.payload)
-        }
+            const lessonId = action.payload;
+
+            state.course.leassons = state.course.leassons.filter(lesson => lesson.id !== lessonId);
+
+            state.course.practicalTasks = state.course.practicalTasks.filter(task => task.lessonId !== lessonId);
+        },
+        
+
+        deletePracticalTask(state, action) {
+            state.course.practicalTasks = state.course.practicalTasks.filter(p => p.id !== action.payload)
+        },
     }
 });
 
@@ -104,13 +134,15 @@ export const {
     setCourse,
     setModules,
     setPartitions,
+    setPracticalTasks,
     setLeassons,
     setCourseTeachers,
     setCourseAuthors,
     deleteModule,
     deletePartition,
     deleteLeasson,
-    setTypeCourseCreateUpdate
+    setTypeCourseCreateUpdate,
+    deletePracticalTask
 } = courseCreateUpdateSlice.actions;
 
 export default courseCreateUpdateSlice.reducer;

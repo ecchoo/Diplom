@@ -77,4 +77,15 @@ exports.customValidation = {
             mustBeGreaterThanZero: 'Время урока должно быть больше нуля'
         }
     },
+    practicalTasks: {
+        condition: {
+            required: "Условие обязательно для заполнения.",
+            mustBeString: "Условие должно быть строкой."
+        },
+        leassonId: {
+            required: 'Урок обязателен для заполнения',
+            mustBeInteger: 'Урок должен быть числом',
+            notFound: 'Выбранный вами урок не существует'
+        },
+    },
 };

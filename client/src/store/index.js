@@ -13,6 +13,7 @@ import modalLockUserReducer from './reducers/ModalLockUser'
 import moderatorReducer from './reducers/Moderator'
 import courseCreateUpdateReducer from './reducers/CourseCreateUpdate'
 import teacherReducer from './reducers/Teacher'
+import modalTaskFileReducer from './reducers/ModalTaskFile'
 
 const persistConfig = {
     key: 'root',
@@ -31,7 +32,8 @@ const rootReducer = combineReducers({
     modalLockUser: modalLockUserReducer,
     moderator: moderatorReducer,
     courseCreateUpdate: courseCreateUpdateReducer,
-    teacher: teacherReducer
+    teacher: teacherReducer,
+    modalTaskFile: modalTaskFileReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

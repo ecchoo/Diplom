@@ -24,6 +24,14 @@ export const LEASSONS_ENDPOINTS = {
     DELETE: '/leassons/delete'
 }
 
+export const PRACTICAL_TASKS_ENDPOINTS = {
+    CREATE: '/practical-tasks/create',
+    UPDATE: '/practical-tasks/update',
+    DELETE: '/practical-tasks/delete',
+    SUBMIT: '/practical-tasks/submit',
+    USER_PRACTICAL_TASKS: '/practical-tasks/user-practical-tasks'
+}
+
 export const DASHBOARD_ENDPOINTS = {
     CHAT_LIST: '/dashboard/chat-list',
     USER_COURSE_LIST: '/dashboard/user-course-list',

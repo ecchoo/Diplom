@@ -2,6 +2,7 @@ const express = require("express");
 const http = require('http')
 const { Server } = require('socket.io')
 const cors = require('cors')
+
 const coursesRouter = require('./routes/coursesRoutes')
 const authRouter = require('./routes/authRoutes')
 const dashboardRouter = require('./routes/dashboardRoutes')
@@ -10,7 +11,7 @@ const teacherRouter = require('./routes/teacherRouter')
 const modulesRouter = require('./routes/modulesRoutes')
 const partitionsRouter = require('./routes/partitionsRoutes')
 const leassonsRouter = require('./routes/leassonsRoutes')
-
+const practicalTasksRouter = require('./routes/practicalTasksRoutes')
 
 const chatService = require('./services/ChatService')
 const messageRepository = require('./repositories/MessageRepository')
@@ -39,6 +40,7 @@ app.use('/api/teachers', teacherRouter)
 app.use('/api/modules', modulesRouter)
 app.use('/api/partitions', partitionsRouter)
 app.use('/api/leassons', leassonsRouter)
+app.use('/api/practical-tasks', practicalTasksRouter)
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -131,9 +133,9 @@ io.on('connection', socket => {
         try {
             const { chatId } = await messageRepository.getMessageById(messageId)
             const { name: nameLockedChat } = await chatService.getUserChatById({ userId, chatId })
-            
+
             const lockedUser = await moderatorService.lockUser({ moderatorId, userId, chatId, messageId, reason, duration })
-            
+
             const chatWithModerator = await chatService.getChatBetweenUsers({ firstUserId: moderatorId, secondUserId: userId })
             if (chatWithModerator) {
                 const message = await chatService.sendMessage({

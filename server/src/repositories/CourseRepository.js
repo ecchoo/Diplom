@@ -1,4 +1,4 @@
-const { Course, Module, Partition, Leasson, User, Teacher, UserCourse, Review, TeacherCourse } = require('../models')
+const { Course, Module, Partition, Leasson, PracticalTask, User, Teacher, UserCourse, Review, TeacherCourse, UserPracticalTask } = require('../models')
 const { ROLES } = require('../constants/roles')
 const { filter: filterParams } = require('../config/params')
 const { Op, where } = require('sequelize')
@@ -32,8 +32,11 @@ class CourseRepository {
                         as: 'partitions',
                         include: {
                             model: Leasson,
-                            as: 'leassons'
-
+                            as: 'leassons',
+                            include: {
+                                model: PracticalTask,
+                                as: 'practicalTasks'
+                            }
                         }
                     }
                 },
@@ -66,7 +69,11 @@ class CourseRepository {
                         as: 'partitions',
                         include: {
                             model: Leasson,
-                            as: 'leassons'
+                            as: 'leassons',
+                            include: {
+                                model: PracticalTask,
+                                as: 'practicalTasks',
+                            }
                         }
                     }
                 },

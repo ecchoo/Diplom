@@ -1,21 +1,53 @@
-import { FormControl, FormHelperText, InputLabel, MenuItem, Typography } from "@mui/material"
-import { Actions, ButtonAdd, ButtonDelete, ButtonNavigate, ButtonSave, Input, Management, LeassonAdditionHeader, LeassonAdditionWrapper, Navigation, Row, Select, QuillWrapper } from "./styled"
+import {
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    MenuItem,
+    Typography
+} from "@mui/material"
+import {
+    Actions,
+    ButtonAdd,
+    ButtonDelete,
+    ButtonNavigate,
+    ButtonSave,
+    Input,
+    Management,
+    LeassonAdditionHeader,
+    LeassonAdditionWrapper,
+    Navigation,
+    Row,
+    Select,
+    QuillWrapper
+} from "./styled"
 import { Add, NavigateNext, NavigateBefore } from "@mui/icons-material"
 import { useDispatch, useSelector } from "react-redux"
-import Quill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { useEffect, useState } from "react"
 import { deleteLeasson, setLeassons } from "@/store/reducers"
-import { QUILL_OPTIONS } from "@/constants"
 import { createLeasson, updateLeasson, deleteLeasson as deleteLeassonApi } from "@/api"
 import { StatusCodes } from "http-status-codes"
 import { convertErrorsValidation } from "@/utils"
+import TurndownService from "turndown";
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
 
 export const FormLeassons = () => {
-    const initialLeasson = { id: 0, name: '', time: 0, partitionId: null, content: '' }
+    const initialLeasson = {
+        id: 0,
+        name: '',
+        time: 0,
+        partitionId: null,
+        content: ''
+    }
 
     const dispatch = useDispatch()
-    const { courseCreateUpdate: { course: { partitions, leassons } } } = useSelector(state => state)
+    const {
+        courseCreateUpdate: {
+            course: { partitions, leassons }
+        }
+    } = useSelector(state => state)
 
     const [leasson, setLeasson] = useState(initialLeasson)
     const [currentLeassonIndex, setCurrentLeassonIndex] = useState(0)
@@ -28,21 +60,22 @@ export const FormLeassons = () => {
 
     const isDisabledForm = !partitions.length
 
+    const mdParser = new MarkdownIt();
+    const turndownService = new TurndownService();
+
+    const handleEditorChange = ({ text }) => {
+        console.log(leasson.content)
+        setLeasson({ ...leasson, content: text })
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target
         setLeasson({ ...leasson, [name]: value })
     }
 
-    const handleChangeQuill = (value) => {
-        setLeasson((prev) => ({ ...prev, content: value }))
-    }
-
     const handleAdd = () => {
         setCurrentLeassonIndex(leassons.length)
-        setLeasson(prevLeasson => {
-            return { ...prevLeasson, ...initialLeasson }
-        })
+        setLeasson({ ...initialLeasson })
     }
 
     const handleSave = async () => {
@@ -55,17 +88,14 @@ export const FormLeassons = () => {
 
             if (isAddLeasson) {
                 const { data: { newLeasson } } = await createLeasson(leasson)
-
                 updatedLeassons = [...leassons, newLeasson]
                 setLeasson(newLeasson)
             } else {
                 await updateLeasson(leasson)
-
                 updatedLeassons = leassons.map(partitionLeasson => {
                     if (partitionLeasson.id === leasson.id) {
                         return leasson
                     }
-
                     return partitionLeasson
                 })
             }
@@ -97,8 +127,7 @@ export const FormLeassons = () => {
             dispatch(deleteLeasson(leasson.id))
 
             const currentCountLeassons = leassons.length - 1
-            const isLastPartitionDeleted = !currentCountLeassons
-                || currentLeassonIndex >= currentCountLeassons
+            const isLastPartitionDeleted = !currentCountLeassons || currentLeassonIndex >= currentCountLeassons
 
             if (isLastPartitionDeleted) {
                 setCurrentLeassonIndex(currentCountLeassons)
@@ -109,7 +138,6 @@ export const FormLeassons = () => {
         } catch (err) {
             console.error(err)
         }
-
     }
 
     const handleNext = () => isNext && handleNavigate(1)
@@ -117,17 +145,24 @@ export const FormLeassons = () => {
 
     useEffect(() => {
         if (initialLoad && leassons.length > 0) {
-            setLeasson(leassons[0]);
-            setCurrentLeassonIndex(0);
-            setInitialLoad(false);
+            const initialContent = leassons[0].content
+            setLeasson({ ...leassons[0], content: initialContent })
+            setCurrentLeassonIndex(0)
+            setInitialLoad(false)
         } else if (leassons.length === 0) {
-            setLeasson(initialLeasson);
-            setCurrentLeassonIndex(0);
+            setLeasson(initialLeasson)
+            setCurrentLeassonIndex(0)
         } else if (currentLeassonIndex >= leassons.length) {
-            setCurrentLeassonIndex(leassons.length - 1);
-            setLeasson(leassons[leassons.length - 1]);
+            setCurrentLeassonIndex(leassons.length - 1)
+            setLeasson(leassons[leassons.length - 1])
         }
-    }, [leassons]);
+    }, [leassons])
+
+    useEffect(() => {
+        if (leassons.length > 0 && currentLeassonIndex < leassons.length) {
+            setLeasson(leassons[currentLeassonIndex])
+        }
+    }, [currentLeassonIndex, leassons])
 
     return (
         <LeassonAdditionWrapper>
@@ -162,9 +197,11 @@ export const FormLeassons = () => {
                         onChange={handleChange}
                         disabled={isDisabledForm}
                     >
-                        {partitions.map((partition) =>
-                            <MenuItem key={partition.id} value={partition.id}>{partition.name}</MenuItem>
-                        )}
+                        {partitions.map((partition) => (
+                            <MenuItem key={partition.id} value={partition.id}>
+                                {partition.name}
+                            </MenuItem>
+                        ))}
                     </Select>
                     <FormHelperText>{errorsValidation?.partitionId}</FormHelperText>
                 </FormControl>
@@ -181,14 +218,11 @@ export const FormLeassons = () => {
                 />
             </Row>
             <QuillWrapper error={errorsValidation?.content}>
-                <Quill
+                <MdEditor
                     value={leasson.content}
-                    onChange={handleChangeQuill}
-                    modules={{
-                        toolbar: QUILL_OPTIONS,
-                    }}
-                    placeholder="Содержание урока"
-                    readOnly={isDisabledForm}
+                    style={{ height: '500px' }}
+                    renderHTML={text => mdParser.render(text)}
+                    onChange={handleEditorChange}
                 />
                 <FormHelperText>{errorsValidation?.content}</FormHelperText>
             </QuillWrapper>

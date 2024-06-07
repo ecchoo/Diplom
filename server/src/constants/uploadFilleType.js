@@ -6,5 +6,9 @@ module.exports.UPLOAD_PATHS = [
     {
         type: 'logo',
         folder: 'logos'
+    },
+    {
+        type: 'task',
+        folder: 'tasks'
     }
 ]

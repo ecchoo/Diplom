@@ -16,4 +16,9 @@ export const ButtonCreateCourse = styled.button`
     justify-content: center;
     align-items: center;
     width: max-content;
+    align-self: flex-end;
+    background-color: ${({ theme }) => theme.colors.accent};
+    padding: ${({ theme }) => theme.spacing(1, 4)};
+    color: ${({ theme }) => theme.colors.white};
+    border-radius: ${({ theme }) => theme.spacing(1)};
 `

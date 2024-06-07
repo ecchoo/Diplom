@@ -8,6 +8,7 @@ const initialState = {
     role: null,
     verified: false,
     photo: null,
+    tasks: []
 };
 
 const userSlice = createSlice({
@@ -22,6 +23,9 @@ const userSlice = createSlice({
             state.verified = action.payload.verified
             state.photo = action.payload.photo
             state.role = action.payload.role
+        },
+        setTasks(state, action){
+            state.tasks = action.payload
         },
         setPersonalDataUser(state, action) {
             state.name = action.payload.name
@@ -42,6 +46,6 @@ const userSlice = createSlice({
     }
 });
 
-export const { setUser, setPersonalDataUser, logoutUser, setVerified } = userSlice.actions;
+export const { setTasks, setUser, setPersonalDataUser, logoutUser, setVerified } = userSlice.actions;
 
 export default userSlice.reducer;

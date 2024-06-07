@@ -1,6 +1,10 @@
 const { Leasson } = require('../models')
 
 class LeassonRepository {
+    async getById(id) {
+        return await Leasson.findOne({ where: { id } })
+    }
+
     async create({ name, partitionId, time, content }) {
         return await Leasson.create({ name, partitionId, time, content })
     }

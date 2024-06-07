@@ -11,6 +11,7 @@ import { setCourse, setIsOpenCourseCreateUpdate } from '@/store/reducers'
 import { createCourse, getCourseById, updateCourse } from '@/api'
 import { transformCourse } from '@/utils'
 import { COURSE_CREATE_UPDATE_TYPES } from '@/constants'
+import { FormPracticalTasks } from '../FormPracticalTasks'
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />
@@ -52,6 +53,7 @@ export const DialogCourseCreateUpdate = () => {
                     <FormModules />
                     <FormPartitions />
                     <FormLeassons />
+                    <FormPracticalTasks />
                 </Container>
             </DialogContent>
         </Dialog>

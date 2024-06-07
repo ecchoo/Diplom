@@ -18,19 +18,23 @@ export const TeacherCardCourse = ({ courseId, name, logo, countStudents }) => {
         const partitions = editCourse.modules.flatMap((m, index) => {
             return m.partitions.map(partition => ({
                 ...partition,
-                module: index
+                // module: index
             }))
         })
 
         const leassons = partitions.flatMap((p, index) => {
             return p.leassons.map(leasson => ({
                 ...leasson,
-                partition: index
+                // partition: index
             }))
         })
 
+        const practicalTasks = leassons.flatMap(l => {
+            return l.practicalTasks
+        })
+
         dispatch(setTypeCourseCreateUpdate(COURSE_CREATE_UPDATE_TYPES.UPDATE))
-        dispatch(setCourse({ ...editCourse, partitions, leassons }))
+        dispatch(setCourse({ ...editCourse, partitions, leassons, practicalTasks }))
         dispatch(setIsOpenCourseCreateUpdate(true))
     }
 
@@ -42,9 +46,9 @@ export const TeacherCardCourse = ({ courseId, name, logo, countStudents }) => {
                     <IconButton onClick={handleEdit}>
                         <Edit />
                     </IconButton>
-                    <IconButton>
+                    {/* <IconButton>
                         <Delete />
-                    </IconButton>
+                    </IconButton> */}
                 </Actions>
             </CardHeader>
             <CardBody>

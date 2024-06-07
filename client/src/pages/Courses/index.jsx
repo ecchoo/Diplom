@@ -73,7 +73,7 @@ export const Courses = () => {
                                 onChange={handleChangeDifficultyLevel.bind(null, 'all')}
                                 checked={filterParams.filters.difficultyLevel === 'all'}
                             />
-                            <Label htmlFor="alldifficultyLevels">Любой</Label>
+                            <Label htmlFor="alldifficultyLevels">Все</Label>
                         </CheckboxWrapper>
                         {DIFFICULTY_LEVELS.map(({ text, value }) =>
                             <CheckboxWrapper>
@@ -96,7 +96,7 @@ export const Courses = () => {
                                 onChange={handleChangeFieldStudy.bind(null, 'all')}
                                 checked={filterParams.filters.fieldStudy === 'all'}
                             />
-                            <Label htmlFor="allFieldStudy">Любая</Label>
+                            <Label htmlFor="allFieldStudy">Все</Label>
                         </CheckboxWrapper>
                         {FIELDS_STUDY.map(({ text, value }) =>
                             <CheckboxWrapper>
