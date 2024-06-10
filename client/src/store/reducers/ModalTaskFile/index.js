@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     isOpen: false,
-    taskId: 0
+    taskId: 0,
+    courseId: 0,
+    nextTaskId: 0
 };
 
 const modalTaskFileSlice = createSlice({
@@ -14,10 +16,16 @@ const modalTaskFileSlice = createSlice({
         },
         setTaskId(state, action) {
             state.taskId = action.payload
+        },
+        setNextTaskId(state, action) {
+            state.nextTaskId = action.payload
+        },
+        setCourseIdModalTaskFile(state, action) {
+            state.courseId = action.payload
         }
     }
 })
 
-export const { setIsOpenModalTaskFile, setTaskId } = modalTaskFileSlice.actions
+export const { setIsOpenModalTaskFile, setTaskId, setCourseIdModalTaskFile, setNextTaskId } = modalTaskFileSlice.actions
 
 export default modalTaskFileSlice.reducer

@@ -11,6 +11,7 @@ import { AUTH_FORMS } from "@/constants"
 import { GoogleAuth } from "../GoogleAuth"
 import { AuthSocial } from "@/UI/AuthSocial"
 import { GitHubAuth } from "../GitHubAuth"
+import { toast } from "react-toastify"
 
 export const FormLogin = () => {
     const dispatch = useDispatch()
@@ -45,6 +46,12 @@ export const FormLogin = () => {
             if (err.response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
                 const convertedErrors = convertErrorsValidation(err.response.data.errors)
                 setErrorsValidation(convertedErrors)
+            } else if (err.response.status === StatusCodes.UNAUTHORIZED) {
+                setErrorsValidation({
+                    email: 'Пользователя с такими данными не существует',
+                    password: 'Пользователяс такими данными не существует'
+                })
+                // toast('')
             }
         }
     }

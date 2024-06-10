@@ -5,20 +5,29 @@ const generatePassword = require('../utils/generatePassword')
 const mailService = require('./MailService')
 const axios = require('axios')
 const { URLS } = require('../constants/urls')
+const teacherRepository = require('../repositories/TeacherRepository')
 
 
 class AuthService {
-    async register({ name, email, password, verified, photo }) {
+    async registerUser({ name, email, password, verified, photo, role = ROLES.STUDENT }) {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         return await userRepository.create({
             name: name,
             password: hashedPassword,
-            role: ROLES.STUDENT,
+            role,
             email,
             verified,
             photo
         })
+    }
+
+    async registerTeacher({ name, password, email, bio, yearsExperience }) {
+        console.log('reg teacher')
+        const user = await this.registerUser({ name, password, email, role: ROLES.TEACHER })
+        await teacherRepository.createTeacher({ userId: user.id, bio, yearsExperience })
+
+        return user
     }
 
     async login({ password, email }) {

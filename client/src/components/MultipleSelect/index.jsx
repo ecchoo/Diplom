@@ -18,13 +18,20 @@ const MenuProps = {
     },
 }
 
-export const MultipleSelect = ({ options, placeholder, onChange, error, helperText, initialValues = [] }) => {
+export const MultipleSelect = ({ options, placeholder, onChange, error, helperText, initialValues = [], disableOptions = [] }) => {
     const [selectedValues, setSelectedValues] = useState(initialValues)
 
     const handleChange = (e) => {
         const { target: { value } } = e
-        setSelectedValues(typeof value === 'string' ? value.split(',') : value)
-        onChange(value)
+        const selected = typeof value === 'string' ? value.split(',') : value
+
+        // Ensure that disabled options (e.g., current user) are not removed
+        const updatedSelected = options.filter(option =>
+            selected.includes(option) || disableOptions.includes(option.id)
+        )
+
+        setSelectedValues(updatedSelected)
+        onChange(updatedSelected)
     }
 
     useEffect(() => {
@@ -45,7 +52,7 @@ export const MultipleSelect = ({ options, placeholder, onChange, error, helperTe
                 renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {selected.map((value) => (
-                            <Chip key={value.name} label={value.name} />
+                            <Chip key={value.id} label={value.name} />
                         ))}
                     </Box>
                 )}
@@ -53,8 +60,9 @@ export const MultipleSelect = ({ options, placeholder, onChange, error, helperTe
             >
                 {options.map((option) => (
                     <MenuItem
-                        key={option.name}
+                        key={option.id}
                         value={option}
+                        disabled={disableOptions.includes(option.id)}
                     >
                         {option.name}
                     </MenuItem>

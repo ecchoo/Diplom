@@ -1,7 +1,7 @@
-const { Course, Module, Partition, Leasson, PracticalTask, User, Teacher, UserCourse, Review, TeacherCourse, UserPracticalTask } = require('../models')
+const { Course, Module, UserProgress, Partition, Answer, Leasson, PracticalTask, User, Teacher, UserCourse, Review, TeacherCourse, Test, Question } = require('../models')
 const { ROLES } = require('../constants/roles')
 const { filter: filterParams } = require('../config/params')
-const { Op, where } = require('sequelize')
+const { Op } = require('sequelize')
 
 class CourseRepository {
     async list({ search, filters }) {
@@ -99,6 +99,10 @@ class CourseRepository {
                         as: 'user',
                         attributes: ['id', 'name', 'photo']
                     }
+                },
+                {
+                    model: Test,
+                    as: 'test'
                 }
             ]
         })
@@ -130,9 +134,21 @@ class CourseRepository {
                             as: 'partitions',
                             include: {
                                 model: Leasson,
-                                as: 'leassons'
+                                as: 'leassons',
+                                include: [
+                                    {
+                                        model: PracticalTask,
+                                        as: 'practicalTasks',
+                                    },
+                                ]
                             }
                         }
+                    },
+                    {
+                        model: UserProgress,
+                        as: 'userProgress',
+                        attributes: ['id', 'courseId', 'userId', 'currentLeassonId', 'currentPracticalTaskId'],
+                        where: { userId }
                     },
                     {
                         model: Teacher,
@@ -150,8 +166,63 @@ class CourseRepository {
                     }
                 ],
             },
-            attributes: ['progress', 'createdAt'],
+            attributes: ['createdAt'],
             where,
+        })
+    }
+
+    async getUserCourseById({ courseId, userId }) {
+        return UserCourse.findOne({
+            where: { courseId, userId },
+            include: {
+                model: Course,
+                as: 'course',
+                attributes: ['id', 'name', 'logo'],
+                include: [
+                    {
+                        model: Module,
+                        as: 'modules',
+                        include: {
+                            model: Partition,
+                            as: 'partitions',
+                            include: {
+                                model: Leasson,
+                                as: 'leassons',
+                                include: [
+                                    {
+                                        model: PracticalTask,
+                                        as: 'practicalTasks',
+                                    },
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        model: UserProgress,
+                        as: 'userProgress',
+                        attributes: ['id', 'courseId', 'userId', 'currentLeassonId', 'currentPracticalTaskId'],
+                        where: { userId }
+                    },
+                    {
+                        model: Teacher,
+                        include: {
+                            model: User,
+                            as: 'user',
+                            attributes: ['name', 'photo']
+                        },
+                        attributes: ['id', 'userId'],
+                        as: 'teachers',
+                        through: {
+                            attributes: ['isAuthor'],
+                            where: { isAuthor: true }
+                        },
+                    },
+                    {
+                        model: Test,
+                        as: 'test'
+                    }
+                ],
+            },
         })
     }
 
@@ -187,6 +258,16 @@ class CourseRepository {
                             attributes: ['id', 'name', 'photo'],
                             through: {
                                 attributes: []
+                            },
+                            include: {
+                                model: UserProgress,
+                                as: 'userProgress',
+                                include: {
+                                    model: Leasson,
+                                    as: 'currentLeasson',
+                                    required: false,
+                                    attributes: ['name']
+                                }
                             }
                         }
                     ],
@@ -195,6 +276,71 @@ class CourseRepository {
         });
     }
 
+    async getTeacherCourseByCourseId({ teacherId, courseId }) {
+        console.log(teacherId)
+        return await TeacherCourse.findOne({
+            where: { teacherId, courseId },
+            attributes: [],
+            include: [
+                {
+                    model: Course,
+                    as: 'course',
+                    attributes: ['id', 'name', 'logo'],
+                    include: [
+                        {
+                            model: Module,
+                            as: 'modules',
+                            required: false,
+                            include: {
+                                model: Partition,
+                                as: 'partitions',
+                                required: false,
+                                include: {
+                                    model: Leasson,
+                                    as: 'leassons',
+                                    required: false,
+                                    include: {
+                                        model: PracticalTask,
+                                        as: 'practicalTasks',
+                                    },
+                                }
+                            }
+                        },
+                        {
+                            model: User,
+                            as: 'courseUsers',
+                            attributes: ['id', 'name', 'photo'],
+                            through: {
+                                attributes: ['createdAt']
+                            },
+                            include: {
+                                model: UserProgress,
+                                as: 'userProgress',
+                                include: {
+                                    model: Leasson,
+                                    as: 'currentLeasson',
+                                    required: false,
+                                    attributes: ['name']
+                                }
+                            }
+                        },
+                        {
+                            model: Test,
+                            as: 'test',
+                            include: {
+                                model: Question,
+                                as: 'questions',
+                                include: {
+                                    model: Answer,
+                                    as: 'answers'
+                                }
+                            }
+                        }
+                    ],
+                },
+            ]
+        });
+    }
 
     async createCourse({ name, description, logo, difficultyLevel, fieldStudy }) {
         return await Course.create({ name, description, logo, difficultyLevel, fieldStudy })
@@ -210,6 +356,10 @@ class CourseRepository {
 
     async createUserCourse({ courseId, userId }) {
         return await UserCourse.create({ courseId, userId })
+    }
+
+    async updateUserCourse({ courseId, userId }) {
+        return await UserCourse.update({ progress }, { where: { courseId, userId } })
     }
 }
 

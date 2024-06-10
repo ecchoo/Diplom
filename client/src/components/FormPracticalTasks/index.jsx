@@ -12,7 +12,7 @@ export const FormPracticalTasks = () => {
     const initialPracticalTask = { id: 0, condition: '', leassonId: null, }
 
     const dispatch = useDispatch()
-    const { courseCreateUpdate: { course: { leassons, practicalTasks } } } = useSelector(state => state)
+    const { courseCreateUpdate: { course: { id: courseId, leassons, practicalTasks } } } = useSelector(state => state)
     const [practicalTask, setPracticalTask] = useState(initialPracticalTask)
     const [currentPracticalTaskIndex, setCurrentPracticalTaskIndex] = useState(0)
     const [initialLoad, setInitialLoad] = useState(true)
@@ -43,7 +43,7 @@ export const FormPracticalTasks = () => {
             let updatedPracticalTasks = []
 
             if (isAddPracticalTask) {
-                const { data: { newPracticalTask } } = await createPracticalTask(practicalTask)
+                const { data: { newPracticalTask } } = await createPracticalTask({ ...practicalTask, courseId })
 
                 updatedPracticalTasks = [...practicalTasks, newPracticalTask]
                 setPracticalTask(newPracticalTask)
@@ -82,7 +82,7 @@ export const FormPracticalTasks = () => {
         try {
             if (!isDelete) return
 
-            await deletePracticalTaskApi(practicalTask.id)
+            await deletePracticalTaskApi({ practicalTaskId: practicalTask.id, courseId })
             dispatch(deletePracticalTask(practicalTask.id))
 
             const currentCountPracticalTask = practicalTasks.length - 1

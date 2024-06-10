@@ -31,14 +31,14 @@ export const TeacherCourses = () => {
                 Добавить
             </ButtonCreateCourse>
             <Courses>
-                {courses?.map(({ id, name, logo, courseUsers }) =>
+                {courses && courses.length ? courses?.map(({ id, name, logo, courseUsers }) =>
                     <TeacherCardCourse
                         courseId={id}
                         name={name}
                         logo={logo}
-                        countStudents={courseUsers.length}
+                        countStudents={courseUsers?.length || 0}
                     />
-                )}
+                ) : null}
             </Courses>
         </Container>
     )

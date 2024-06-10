@@ -12,6 +12,7 @@ export const VerifyEmail = () => {
     const navigate = useNavigate()
 
     const { user: { email } } = useSelector(state => state)
+    console.log(email)
 
     useEffect(() => {
         const fetchVerifyEmail = async () => {
@@ -30,12 +31,8 @@ export const VerifyEmail = () => {
 
         }
 
-        fetchVerifyEmail()
+        email && fetchVerifyEmail()
     }, [])
 
-    return (
-        <>
-            {email}
-        </>
-    )
+    return <></>
 }

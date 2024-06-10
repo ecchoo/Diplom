@@ -1,5 +1,6 @@
 import { Avatar } from "@/UI";
 import { LinearProgress } from "@mui/material";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Card = styled.div`
@@ -43,7 +44,7 @@ export const CardBody = styled.div`
 export const TitleCourse = styled.h1`
     font-size: 20px;
     font-weight: 500;
-    color: ${({ theme }) => theme.colors.primary}
+    color: ${({ theme }) => theme.colors.primary};
 `
 
 export const AuthorInfo = styled.div`
@@ -76,7 +77,14 @@ export const CourseInfo = styled.div`
 export const CardFooter = styled.div`
     width: 100%;
     display: flex;
-    /* column-gap: 140px; */
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+`
+
+export const Progress = styled.div`
+    width: 100%;
+    display: flex;
     align-items: center;
     justify-content: space-between;
 `
@@ -93,5 +101,17 @@ export const CourseProgressBar = styled(LinearProgress)`
         border-radius: 5px;
         background-color: ${({ theme }) => theme.colors.progressBar.secondary};
     }
+`
+
+export const ButtonContinue = styled(Link)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: ${({ theme }) => theme.spacing(1, 2)};
+    background-color: ${({ theme }) => theme.colors.accent};
+    color: ${({ theme }) => theme.colors.white};
+    border-radius: ${({ theme }) => theme.spacing(1)};
+    width: 100%;
+    margin-top: ${({ theme }) => theme.spacing(1)};
 `
 

@@ -5,6 +5,7 @@ const moduleService = require('./ModuleService')
 const teacherService = require('./TeacherService')
 const { CHAT_TYPES } = require("../constants/chatTypes")
 const teacherRepository = require("../repositories/TeacherRepository")
+const userRepository = require("../repositories/UserRepository")
 
 class CourseService {
     async getCourseList({ search, filters }) {
@@ -44,7 +45,7 @@ class CourseService {
         const { countLeassons, courseTime } = courseModules.reduce((accumulator, { partitions }) => {
             partitions.forEach(({ leassons }) => {
                 accumulator.countLeassons += leassons.length
-                leassons.forEach(lesson => accumulator.courseTime += lesson.time)
+                leassons.forEach(leasson => accumulator.courseTime += leasson.time)
             })
 
             return accumulator
@@ -79,14 +80,38 @@ class CourseService {
     }
 
     async enrollCourse({ userId, courseId }) {
-        const { name } = await courseRepository.getById(courseId)
-        const { id } = await chatRepository.getCourseChat(name)
+        const course = await courseRepository.getById(courseId);
+        if (!course) {
+            throw new Error(`Course with id ${courseId} not found`);
+        }
 
-        await courseRepository.createUserCourse({ userId, courseId })
-        await chatService.addUserInChat({ userId, chatId: id })
+        const { name, modules } = course;
+        const { id: chatId } = await chatRepository.getCourseChat(name);
 
-        return true
+        await courseRepository.createUserCourse({ userId, courseId });
+        await chatService.addUserInChat({ userId, chatId });
+
+        let firstLeassonId = null;
+        let firstPracticalTaskId = null;
+
+        modules.some(module => {
+            const leasson = module.partitions[0]?.leassons[0];
+            if (leasson) {
+                firstLeassonId = leasson.id;
+                const task = leasson.practicalTasks[0];
+                if (task) {
+                    firstPracticalTaskId = task.id;
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        await userRepository.createUserProgress({ userId, courseId, currentLeassonId: firstLeassonId, currentPracticalTaskId: firstPracticalTaskId });
+
+        return true;
     }
+
 }
 
 module.exports = new CourseService();

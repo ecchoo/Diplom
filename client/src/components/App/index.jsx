@@ -14,6 +14,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ModalLockUser } from "../ModalLockUser"
 import { DialogCourseCreateUpdate } from "../DialogCourseCreateUpdate"
 import { ModalTaskFile } from "../ModalTaskFile"
+import { DialogTestCreateUpdate } from "../DialogTestCreateUpdate"
+import { ModalConfirmDeleteСourse } from "../ModalConfirmDeleteCourse"
 
 export const App = () => {
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID
@@ -27,10 +29,12 @@ export const App = () => {
                             <ModalAuth />
                             <ModalCourse />
                             <ModalConfirmDeleteMessage />
+                            <ModalConfirmDeleteСourse />
                             <ModalLockUser />
                             <ModalTaskFile />
 
                             <DialogCourseCreateUpdate />
+                            <DialogTestCreateUpdate />
 
                             <ToastContainer />
 

@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     UserPracticalTask.init({
         practicalTaskId: DataTypes.INTEGER,
         userId: DataTypes.INTEGER,
-        filePath: DataTypes.STRING
+        filePath: DataTypes.STRING,
+        mark: DataTypes.INTEGER,
     }, {
         sequelize,
         modelName: 'UserPracticalTask',

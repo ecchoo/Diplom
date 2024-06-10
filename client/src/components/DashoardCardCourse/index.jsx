@@ -1,12 +1,13 @@
-import { AuthorAvatar, AuthorInfo, AuthorName, Card, CardBody, CardFooter, CardHeader, CourseInfo, CourseLogo, CourseProgressBar, TitleCourse, WrapperCourseProgressBar } from "./styled"
+import { AuthorAvatar, AuthorInfo, AuthorName, ButtonContinue, Card, CardBody, CardFooter, CardHeader, CourseInfo, CourseLogo, CourseProgressBar, Progress, TitleCourse, WrapperCourseProgressBar } from "./styled"
 import ClockIcon from '@/assets/icons/clock.svg'
 import BookIcon from '@/assets/icons/book.svg'
 import { ButtonActions } from "../ButtonActions"
+import { COURSES } from "@/constants"
 
 
 export const DashoardCardCourse = ({ name, logo, progress, author, countLeassons, courseTime }) => {
     const hours = (courseTime / 60).toFixed(1)
-
+    console.log('progress', progress)
     return (
         <Card>
             <CardHeader>
@@ -31,10 +32,13 @@ export const DashoardCardCourse = ({ name, logo, progress, author, countLeassons
                 </CourseInfo>
             </CardBody>
             <CardFooter>
-                <span>{progress} %</span>
-                <WrapperCourseProgressBar>
-                    <CourseProgressBar variant="determinate" value={progress} />
-                </WrapperCourseProgressBar>
+                <Progress>
+                    <span>{progress.progressPercentage} %</span>
+                    <WrapperCourseProgressBar>
+                        <CourseProgressBar variant="determinate" value={progress.progressPercentage} />
+                    </WrapperCourseProgressBar>
+                </Progress>
+                <ButtonContinue to={`${COURSES}${progress.courseId}/lessons/${progress.currentLeassonId}`}>Продолжить обучение</ButtonContinue>
             </CardFooter>
         </Card>
     )

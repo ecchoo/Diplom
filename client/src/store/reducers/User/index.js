@@ -8,7 +8,8 @@ const initialState = {
     role: null,
     verified: false,
     photo: null,
-    tasks: []
+    tasks: [],
+    courses: []
 };
 
 const userSlice = createSlice({
@@ -24,8 +25,11 @@ const userSlice = createSlice({
             state.photo = action.payload.photo
             state.role = action.payload.role
         },
-        setTasks(state, action){
+        setTasks(state, action) {
             state.tasks = action.payload
+        },
+        setUserCourses(state, action) {
+            state.courses = action.payload
         },
         setPersonalDataUser(state, action) {
             state.name = action.payload.name

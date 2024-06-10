@@ -1,3 +1,5 @@
+import { IconButton } from "@mui/material"
+import { Link } from "react-router-dom"
 import styled from "styled-components"
 
 export const Container = styled.div`
@@ -39,12 +41,37 @@ export const NavigationLink = styled.a`
     font-size: 16px;
 `
 
+export const LeassonWrapper = styled.div`
+    position: relative;
+    /* padding-left: 20%; */
+    height: 100vh;
+    /* background-color: ${({ theme }) => theme.colors.white}; */
+    width: 100%;
+    /* overflow-x: hidden; */
+`
+
+const ButtonNavigate = styled(Link)`
+    position: absolute !important;
+    top: 50%;
+    /* right: 2%; */
+    transform: translateY(-50%);
+`
+
+export const ButtonNext = styled(ButtonNavigate)`
+    right: 2%;
+`;
+
+export const ButtonPrev = styled(ButtonNavigate)`
+    left: 20%;
+`;
+
 export const LeassonContent = styled.div`
     margin-left: 20%;
     width: 80%;
+    height: 100%;
     overflow-y: auto;
     position: relative;
-    /* padding: ${({ theme }) => theme.spacing(3)}; */
+    padding: ${({ theme }) => theme.spacing(0, 5)};
 `
 
 export const MdWrapper = styled.div`

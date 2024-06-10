@@ -13,6 +13,14 @@ export const getUserCourseList = async (params) => {
     return data
 }
 
+export const getUserCourseByCourseId = async (courseId) => {
+    return await $authHost.get(`${DASHBOARD_ENDPOINTS.USER_COURSE_LIST}${courseId}`)
+}
+
 export const getTeacherCourseList = async () => {
     return await $authHost.get(DASHBOARD_ENDPOINTS.TEACHER_COURSE_LIST)
+}
+
+export const getTeacherCourseByCourseId = async (courseId) => {
+    return await $authHost.get(`${DASHBOARD_ENDPOINTS.TEACHER_COURSE_LIST}${courseId}`)
 }

@@ -1,16 +1,16 @@
 import { IconButton } from "@mui/material"
 import { ButtonCancel, ButtonSend, Buttons, Dialog, DialogContent, DialogHeader, DialogTitle, DropZone, DropZoneContainer, Placeholder, Preview } from "./styled"
-import { Close, CloudDone } from "@mui/icons-material"
+import { Close, CloudUpload } from "@mui/icons-material"
 import { useDispatch, useSelector } from "react-redux"
 import { setIsOpenModalTaskFile, setTasks } from "@/store/reducers"
 import { useDropzone } from 'react-dropzone'
-import { submitPracticalTask, uploadFile } from '@/api'
+import { submitPracticalTask, updateProgress, uploadFile } from '@/api'
 import { useState } from "react"
 
 export const ModalTaskFile = () => {
     const dispatch = useDispatch()
     const {
-        modalTaskFile: { isOpen, taskId },
+        modalTaskFile: { isOpen, taskId, courseId, nextTaskId },
         user: { tasks }
     } = useSelector(state => state)
 
@@ -42,12 +42,17 @@ export const ModalTaskFile = () => {
         try {
             const { data: { userPracticalTask } } = await submitPracticalTask({
                 filePath: uploadedFile.path,
-                practicalTaskId: taskId
+                practicalTaskId: taskId,
+                courseId
             })
-            console.log('new', userPracticalTask)
+
+            if (nextTaskId) {
+                await updateProgress({ courseId, currentPracticalTaskId: nextTaskId })
+            }
+
             setUploadedFile(null)
             dispatch(setIsOpenModalTaskFile(false))
-            dispatch(setTasks({ ...tasks, userPracticalTask }))
+            dispatch(setTasks([...tasks, userPracticalTask]))
         } catch (err) {
             console.error(err)
         }
@@ -67,7 +72,7 @@ export const ModalTaskFile = () => {
                         <input {...getInputProps()} />
                         {uploadedFile ? (
                             <Preview>
-                                <CloudDone />
+                                <CloudUpload />
                                 {uploadedFile.name}
                             </Preview>
                         ) : null}

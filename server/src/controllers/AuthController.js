@@ -5,11 +5,11 @@ const { validationResult } = require("express-validator")
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 const userRepository = require('../repositories/UserRepository')
-const URLS = require('../constants/urls')
+const { URLS } = require('../constants/urls')
 dotenv.config()
 
 class AuthController {
-    async register(req, res) {
+    async registerStudent(req, res) {
         try {
             const errorsValidation = validationResult(req)
             if (!errorsValidation.isEmpty()) {
@@ -17,7 +17,33 @@ class AuthController {
             }
 
             const { name, password, email } = req.body
-            const { id, role, verified, photo } = await authService.register({ name, password, email })
+            const { id, role, verified, photo } = await authService.registerUser({ name, password, email })
+
+            const token = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+            console.log('URLS', URLS)
+            mailService.sendMessage({
+                from: 'kosmat3936@gmail.com',
+                to: email,
+                subject: 'Верификация почты',
+                text: `${URLS.VERIFY_EMAIL}?token=${token}`
+            })
+
+            return res.status(StatusCodes.CREATED).json({ id, email, name, role, verified, photo, token })
+        } catch (err) {
+            console.log(err)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
+        }
+    }
+
+    async registerTeacher(req, res) {
+        try {
+            const errorsValidation = validationResult(req)
+            if (!errorsValidation.isEmpty()) {
+                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
+            }
+
+            const { name, password, email, bio, yearsExperience } = req.body
+            const { id, role, verified, photo } = await authService.registerTeacher({ name, password, email, bio, yearsExperience })
 
             const token = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
@@ -30,6 +56,7 @@ class AuthController {
 
             return res.status(StatusCodes.CREATED).json({ id, email, name, role, verified, photo, token })
         } catch (err) {
+            console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
         }
     }

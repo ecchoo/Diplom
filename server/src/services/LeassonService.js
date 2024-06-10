@@ -12,6 +12,10 @@ class LeassonService {
             await leassonRepository.update(leasson)
         }))
     }
+
+    async delete({ leassonId, courseId }) {
+        return await leassonRepository.delete(leassonId)
+    }
 }
 
 module.exports = new LeassonService()

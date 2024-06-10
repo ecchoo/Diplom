@@ -1,67 +1,91 @@
-import { Form, FormRow, TextField } from "@/UI"
-import { FormControl, FormHelperText, InputLabel, MenuItem, Typography } from "@mui/material"
-import { MultipleSelect } from "../MultipleSelect"
-import { useDispatch, useSelector } from "react-redux"
-import { setCourse, setCourseAuthors, setCourseTeachers } from "@/store/reducers"
-import { useEffect, useState } from "react"
-import { getTeacherList } from "@/api/teachers"
-import { CourseLoogoAddition } from "../CourseLoogoAddition"
-import { ButtonSave, Select } from "./styled"
-import { createCourse, updateCourse } from "@/api"
-import { StatusCodes } from "http-status-codes"
-import { convertErrorsValidation } from "@/utils"
-import { DIFFICULTY_LEVELS, FIELDS_STUDY } from "@/constants"
+import { Form, FormRow, TextField } from "@/UI";
+import { FormControl, FormHelperText, InputLabel, MenuItem, Typography } from "@mui/material";
+import { MultipleSelect } from "../MultipleSelect";
+import { useDispatch, useSelector } from "react-redux";
+import { setCourse, setCourseTeachers, setTeacherCourses } from "@/store/reducers";
+import { useEffect, useState } from "react";
+import { getTeacherList } from "@/api/teachers";
+import { CourseLoogoAddition } from "../CourseLoogoAddition";
+import { ButtonSave, Select } from "./styled";
+import { createCourse, updateCourse } from "@/api";
+import { StatusCodes } from "http-status-codes";
+import { convertErrorsValidation } from "@/utils";
+import { DIFFICULTY_LEVELS, FIELDS_STUDY } from "@/constants";
 
 export const FormMainInfo = () => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const {
         courseCreateUpdate: { course },
-    } = useSelector(state => state)
+        teacher: { teacherCourses },
+        user: { id: userId }
+    } = useSelector(state => state);
 
-    const [teachers, setTeachers] = useState([])
-    const [errorsValidation, setErrorsValidation] = useState({})
+    const [teacherList, setTeacherList] = useState([]);
+    const [errorsValidation, setErrorsValidation] = useState({});
 
     const handleChange = (e) => {
-        const { target: { name, value } } = e
-        dispatch(setCourse({ ...course, [name]: value }))
-    }
+        const { target: { name, value } } = e;
+        dispatch(setCourse({ ...course, [name]: value }));
+    };
 
     const handleChangeTeachers = (selectedTeachers) => {
-        dispatch(setCourseTeachers(selectedTeachers))
-    }
+        // Ensure the current teacher (userId) is always included and cannot be removed
+        if (!selectedTeachers.some(teacher => teacher.id === userId)) {
+            const currentUser = teacherList.find(teacher => teacher.id === userId);
+            if (currentUser) {
+                selectedTeachers.push(currentUser);
+            }
+        }
+        dispatch(setCourseTeachers(selectedTeachers));
+    };
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-
+        e.preventDefault();
+        console.log('course', course)
         try {
             if (!course.id) {
-                const { data: { newCourse: { id } } } = await createCourse(course);
-                dispatch(setCourse({ ...course, id }))
+                const { data: { newCourse } } = await createCourse(course);
+                dispatch(setCourse({ ...course, id: newCourse.id }));
+                dispatch(setTeacherCourses([...teacherCourses, newCourse]));
             } else {
-                await updateCourse(course)
+                await updateCourse(course);
+                const updatedTeacherCourses = teacherCourses.map(teacherCourse => {
+                    if (teacherCourse.id === course.id) {
+                        return { ...teacherCourse, ...course };
+                    }
+
+                    return teacherCourse;
+                });
+                dispatch(setTeacherCourses(updatedTeacherCourses));
             }
-            setErrorsValidation({})
+            setErrorsValidation({});
         } catch (err) {
-            console.error(err)
+            console.error(err);
             if (err?.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
-                const convertedErrors = convertErrorsValidation(err.response.data.errors)
-                setErrorsValidation(convertedErrors)
+                const convertedErrors = convertErrorsValidation(err.response.data.errors);
+                setErrorsValidation(convertedErrors);
             }
         }
     };
 
     useEffect(() => {
         const fetchTeachers = async () => {
-            const { data: { teacherList } } = await getTeacherList()
-            setTeachers(teacherList)
-        }
+            const { data: { teacherList: teachers } } = await getTeacherList();
+            setTeacherList(teachers);
+            const me = teachers.find(t => t.userId === userId);
+            if (me) {
+                dispatch(setCourseTeachers([me]));
+            }
+        };
 
-        fetchTeachers()
-    }, [])
+        fetchTeachers();
+    }, []);
 
-    const initialTeachers = teachers.filter(teacher =>
-        course.teachers.some(courseTeacher => teacher.id === courseTeacher.id)
-    )
+    const initialTeachers = teacherList.filter(t =>
+        course.teachers.some(courseTeacher => t.id === courseTeacher.id)
+    );
+
+    const me = teacherList.find(t => t.userId === userId);
 
     return (
         <Form onSubmit={handleSubmit}>
@@ -80,14 +104,15 @@ export const FormMainInfo = () => {
                     helperText={errorsValidation?.name}
                 />
                 {
-                    teachers?.length ? (
+                    teacherList?.length ? (
                         <MultipleSelect
-                            options={teachers}
+                            options={teacherList}
                             placeholder='Преподаватели'
                             onChange={handleChangeTeachers}
                             error={errorsValidation?.teachers}
                             helperText={errorsValidation?.teachers}
                             initialValues={initialTeachers}
+                            disableOptions={[me.id]}  // Disable the current user from being deselected
                         />
                     ) : null
                 }
@@ -120,7 +145,7 @@ export const FormMainInfo = () => {
                         onChange={handleChange}
                     >
                         {FIELDS_STUDY.map(({ text, value }) =>
-                            <MenuItem key={value} value={value} >{text}</MenuItem>
+                            <MenuItem key={value} value={value}>{text}</MenuItem>
                         )}
                     </Select>
                     <FormHelperText>{errorsValidation?.fieldStudy}</FormHelperText>
@@ -146,5 +171,5 @@ export const FormMainInfo = () => {
             </FormRow>
             <ButtonSave type="submit">Сохранить</ButtonSave>
         </Form>
-    )
-}
+    );
+};

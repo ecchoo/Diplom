@@ -7,6 +7,7 @@ export const DashboardActivityContainer = styled.div`
 
 export const DashboardActivityHeader = styled.div`
     display: flex;
+    padding-bottom: 40px;
 `
 
 export const SalutationBlock = styled.div`
@@ -39,4 +40,8 @@ export const ButtonContinue = styled.button`
     align-items: center;
     padding: ${({ theme }) => theme.spacing(1)} ${({ theme }) => theme.spacing(8)};
     width: max-content;
+`
+
+export const ChartContainer = styled.div`
+
 `

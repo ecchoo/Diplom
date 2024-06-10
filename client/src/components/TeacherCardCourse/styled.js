@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Card = styled.div`
@@ -6,9 +7,10 @@ export const Card = styled.div`
     row-gap: ${({ theme }) => theme.spacing(2)};
     padding: ${({ theme }) => theme.spacing(2)};
     border-radius: ${({ theme }) => theme.spacing(2)};
-    width: ${({ theme }) => theme.spacing(35)};
+    width: ${({ theme }) => theme.spacing(38)};
     background-color: ${({ theme }) => theme.colors.white};
     position: relative;
+    height: max-content;
 `
 
 export const CardHeader = styled.div`
@@ -94,7 +96,7 @@ export const CardFooter = styled.div`
     justify-content: space-between;
 `
 
-export const Button = styled.button`
+export const ButtonGo = styled.button`
     background-color: #ffc773;
     display: flex;
     justify-content: center;

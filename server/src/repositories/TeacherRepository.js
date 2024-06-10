@@ -19,6 +19,10 @@ class TeacherRepository {
         })
     }
 
+    async createTeacher({ userId, bio, yearsExperience }) {
+        return await Teacher.create({ userId, bio, yearsExperience })
+    }
+
     async getTeacherByUserId(userId) {
         return await Teacher.findOne({ where: { userId }, attributes: ['id'] })
     }

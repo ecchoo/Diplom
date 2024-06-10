@@ -4,5 +4,7 @@ export const DASHBOARD_SECTIONS = {
     STUDENT_COURSES: 'studentCourses',
     TEACHER_COURSES: 'teacherCourses',
     PROFILE: 'profile',
-    MESSAGE_MODERATION: 'messageModeration'
+    MESSAGE_MODERATION: 'messageModeration',
+    // TESTS: 'tests',
+    TEACHER_COURSE: 'teacherCourse'
 }

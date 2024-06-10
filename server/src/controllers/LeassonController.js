@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const leassonRepository = require('../repositories/LeassonRepository')
-const { validationResult } = require('express-validator')
+const { validationResult } = require('express-validator');
+const leassonService = require("../services/LeassonService");
 
 class LeassonController {
     async create(req, res) {
@@ -26,7 +27,7 @@ class LeassonController {
             if (!errorsValidation.isEmpty()) {
                 return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
             }
-            
+
             const { id, partitionId, name, time, content } = req.body
             const updatedLeasson = await leassonRepository.update({ id, partitionId, name, time, content })
 
@@ -39,8 +40,8 @@ class LeassonController {
 
     async delete(req, res) {
         try {
-            const { query: { id } } = req
-            const deletedLeasson = await leassonRepository.delete(id)
+            const { query: { leassonId, courseId } } = req
+            const deletedLeasson = await leassonService.delete({ leassonId, courseId })
 
             return res.status(StatusCodes.NO_CONTENT).json({ deletedLeasson })
         } catch (err) {

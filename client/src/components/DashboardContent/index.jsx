@@ -6,6 +6,7 @@ import { DashboardChats } from "../DashboardChats"
 import { StudentProfile } from "../StudentProfile"
 import { ModerationMessages } from "../ModerationMessages"
 import { TeacherCourses } from "../TeacherCourses"
+import { TeacherCourse } from "../TeacherCourse"
 
 export const DashboardContent = () => {
     const { dashboard: { activeSection } } = useSelector(state => state)
@@ -17,5 +18,7 @@ export const DashboardContent = () => {
         case DASHBOARD_SECTIONS.CHATS: return <DashboardChats />
         case DASHBOARD_SECTIONS.MESSAGE_MODERATION: return <ModerationMessages />
         case DASHBOARD_SECTIONS.TEACHER_COURSES: return <TeacherCourses />
+        case DASHBOARD_SECTIONS.TEACHER_COURSE: return <TeacherCourse />
+        // case DASHBOARD_SECTIONS.TESTS: return <Tests />
     }
 }

@@ -133,11 +133,16 @@ class ChatService {
             chatId: chat.id
         })
 
+
         await Promise.all(teachers.map(async ({ userId }) => {
             await this.addUserInChat({ userId, chatId: chat.id })
         }))
 
-        await this.addUserInChat({ userId: 47, chatId: chat.id })
+        const moderator = await userRepository.getModerator()
+
+        if (moderator) {
+            await this.addUserInChat({ userId: moderator.id, chatId: chat.id })
+        }
 
         return chat
     }
@@ -167,11 +172,13 @@ class ChatService {
     }
 
     async addUserInChat({ userId, chatId }) {
-        const { name } = await userRepository.getById(userId)
+        const user = await userRepository.getById(userId)
+
+        if (!user) return
 
         await chatRepository.createUserChat({ userId, chatId })
         await chatNotificationRepository.create({
-            text: `${name} присоединился к чату`,
+            text: `${user.name} присоединился к чату`,
             chatId: chatId
         }) //
 

@@ -11,6 +11,7 @@ export const getCourseById = async (id) => {
     return await $host.get(`${COURSES_ENDPOINTS.BY_ID}${id}`)
 }
 
+
 export const enrollCourse = async ({ courseId }) => {
     const { data } = await $authHost.post(COURSES_ENDPOINTS.ENROLL, { courseId })
 
@@ -40,4 +41,8 @@ export const updateCourse = async ({ id, name, description, logo, difficultyLeve
         difficultyLevel,
         fieldStudy
     })
+}
+
+export const deleteCourse = async (id) => {
+    return await $authHost.delete(COURSES_ENDPOINTS.DELETE, { params: { id } })
 }

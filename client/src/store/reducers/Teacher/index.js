@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    teacherCourses: []
+    teacherCourses: [],
+    selectedCourseId: 0
 };
 
 const teacherSlice = createSlice({
@@ -10,10 +11,13 @@ const teacherSlice = createSlice({
     reducers: {
         setTeacherCourses(state, action) {
             state.teacherCourses = action.payload
+        },
+        setSelectedTeacherCourseId(state, action) {
+            state.selectedCourseId = action.payload
         }
     }
 });
 
-export const { setTeacherCourses } = teacherSlice.actions;
+export const { setTeacherCourses, setSelectedTeacherCourseId } = teacherSlice.actions;
 
 export default teacherSlice.reducer;

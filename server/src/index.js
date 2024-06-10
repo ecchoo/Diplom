@@ -12,6 +12,11 @@ const modulesRouter = require('./routes/modulesRoutes')
 const partitionsRouter = require('./routes/partitionsRoutes')
 const leassonsRouter = require('./routes/leassonsRoutes')
 const practicalTasksRouter = require('./routes/practicalTasksRoutes')
+const testRouter = require('./routes/testRoutes')
+const questionRouter = require('./routes/questionRotes')
+const answerRouter = require('./routes/answerRoutes')
+const userProgressRouter = require('./routes/userProgressRoutes')
+
 
 const chatService = require('./services/ChatService')
 const messageRepository = require('./repositories/MessageRepository')
@@ -41,6 +46,12 @@ app.use('/api/modules', modulesRouter)
 app.use('/api/partitions', partitionsRouter)
 app.use('/api/leassons', leassonsRouter)
 app.use('/api/practical-tasks', practicalTasksRouter)
+app.use('/api/tests', testRouter)
+app.use('/api/questions', questionRouter)
+app.use('/api/answers', answerRouter)
+app.use('/api/progress', userProgressRouter)
+
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -64,6 +75,18 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     const relativeFilePath = req.file.path.slice(4).replace(/\\/g, '/');
     res.status(200).send({ filePath: `http://localhost:3000/${relativeFilePath}` });
 })
+
+app.get('/api/download/:fileName', (req, res) => {
+    const { fileName } = req.params;
+    const filePath = path.join(__dirname, 'uploads', 'tasks', fileName);
+
+    res.download(filePath, (err) => {
+        if (err) {
+            console.error(`Error downloading file: ${err}`);
+            res.status(500).send('Error downloading file');
+        }
+    });
+});
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 

@@ -17,6 +17,8 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'teacherId',
                 as: 'teachers'
             })
+            Course.hasOne(models.Test, { foreignKey: 'courseId', as: 'test' })
+            Course.hasMany(models.UserProgress, { foreignKey: 'courseId', as: 'userProgress' })
         }
     }
 

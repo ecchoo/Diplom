@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'userPracticalTasks'
             })
             User.hasOne(models.LockedUser, { foreignKey: 'userId', as: 'locked' })
+            User.hasMany(models.UserProgress, { foreignKey: 'userId', as: 'userProgress' })
         }
     }
 

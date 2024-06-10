@@ -9,12 +9,26 @@ export const login = async ({ email, password }) => {
     return data
 }
 
-export const register = async ({ name, email, password, passwordConfirm }) => {
-    const { data } = await $host.post(AUTH_USER_ENDPOINTS.REGISTER, {
+export const registerStudent = async ({ name, email, password, passwordConfirm }) => {
+    const { data } = await $host.post(AUTH_USER_ENDPOINTS.REGISTER_STUDENT, {
         name,
         email,
         password,
         passwordConfirm
+    })
+
+    return data
+}
+
+export const registerTeacher = async ({ name, email, password, passwordConfirm, bio, yearsExperience }) => {
+    console.log('reg teacher')
+    const { data } = await $host.post(AUTH_USER_ENDPOINTS.REGISTER_TEACHER, {
+        name,
+        email,
+        password,
+        passwordConfirm,
+        bio,
+        yearsExperience
     })
 
     return data

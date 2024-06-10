@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
     UserCourse.init({
         courseId: DataTypes.INTEGER,
         userId: DataTypes.INTEGER,
-        progress: DataTypes.INTEGER,
     }, {
         sequelize,
         modelName: 'UserCourse',

@@ -1,11 +1,11 @@
-import { Actions, Button, Card, CardBody, CardFooter, CardHeader, CountStudentIcon, CourseInfo, CourseLogo, TitleCourse } from "./styled"
+import { Actions, ButtonGo, Card, CardBody, CardFooter, CardHeader, CountStudentIcon, CourseInfo, CourseLogo, TitleCourse } from "./styled"
 import { Delete, Edit } from '@mui/icons-material'
 import { IconButton } from "@mui/material"
 import { useDispatch } from "react-redux"
-import { setCourse, setIsOpenCourseCreateUpdate, setTypeCourseCreateUpdate } from "@/store/reducers"
+import { setActiveDashboardSection, setCourse, setDeleteCourseId, setIsOpenCourseCreateUpdate, setIsOpenModalConfirmDeleteCourse, setSelectedTeacherCourseId, setTypeCourseCreateUpdate } from "@/store/reducers"
 import { getCourseById } from "@/api"
 import ProfileIcon from '@/assets/icons/profile.svg'
-import { COURSE_CREATE_UPDATE_TYPES } from "@/constants"
+import { COURSE_CREATE_UPDATE_TYPES, DASHBOARD_SECTIONS, TEACHER_COURSE } from "@/constants"
 
 export const TeacherCardCourse = ({ courseId, name, logo, countStudents }) => {
     const dispatch = useDispatch()
@@ -38,6 +38,16 @@ export const TeacherCardCourse = ({ courseId, name, logo, countStudents }) => {
         dispatch(setIsOpenCourseCreateUpdate(true))
     }
 
+    const handleDelete = () => {
+        dispatch(setIsOpenModalConfirmDeleteCourse(true))
+        dispatch(setDeleteCourseId(courseId))
+    }
+
+    const handleGoCourse = () => {
+        dispatch(setSelectedTeacherCourseId(courseId))
+        dispatch(setActiveDashboardSection(DASHBOARD_SECTIONS.TEACHER_COURSE))
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -46,9 +56,9 @@ export const TeacherCardCourse = ({ courseId, name, logo, countStudents }) => {
                     <IconButton onClick={handleEdit}>
                         <Edit />
                     </IconButton>
-                    {/* <IconButton>
+                    <IconButton onClick={handleDelete}>
                         <Delete />
-                    </IconButton> */}
+                    </IconButton>
                 </Actions>
             </CardHeader>
             <CardBody>
@@ -59,7 +69,7 @@ export const TeacherCardCourse = ({ courseId, name, logo, countStudents }) => {
                 </CourseInfo>
             </CardBody>
             <CardFooter>
-                <Button>Перейти</Button>
+                <ButtonGo onClick={handleGoCourse}>Перейти</ButtonGo>
             </CardFooter>
         </Card>
     )

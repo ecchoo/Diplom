@@ -6,9 +6,27 @@ export const Container = styled.div`
 `
 
 export const Courses = styled.div`
+    margin-top: ${({ theme }) => theme.spacing(2)};
     display: flex;
     flex-wrap: wrap;
-    gap: ${({ theme }) => theme.spacing(2)};
+    justify-content: space-between;
+    row-gap: ${({ theme }) => theme.spacing(2)};
+    overflow-y: auto;
+    height: 610px;
+
+    &::-webkit-scrollbar{
+        width: 5px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background-color: ${({ theme }) => theme.colors.gray}
+    }
+
 `
 
 export const ButtonCreateCourse = styled.button`

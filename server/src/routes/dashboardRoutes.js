@@ -9,7 +9,10 @@ const dashboardRouter = Router()
 dashboardRouter.use(authenticateUser)
 
 dashboardRouter.get('/user-course-list', checkRoleMiddleware([ROLES.STUDENT]), getUserCourseList(), dashboardController.getUserCourseList)
+dashboardRouter.get('/user-course-list/:id', checkRoleMiddleware([ROLES.STUDENT]), dashboardController.getUserCourse)
 dashboardRouter.get('/teacher-course-list', checkRoleMiddleware([ROLES.TEACHER]), dashboardController.getTeacherCourseList)
 dashboardRouter.get('/chat-list', dashboardController.getChatList)
+dashboardRouter.get('/teacher-course-list/:id', checkRoleMiddleware([ROLES.TEACHER]), dashboardController.getTeacherCourse)
+
 
 module.exports = dashboardRouter

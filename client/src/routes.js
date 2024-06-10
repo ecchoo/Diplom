@@ -1,10 +1,13 @@
 import { Home } from "./pages/Home";
 import { Courses } from "./pages/Courses";
-import { COURSES, COURSE_PASSAGE, DASHBOARD, HOME, VERIFY_EMAIL } from "./constants";
+import { COURSES, DASHBOARD, HOME, TEACHER_COURSE, TESTS, VERIFY_EMAIL } from "./constants";
 import { Dashboard } from "./pages/Dashboard";
 import { Course } from "./pages/Course";
 import { VerifyEmail } from "./pages/VerifyEmail";
 import { Leasson } from "./pages/Leasson";
+import { TeacherCourse } from "./components/TeacherCourse";
+import { CourseContent } from "./pages/CourseContent";
+import { CourseTest } from "./pages/CourseTest";
 
 export const routes = [
     {
@@ -19,20 +22,24 @@ export const routes = [
         path: DASHBOARD,
         Component: Dashboard
     },
-    // {
-    //     path: `${COURSE_PASSAGE}:id`,
-    //     Component: Leasson
-    // },
     {
         path: `${COURSES}:id`,
         Component: Course
     },
     {
-        path: `${COURSES}:courseId/leassons/:leassonId`,
+        path: `${COURSES}:id/content`,
+        Component: CourseContent
+    },
+    {
+        path: `${TESTS}:id`,
+        Component: CourseTest
+    },
+    {
+        path: `${COURSES}:courseId/lessons/:leassonId`,
         Component: Leasson
     },
     {
         path: `${VERIFY_EMAIL}`,
         Component: VerifyEmail
-    }
+    },
 ]

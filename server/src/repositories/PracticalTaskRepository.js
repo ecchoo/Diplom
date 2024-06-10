@@ -1,4 +1,4 @@
-const { PracticalTask, UserPracticalTask } = require('../models')
+const { PracticalTask, UserPracticalTask, User } = require('../models')
 
 class PracticalTaskRepository {
     async create({ condition, leassonId }) {
@@ -17,8 +17,23 @@ class PracticalTaskRepository {
         return await UserPracticalTask.create({ filePath, userId, practicalTaskId })
     }
 
+    async updateUserPracticalTask({ filePath, userId, practicalTaskId, mark }) {
+        return await UserPracticalTask.update({ filePath, mark }, { where: { userId, practicalTaskId } })
+    }
+
     async getUserPracticalTasks(userId) {
         return UserPracticalTask.findAll({ where: { userId } })
+    }
+
+    async getUserPracticalTasksTurnedInById(practicalTaskId) {
+        return await UserPracticalTask.findAll({
+            where: { practicalTaskId },
+            include: {
+                model: User,
+                as: 'user',
+                attributes: ['id', 'name']
+            }
+        })
     }
 }
 

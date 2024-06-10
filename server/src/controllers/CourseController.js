@@ -80,7 +80,7 @@ class CourseController {
 
     async delete(req, res) {
         try {
-            const { id: courseId } = req.body
+            const { id: courseId } = req.query
             const deletedCourse = await courseRepository.delete(courseId)
 
             return res.status(StatusCodes.NO_CONTENT).json({ course: deletedCourse })

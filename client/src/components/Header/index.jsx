@@ -18,7 +18,7 @@ export const Header = () => {
 
     const handleClickRegister = () => {
         dispatch(setIsOpenModalAuth(true))
-        dispatch(setActiveFormModalAuth(AUTH_FORMS.REGISTER))
+        dispatch(setActiveFormModalAuth(AUTH_FORMS.REGISTER_STUDENT))
     }
 
     return (

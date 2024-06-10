@@ -8,10 +8,12 @@ import modalCourseReducer from './reducers/ModalCourse'
 import chatsReducer from './reducers/Chats'
 import dashboardReducer from './reducers/Dashboard'
 import modalConfirmDeleteMessageReducer from './reducers/ModalConfirmDeleteMessage'
+import modalConfirmDeleteCourseReducer from './reducers/ModalConfirmDeleteCourse'
 import editMessageReducer from './reducers/EditMessage'
 import modalLockUserReducer from './reducers/ModalLockUser'
 import moderatorReducer from './reducers/Moderator'
 import courseCreateUpdateReducer from './reducers/CourseCreateUpdate'
+import testCreateUpdateReducer from './reducers/TestCreateUpdate'
 import teacherReducer from './reducers/Teacher'
 import modalTaskFileReducer from './reducers/ModalTaskFile'
 
@@ -32,8 +34,10 @@ const rootReducer = combineReducers({
     modalLockUser: modalLockUserReducer,
     moderator: moderatorReducer,
     courseCreateUpdate: courseCreateUpdateReducer,
+    testCreateUpdate: testCreateUpdateReducer,
     teacher: teacherReducer,
-    modalTaskFile: modalTaskFileReducer
+    modalTaskFile: modalTaskFileReducer,
+    modalConfirmDeleteCourse: modalConfirmDeleteCourseReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

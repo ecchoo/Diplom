@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const practicalTasksRepository = require('../repositories/PracticalTaskRepository')
-const { validationResult } = require('express-validator')
+const { validationResult } = require('express-validator');
+const practicalTaskService = require("../services/PracticalTaskService");
 
 class PracticalTaskController {
     async create(req, res) {
@@ -10,8 +11,8 @@ class PracticalTaskController {
                 return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
             }
 
-            const { condition, leassonId } = req.body
-            const newPracticalTask = await practicalTasksRepository.create({ condition, leassonId })
+            const { condition, leassonId, courseId } = req.body
+            const newPracticalTask = await practicalTaskService.create({ condition, leassonId, courseId })
 
             return res.status(StatusCodes.CREATED).json({ newPracticalTask })
         } catch (err) {
@@ -39,8 +40,8 @@ class PracticalTaskController {
 
     async delete(req, res) {
         try {
-            const { query: { id } } = req
-            const deletedPracticalTask = await practicalTasksRepository.delete(id)
+            const { query: { practicalTaskId, courseId } } = req
+            const deletedPracticalTask = await practicalTaskService.delete({ practicalTaskId: Number(practicalTaskId), courseId: Number(courseId) })
 
             return res.status(StatusCodes.NO_CONTENT).json({ deletedPracticalTask })
         } catch (err) {
@@ -51,8 +52,8 @@ class PracticalTaskController {
 
     async submit(req, res) {
         try {
-            const { userId, body: { filePath, practicalTaskId } } = req
-            const userPracticalTask = await practicalTasksRepository.createUserPracticalTask({ filePath, userId, practicalTaskId })
+            const { userId, body: { filePath, practicalTaskId, courseId } } = req
+            const userPracticalTask = await practicalTaskService.submit({ userId, filePath, practicalTaskId, courseId })
 
             return res.status(StatusCodes.CREATED).json({ userPracticalTask })
         } catch (err) {
@@ -71,6 +72,37 @@ class PracticalTaskController {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
         }
     }
+
+    async getUserPracticalTasksTurnedInById(req, res) {
+        try {
+            const { id: taskId } = req.params
+            const practicalTasksTurnedIn = await practicalTasksRepository.getUserPracticalTasksTurnedInById(taskId)
+
+            return res.status(StatusCodes.CREATED).json({ practicalTasksTurnedIn })
+        } catch (err) {
+            console.log(err)
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
+        }
+    }
+
+    async checkUserPracticalTask(req, res) {
+        try {
+            const errorsValidation = validationResult(req)
+            if (!errorsValidation.isEmpty()) {
+                return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({ errors: errorsValidation.array() })
+            }
+
+            const { userId, practicalTaskId, mark } = req.body
+            console.log({ userId, practicalTaskId, mark })
+            const practicalTasksTurnedIn = await practicalTasksRepository.updateUserPracticalTask({ userId, practicalTaskId, mark })
+
+            return res.status(StatusCodes.CREATED).json({ practicalTasksTurnedIn })
+        } catch (err) {
+            console.log(err)
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err })
+        }
+    }
+
 }
 
 module.exports = new PracticalTaskController();
